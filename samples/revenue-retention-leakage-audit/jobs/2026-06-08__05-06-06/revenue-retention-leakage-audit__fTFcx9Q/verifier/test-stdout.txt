@@ -1,0 +1,184 @@
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+Collecting pytest==8.4.1
+  Downloading pytest-8.4.1-py3-none-any.whl.metadata (7.7 kB)
+Collecting pytest-json-ctrf==0.3.5
+  Downloading pytest_json_ctrf-0.3.5-py3-none-any.whl.metadata (3.3 kB)
+Requirement already satisfied: pandas==2.2.3 in /usr/local/lib/python3.12/dist-packages (2.2.3)
+Requirement already satisfied: pyarrow==18.1.0 in /usr/local/lib/python3.12/dist-packages (18.1.0)
+Requirement already satisfied: scikit-learn==1.5.2 in /usr/local/lib/python3.12/dist-packages (1.5.2)
+Requirement already satisfied: numpy==1.26.4 in /usr/local/lib/python3.12/dist-packages (1.26.4)
+Requirement already satisfied: PyYAML==6.0.2 in /usr/local/lib/python3.12/dist-packages (6.0.2)
+Collecting iniconfig>=1 (from pytest==8.4.1)
+  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting packaging>=20 (from pytest==8.4.1)
+  Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting pluggy<2,>=1.5 (from pytest==8.4.1)
+  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pygments>=2.7.2 (from pytest==8.4.1)
+  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)
+Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2026.2)
+Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2026.2)
+Requirement already satisfied: scipy>=1.6.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn==1.5.2) (1.17.1)
+Requirement already satisfied: joblib>=1.2.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn==1.5.2) (1.5.3)
+Requirement already satisfied: threadpoolctl>=3.1.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn==1.5.2) (3.6.0)
+Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.8.2->pandas==2.2.3) (1.17.0)
+Downloading pytest-8.4.1-py3-none-any.whl (365 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 365.5/365.5 kB 1.9 MB/s eta 0:00:00
+Downloading pytest_json_ctrf-0.3.5-py3-none-any.whl (6.8 kB)
+Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Downloading packaging-26.2-py3-none-any.whl (100 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100.2/100.2 kB 2.0 MB/s eta 0:00:00
+Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Downloading pygments-2.20.0-py3-none-any.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 2.1 MB/s eta 0:00:00
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest, pytest-json-ctrf
+Successfully installed iniconfig-2.3.0 packaging-26.2 pluggy-1.6.0 pygments-2.20.0 pytest-8.4.1 pytest-json-ctrf-0.3.5
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /tests
+plugins: json-ctrf-0.3.5
+collecting ... collected 55 items
+
+../tests/test_outputs.py::TestPipelineRuns::test_train_model_runs_without_error PASSED [  1%]
+../tests/test_outputs.py::TestPipelineRuns::test_output_files_written_by_pipeline PASSED [  3%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_selected_features_match_pipeline_columns PASSED [  5%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_prohibited_closure_classification_not_selected PASSED [  7%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_prohibited_advance_charge_not_selected PASSED [  9%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_prohibited_post_period_drift_not_selected PASSED [ 10%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_in_period_settlement_not_selected PASSED [ 12%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_drop_only_starter_columns_not_selected PASSED [ 14%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_supplementary_aggregates_not_selected_with_primary PASSED [ 16%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_rolling_engagement_aggregate_selected PASSED [ 18%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_case_volume_selected PASSED [ 20%]
+../tests/test_outputs.py::TestNoLeakyFeatures::test_at_least_one_feature_kept PASSED [ 21%]
+../tests/test_outputs.py::TestFeatureValueIntegrity::test_no_closed_churn_disposition_in_feature_matrix PASSED [ 23%]
+../tests/test_outputs.py::TestFeatureValueIntegrity::test_usage_events_strictly_before_prediction_date PASSED [ 25%]
+../tests/test_outputs.py::TestFeatureValueIntegrity::test_health_score_respects_prev_month_boundary PASSED [ 27%]
+../tests/test_outputs.py::TestFeatureValueIntegrity::test_support_ticket_count_respects_prediction_boundary PASSED [ 29%]
+../tests/test_outputs.py::TestFeatureValueIntegrity::test_prior_cycle_invoice_respects_due_date_rule PASSED [ 30%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_required_keys_present PASSED [ 32%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_holdout_month_correct PASSED [ 34%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_is_list PASSED [ 36%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_forward_billing PASSED [ 38%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_evaluation_mrr PASSED [ 40%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_ticket_disposition PASSED [ 41%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_current_cycle_invoice PASSED [ 43%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_usage_window_repair PASSED [ 45%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_audit_documents_health_score_boundary_repair PASSED [ 47%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_audit_documents_ticket_volume_boundary_repair PASSED [ 49%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_audit_documents_prior_cycle_invoice_repair PASSED [ 50%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_audit_lists_repaired_boundary_features PASSED [ 52%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_boundary_fixes_not_only_in_kept_features PASSED [ 54%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_next_invoice PASSED [ 56%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_label_delta PASSED [ 58%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_kept_features_is_list PASSED [ 60%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_cover_prohibited_columns PASSED [ 61%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_repaired_entries_are_substantive PASSED [ 63%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_repaired_and_kept_features_disjoint PASSED [ 65%]
+../tests/test_outputs.py::TestLeakageAuditJson::test_leakage_risk_summary_non_empty PASSED [ 67%]
+../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_has_required_columns PASSED [ 69%]
+../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_validate_months_match_windows_csv PASSED [ 70%]
+../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_has_all_windows PASSED [ 72%]
+../tests/test_outputs.py::TestBacktestTemporalSplit::test_holdout_month_not_in_backtest_as_validate PASSED [ 74%]
+../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_row_counts_exact PASSED [ 76%]
+../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_row_counts_positive PASSED [ 78%]
+../tests/test_outputs.py::TestHoldoutPredictions::test_holdout_has_required_columns PASSED [ 80%]
+../tests/test_outputs.py::TestHoldoutPredictions::test_holdout_prediction_month_is_april_2026 PASSED [ 81%]
+../tests/test_outputs.py::TestHoldoutPredictions::test_holdout_row_count_matches_accounts PASSED [ 83%]
+../tests/test_outputs.py::TestHoldoutPredictions::test_holdout_no_duplicate_accounts PASSED [ 85%]
+../tests/test_outputs.py::TestHoldoutPredictions::test_churn_probability_in_range PASSED [ 87%]
+../tests/test_outputs.py::TestHoldoutPredictions::test_predicted_label_is_binary PASSED [ 89%]
+../tests/test_outputs.py::TestHonestAucRange::test_validation_auc_better_than_random PASSED [ 90%]
+../tests/test_outputs.py::TestPipelineSourceIntegrity::test_no_resolution_code_in_project_source PASSED [ 92%]
+../tests/test_outputs.py::TestPipelineSourceIntegrity::test_no_inclusive_horizon_window_in_source PASSED [ 94%]
+../tests/test_outputs.py::TestPipelineSourceIntegrity::test_no_label_horizon_helpers_in_feature_assembly FAILED [ 96%]
+../tests/test_outputs.py::TestPipelineSourceIntegrity::test_no_shuffle_split_in_train_model PASSED [ 98%]
+../tests/test_outputs.py::TestPipelineSourceIntegrity::test_drop_columns_not_in_feature_matrix PASSED [100%]
+
+=================================== FAILURES ===================================
+_ TestPipelineSourceIntegrity.test_no_label_horizon_helpers_in_feature_assembly _
+
+self = <test_outputs.TestPipelineSourceIntegrity object at 0x759503ad3530>
+
+    def test_no_label_horizon_helpers_in_feature_assembly(self):
+        """ts_he / pm_next tie starter features to the outcome observation window."""
+        src = _feature_assembly_sources().lower()
+>       assert 'ts_he(' not in src and 'ts_he_month' not in src, (
+            "Feature assembly still references label-horizon helpers (ts_he). "
+            "Rolling features must end at period open per feature_availability.pdf."
+        )
+E       AssertionError: Feature assembly still references label-horizon helpers (ts_he). Rolling features must end at period open per feature_availability.pdf.
+E       assert ('ts_he(' not in '"""primary ...sd.month))\n'
+E         
+E         'ts_he(' is contained here:
+E           """primary feature assembly (core matrix)."""
+E           import sqlite3
+E           
+E           import pandas as pd
+E           ...
+E         
+E         ...Full output truncated (221 lines hidden), use '-vv' to show)
+
+/tests/test_outputs.py:1042: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_outputs.py::TestPipelineRuns::test_train_model_runs_without_error
+PASSED ../tests/test_outputs.py::TestPipelineRuns::test_output_files_written_by_pipeline
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_selected_features_match_pipeline_columns
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_prohibited_closure_classification_not_selected
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_prohibited_advance_charge_not_selected
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_prohibited_post_period_drift_not_selected
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_in_period_settlement_not_selected
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_drop_only_starter_columns_not_selected
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_supplementary_aggregates_not_selected_with_primary
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_rolling_engagement_aggregate_selected
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_case_volume_selected
+PASSED ../tests/test_outputs.py::TestNoLeakyFeatures::test_at_least_one_feature_kept
+PASSED ../tests/test_outputs.py::TestFeatureValueIntegrity::test_no_closed_churn_disposition_in_feature_matrix
+PASSED ../tests/test_outputs.py::TestFeatureValueIntegrity::test_usage_events_strictly_before_prediction_date
+PASSED ../tests/test_outputs.py::TestFeatureValueIntegrity::test_health_score_respects_prev_month_boundary
+PASSED ../tests/test_outputs.py::TestFeatureValueIntegrity::test_support_ticket_count_respects_prediction_boundary
+PASSED ../tests/test_outputs.py::TestFeatureValueIntegrity::test_prior_cycle_invoice_respects_due_date_rule
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_required_keys_present
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_holdout_month_correct
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_is_list
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_forward_billing
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_evaluation_mrr
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_ticket_disposition
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_current_cycle_invoice
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_usage_window_repair
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_audit_documents_health_score_boundary_repair
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_audit_documents_ticket_volume_boundary_repair
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_audit_documents_prior_cycle_invoice_repair
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_audit_lists_repaired_boundary_features
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_boundary_fixes_not_only_in_kept_features
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_next_invoice
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_label_delta
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_kept_features_is_list
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_dropped_features_cover_prohibited_columns
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_repaired_entries_are_substantive
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_repaired_and_kept_features_disjoint
+PASSED ../tests/test_outputs.py::TestLeakageAuditJson::test_leakage_risk_summary_non_empty
+PASSED ../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_has_required_columns
+PASSED ../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_validate_months_match_windows_csv
+PASSED ../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_has_all_windows
+PASSED ../tests/test_outputs.py::TestBacktestTemporalSplit::test_holdout_month_not_in_backtest_as_validate
+PASSED ../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_row_counts_exact
+PASSED ../tests/test_outputs.py::TestBacktestTemporalSplit::test_backtest_row_counts_positive
+PASSED ../tests/test_outputs.py::TestHoldoutPredictions::test_holdout_has_required_columns
+PASSED ../tests/test_outputs.py::TestHoldoutPredictions::test_holdout_prediction_month_is_april_2026
+PASSED ../tests/test_outputs.py::TestHoldoutPredictions::test_holdout_row_count_matches_accounts
+PASSED ../tests/test_outputs.py::TestHoldoutPredictions::test_holdout_no_duplicate_accounts
+PASSED ../tests/test_outputs.py::TestHoldoutPredictions::test_churn_probability_in_range
+PASSED ../tests/test_outputs.py::TestHoldoutPredictions::test_predicted_label_is_binary
+PASSED ../tests/test_outputs.py::TestHonestAucRange::test_validation_auc_better_than_random
+PASSED ../tests/test_outputs.py::TestPipelineSourceIntegrity::test_no_resolution_code_in_project_source
+PASSED ../tests/test_outputs.py::TestPipelineSourceIntegrity::test_no_inclusive_horizon_window_in_source
+PASSED ../tests/test_outputs.py::TestPipelineSourceIntegrity::test_no_shuffle_split_in_train_model
+PASSED ../tests/test_outputs.py::TestPipelineSourceIntegrity::test_drop_columns_not_in_feature_matrix
+FAILED ../tests/test_outputs.py::TestPipelineSourceIntegrity::test_no_label_horizon_helpers_in_feature_assembly
+========================= 1 failed, 54 passed in 3.63s =========================

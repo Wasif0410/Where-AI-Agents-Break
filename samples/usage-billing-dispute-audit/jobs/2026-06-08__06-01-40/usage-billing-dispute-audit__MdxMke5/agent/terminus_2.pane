@@ -1,0 +1,506 @@
+[?2004hroot@03f8f4797f18:~# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@03f8f4797f18:~# clear
+[?2004l[H[J[3J[?2004hroot@03f8f4797f18:~# ls -la /root/data
+[?2004ltotal 40
+drwxr-xr-x 3 root root 4096 Jun  8 10:02 [0m[01;34m.[0m
+drwx------ 1 root root 4096 Jun  8 10:03 [01;34m..[0m
+-rw-r--r-- 1 root root  200 Jun  8 10:02 customers.csv
+-rw-r--r-- 1 root root  138 Jun  8 10:02 fx_rates.csv
+drwxr-xr-x 2 root root 4096 Jun  8 10:02 [01;34minvoices[0m
+-rw-r--r-- 1 root root 4963 Jun  8 10:02 legacy_call_adjustments.xlsx
+-rw-r--r-- 1 root root 2879 Jun  8 10:02 pricing_addendum.pdf
+-rw-r--r-- 1 root root  461 Jun  8 10:02 support_tickets.csv
+-rw-r--r-- 1 root root  247 Jun  8 10:02 usage_logs.csv
+[?2004hroot@03f8f4797f18:~# ls -la /root/data/invoices
+[?2004ltotal 20
+drwxr-xr-x 2 root root 4096 Jun  8 10:02 [0m[01;34m.[0m
+drwxr-xr-x 3 root root 4096 Jun  8 10:02 [01;34m..[0m
+-rw-r--r-- 1 root root 2171 Jun  8 10:02 invoice_acct_001.pdf
+-rw-r--r-- 1 root root 2175 Jun  8 10:02 invoice_acct_002.pdf
+-rw-r--r-- 1 root root 1994 Jun  8 10:02 invoice_acct_003.pdf
+[?2004hroot@03f8f4797f18:~# which pdftotext || pip list | grep -E "pdf|openpyxl|pandas"
+[?2004lcat /root/data/customers.csv
+[33mWARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'[0m[33m
+[0m[01;31m[Kopenpyxl[m[K           3.1.5
+[01;31m[Kpandas[m[K             2.2.3
+[01;31m[Kpdf[m[Kminer.six       20231228
+[01;31m[Kpdf[m[Kplumber         0.11.4
+py[01;31m[Kpdf[m[Kium2          5.9.0
+[?2004hroot@03f8f4797f18:~# cat /root/data/customers.csv
+[?2004laccount_id,company_name,segment,region,is_enterprise_legacy
+acct_001,Northwind Analytics,Mid-Market,NA,false
+acct_002,Alpine Cloud Systems,Enterprise,EMEA,true
+acct_003,PixelWorks Studio,SMB,NA,false
+[?2004hroot@03f8f4797f18:~# cat /root/data/fx_rates.csv
+[?2004lmonth,currency,usd_rate
+2026-01,USD,1.0000
+2026-01,EUR,1.0850
+2026-02,USD,1.0000
+2026-02,EUR,1.0920
+2026-03,USD,1.0000
+2026-03,EUR,1.0790
+[?2004hroot@03f8f4797f18:~# cat /root/data/usage_logs.csv
+[?2004laccount_id,service_month,api_calls
+acct_001,2026-01,85000
+acct_001,2026-02,145000
+acct_001,2026-03,92000
+acct_002,2026-01,175000
+acct_002,2026-02,88000
+acct_002,2026-03,350000
+acct_003,2026-01,76000
+acct_003,2026-02,132000
+acct_003,2026-03,220000
+[?2004hroot@03f8f4797f18:~# cat /root/data/support_tickets.csv
+[?2004lticket_id,account_id,created_date,subject,notes
+TKT-001,acct_002,2026-04-03,Overage Discount Not Applied,"Enterprise Legacy account per contract addendum section 4. Verify 8% discount applied to all Q1 2026 overage charges."
+TKT-002,acct_003,2026-04-07,Tax Charged on API Overage,"February invoice includes USD 10.24 sales tax on overage line. Per contract clause 7.2 and pricing addendum tax policy sales tax is excluded from usage billing. Credit requested."
+[?2004hroot@03f8f4797f18:~# cat << 'EOF' > read_pdf.py
+[?2004l[?2004h> import pdfplumber
+[?2004l[?2004h> with pdfplumber.open('/root/data/pricing_addendum.pdf') as pdf:
+[?2004l[?2004h>     for i, page in enumerate(pdf.pages):
+[?2004l[?2004h>         print(f"--- Page {i+1} ---")
+[?2004l[?2004h>         print(page.extract_text())
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@03f8f4797f18:~# python3 read_pdf.py
+[?2004l--- Page 1 ---
+Abundant Cloud Platform — Pricing Addendum
+Effective: January 1, 2026
+Usage Pricing Tiers
+Each account includes 100,000 API calls per calendar month at no additional charge.
+Tier 1 Overage: calls 100,001 through 200,000 are billed at USD 0.002 per call.
+Tier 2 Overage: calls above 200,000 are billed at USD 0.0015 per call.
+Billable overage is rounded UP to the nearest 1,000 calls before rate application.
+Enterprise Legacy Discount
+Accounts designated as Enterprise Legacy in the customer registry receive an 8%
+discount applied to total overage charges. The discount is applied after tier rate
+calculation and before any tax. Discount applies to all overage tiers.
+Tax Policy
+Sales tax and VAT are excluded from usage overage charges in billing reconciliation
+audits. Where tax appears on an invoice overage line, it must be separated and
+classified as line_type='tax' in the extracted invoice lines.
+Regional Currency Policy
+EMEA accounts are invoiced in EUR. Billing reconciliation is performed in USD
+using the monthly usd_rate from fx_rates.csv for the service month.
+Legacy Billing Adjustments
+Account-months listed in legacy_call_adjustments.xlsx carry authoritative call-count
+values from the prior billing system. Interpret those cells using standard Excel
+formula semantics.
+Dispute Severity Framework
+High — sales tax or VAT included in usage overage charges.
+Medium — Enterprise Legacy discount not applied to invoice overage, tier
+arithmetic errors, or rounding errors.
+Low — immaterial per-call rate variance below the audit materiality threshold.
+Base Plan
+Base plan subscription charges are USD 500.00 per account per month.
+Base plan lines are not subject to dispute review in this audit.
+[?2004hroot@03f8f4797f18:~# cat << 'EOF' > read_xlsx.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> xls = pd.ExcelFile('/root/data/legacy_call_adjustments.xlsx')
+[?2004l[?2004h> print("Sheets:", xls.sheet_names)
+[?2004l[?2004h> for sheet in xls.sheet_names:
+[?2004l[?2004h>     print(f"--- Sheet {sheet} ---")
+[?2004l[?2004h>     df = pd.read_excel(xls, sheet)
+[?2004l[?2004h>     print(df.to_string())
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@03f8f4797f18:~# python3 read_xlsx.py
+[?2004lSheets: ['Adjustments']
+--- Sheet Adjustments ---
+  account_id service_month  billable_calls  tier2_calls
+0   acct_001       2026-02             NaN          NaN
+1   acct_002       2026-03             NaN          NaN
+[?2004hroot@03f8f4797f18:~# cat << 'EOF' > read_xlsx_formulas.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/legacy_call_adjustments.xlsx', data_only=False)
+[?2004l[?2004h> sheet = wb.active
+[?2004l[?2004h> for r in range(1, sheet.max_row+1):
+[?2004l[?2004h>     row_vals = [sheet.cell(r, c).value for c in range(1, sheet.max_column+1)]
+[?2004l[?2004h>     print(f"Row {r}: {row_vals}")
+[?2004l[?2004h> 
+[?2004l[?2004h> wb_val = openpyxl.load_workbook('/root/data/legacy_call_adjustments.xlsx', data_only=True)
+[?2004l[?2004h> sheet_val = wb_val.active
+[?2004l[?2004h> for r in range(1, sheet_val.max_row+1):
+[?2004l[?2004h>     row_vals = [sheet_val.cell(r, c).value for c in range(1, sheet_val.max_column+1)]
+[?2004l[?2004h>     print(f"Row {r} (evaluated): {row_vals}")
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@03f8f4797f18:~# python3 read_xlsx_formulas.py
+[?2004lRow 1: ['account_id', 'service_month', 'billable_calls', 'tier2_calls']
+Row 2: ['acct_001', '2026-02', '=SUM(40000,5000,1000)', None]
+Row 3: ['acct_002', '2026-03', None, '=MAX(100000,150000)']
+Row 1 (evaluated): ['account_id', 'service_month', 'billable_calls', 'tier2_calls']
+Row 2 (evaluated): ['acct_001', '2026-02', None, None]
+Row 3 (evaluated): ['acct_002', '2026-03', None, None]
+[?2004hroot@03f8f4797f18:~# cat << 'EOF' > read_invoices.py
+[?2004l[?2004h> import pdfplumber
+[?2004l[?2004h> import os
+[?2004l[?2004h> 
+[?2004l[?2004h> for name in sorted(os.listdir('/root/data/invoices')):
+[?2004l[?2004h>     if name.endswith('.pdf'):
+[?2004l[?2004h>         print(f"=================== {name} ===================")
+[?2004l[?2004h>         with pdfplumber.open(os.path.join('/root/data/invoices', name)) as pdf:
+[?2004l[?2004h>             for i, page in enumerate(pdf.pages):
+[?2004l[?2004h>                 print(f"Page {i+1}:")
+[?2004l[?2004h>                 print(page.extract_text())
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@03f8f4797f18:~# python3 read_invoices.py
+[?2004l=================== invoice_acct_001.pdf ===================
+Page 1:
+Northwind Analytics — Q1 2026 Invoice
+Account ID: acct_001 | Billing Period: January – March 2026
+Currency: USD
+source_file | account_id | month | line_description | quantity | unit_price | amount_usd | line_type
+invoice_acct_001.pdf | acct_001 | 2026-01 | Monthly Subscription | 1 | 500.0000 | 500.00 | base_plan
+invoice_acct_001.pdf | acct_001 | 2026-01 | API Overage Calls | 0 | 0.0020 | 0.00 | overage
+invoice_acct_001.pdf | acct_001 | 2026-02 | Monthly Subscription | 1 | 500.0000 | 500.00 | base_plan
+invoice_acct_001.pdf | acct_001 | 2026-02 | API Overage (46,000 calls) | 46000 | 0.0020 | 92.00 | overage
+invoice_acct_001.pdf | acct_001 | 2026-03 | Monthly Subscription | 1 | 500.0000 | 500.00 | base_plan
+invoice_acct_001.pdf | acct_001 | 2026-03 | API Overage Calls | 0 | 0.0020 | 0.00 | overage
+Invoice Total: USD 1,592.00
+=================== invoice_acct_002.pdf ===================
+Page 1:
+Alpine Cloud Systems — Q1 2026 Statement of Charges
+Account ID: acct_002
+Billing Period: January 2026 – March 2026 | Currency: EUR
+January 2026
+Base Plan Subscription ................................ EUR 500.00
+API Overage 75,000 calls .............................. EUR 150.00
+January Subtotal: EUR 650.00
+February 2026
+Base Plan Subscription ................................ EUR 500.00
+No API overage charges this month.
+March 2026
+Base Plan Subscription ................................ EUR 500.00
+API Overage 250,000 calls ............................. EUR 425.00
+March Subtotal: EUR 925.00
+Grand Total: EUR 2,075.00
+Payment terms: Net 30 from invoice date.
+=================== invoice_acct_003.pdf ===================
+Page 1:
+PixelWorks Studio — Quarterly Invoice Q1 2026
+Account ID: acct_003 | Period: Jan–Mar 2026 | Currency: USD
+Monthly Charges:
+Jan 2026: Base $500.00 | No API overage charges.
+Feb 2026: Base $500.00 | API Overage: 32,000 calls at $0.002/call = $64.00 (incl. tax $10.24) | Line total $74.24
+Mar 2026: Base $500.00 | API Overage: 120,000 calls at $0.002/call = $240.00
+Grand Total: USD 2,314.24
+Note: Tax charges on usage lines subject to customer dispute (see ticket TKT-002).
+[?2004hroot@03f8f4797f18:~# cat << 'EOF' > inspect_details.py
+[?2004l[?2004h> import pdfplumber
+[?2004l[?2004h> 
+[?2004l[?2004h> with pdfplumber.open('/root/data/invoices/invoice_acct_001.pdf') as pdf:
+[?2004l[?2004h>     print("--- acct_001 tables ---")
+[?2004l[?2004h>     for p in pdf.pages:
+[?2004l[?2004h>         print(p.extract_tables())
+[?2004l[?2004h> 
+[?2004l[?2004h> with pdfplumber.open('/root/data/invoices/invoice_acct_002.pdf') as pdf:
+[?2004l[?2004h>     print("--- acct_002 tables ---")
+[?2004l[?2004h>     for p in pdf.pages:
+[?2004l[?2004h>         print(p.extract_tables())
+[?2004l[?2004h> 
+[?2004l[?2004h> with pdfplumber.open('/root/data/invoices/invoice_acct_003.pdf') as pdf:
+[?2004l[?2004h>     print("--- acct_003 tables ---")
+[?2004l[?2004h>     for p in pdf.pages:
+[?2004l[?2004h>         print(p.extract_tables())
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@03f8f4797f18:~# python3 inspect_details.py
+[?2004l--- acct_001 tables ---
+[]
+--- acct_002 tables ---
+[]
+--- acct_003 tables ---
+[]
+[?2004hroot@03f8f4797f18:~# cat << 'EOF' > dump_lines.py
+[?2004l[?2004h> import pdfplumber
+[?2004l[?2004h> import os
+[?2004l[?2004h> 
+[?2004l[?2004h> for name in sorted(os.listdir('/root/data/invoices')):
+[?2004l[?2004h>     if name.endswith('.pdf'):
+[?2004l[?2004h>         print(f"=== {name} ===")
+[?2004l[?2004h>         with pdfplumber.open(os.path.join('/root/data/invoices', name)) as pdf:
+[?2004l[?2004h>             for page in pdf.pages:
+[?2004l[?2004h>                 text = page.extract_text()
+[?2004l[?2004h>                 lines = text.split('\n')
+[?2004l[?2004h>                 for idx, line in enumerate(lines):
+[?2004l[?2004h>                     print(f"{idx+1:02d}: {line!r}")
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@03f8f4797f18:~# python3 dump_lines.py
+[?2004l=== invoice_acct_001.pdf ===
+01: 'Northwind Analytics — Q1 2026 Invoice'
+02: 'Account ID: acct_001 | Billing Period: January – March 2026'
+03: 'Currency: USD'
+04: 'source_file | account_id | month | line_description | quantity | unit_price | amount_usd | line_type'
+05: 'invoice_acct_001.pdf | acct_001 | 2026-01 | Monthly Subscription | 1 | 500.0000 | 500.00 | base_plan'
+06: 'invoice_acct_001.pdf | acct_001 | 2026-01 | API Overage Calls | 0 | 0.0020 | 0.00 | overage'
+07: 'invoice_acct_001.pdf | acct_001 | 2026-02 | Monthly Subscription | 1 | 500.0000 | 500.00 | base_plan'
+08: 'invoice_acct_001.pdf | acct_001 | 2026-02 | API Overage (46,000 calls) | 46000 | 0.0020 | 92.00 | overage'
+09: 'invoice_acct_001.pdf | acct_001 | 2026-03 | Monthly Subscription | 1 | 500.0000 | 500.00 | base_plan'
+10: 'invoice_acct_001.pdf | acct_001 | 2026-03 | API Overage Calls | 0 | 0.0020 | 0.00 | overage'
+11: 'Invoice Total: USD 1,592.00'
+=== invoice_acct_002.pdf ===
+01: 'Alpine Cloud Systems — Q1 2026 Statement of Charges'
+02: 'Account ID: acct_002'
+03: 'Billing Period: January 2026 – March 2026 | Currency: EUR'
+04: 'January 2026'
+05: 'Base Plan Subscription ................................ EUR 500.00'
+06: 'API Overage 75,000 calls .............................. EUR 150.00'
+07: 'January Subtotal: EUR 650.00'
+08: 'February 2026'
+09: 'Base Plan Subscription ................................ EUR 500.00'
+10: 'No API overage charges this month.'
+11: 'March 2026'
+12: 'Base Plan Subscription ................................ EUR 500.00'
+13: 'API Overage 250,000 calls ............................. EUR 425.00'
+14: 'March Subtotal: EUR 925.00'
+15: 'Grand Total: EUR 2,075.00'
+16: 'Payment terms: Net 30 from invoice date.'
+=== invoice_acct_003.pdf ===
+01: 'PixelWorks Studio — Quarterly Invoice Q1 2026'
+02: 'Account ID: acct_003 | Period: Jan–Mar 2026 | Currency: USD'
+03: 'Monthly Charges:'
+04: 'Jan 2026: Base $500.00 | No API overage charges.'
+05: 'Feb 2026: Base $500.00 | API Overage: 32,000 calls at $0.002/call = $64.00 (incl. tax $10.24) | Line total $74.24'
+06: 'Mar 2026: Base $500.00 | API Overage: 120,000 calls at $0.002/call = $240.00'
+07: 'Grand Total: USD 2,314.24'
+08: 'Note: Tax charges on usage lines subject to customer dispute (see ticket TKT-002).'
+[?2004hroot@03f8f4797f18:~# cat << 'EOF' > make_sheets.py
+[?2004l[?2004h> import os
+[?2004lET 3: Bill[?2004h> import pandas as pd
+[?2004l-[?2004h> import openpyxl
+[?2004l[?2004h> 
+[?2004l[?2004h> os.makedirs('/root/out', exist_ok=True)
+[?2004led_ov[?2004h> 
+[?2004le[?2004h> # --- SHEET 1: Extracted Invoice Lines ---
+[?2004la_usd[?2004h> s1_cols = ['source_file', 'account_id', 'invoice_month', 'line_description', 'quantity', 'unit_price', 'line_amount', 'line_type']
+[?2004l[?2004h> s1_data = [
+[?2004l[?2004h>     # acct_001
+[?2004l[?2004h>     ['invoice_acct_001.pdf', 'acct_001', '2026-01', 'Monthly Subscription', 1, 500.0, 500.0, 'base_plan'],
+[?2004l[?2004h>     ['invoice_acct_001.pdf', 'acct_001', '2026-01', 'API Overage Calls', 0, 0.002, 0.0, 'overage'],
+[?2004l[?2004h>     ['invoice_acct_001.pdf', 'acct_001', '2026-02', 'Monthly Subscription', 1, 500.0, 500.0, 'base_plan'],
+[?2004l[?2004h>     ['invoice_acct_001.pdf', 'acct_001', '2026-02', 'API Overage (46,000 calls)', 46000, 0.002, 92.0, 'overage'],
+[?2004l[?2004h>     ['invoice_acct_001.pdf', 'acct_001', '2026-03', 'Monthly Subscription', 1, 500.0, 500.0, 'base_plan'],
+[?2004l[?2004h>     ['invoice_acct_001.pdf', 'acct_001', '2026-03', 'API Overage Calls', 0, 0.002, 0.0, 'overage'],
+[?2004l.0, 2[?2004h>     # acct_002
+[?2004l.0[?2004h>     ['invoice_acct_002.pdf', 'acct_002', '2026-01', 'Base Plan Subscription', 1, 500.0, 500.0, 'base_plan'],
+[?2004l[?2004h>     ['invoice_acct_002.pdf', 'acct_002', '2026-01', 'API Overage 75,000 calls', 75000, 0.002, 150.0, 'overage'],
+[?2004l[?2004h>     ['invoice_acct_002.pdf', 'acct_002', '2026-02', 'Base Plan Subscription', 1, 500.0, 500.0, 'base_plan'],
+[?2004l[?2004h>     ['invoice_acct_002.pdf', 'acct_002', '2026-02', 'No API overage charges this month.', 0, 0.0, 0.0, 'overage'],
+[?2004l[?2004h>     ['invoice_acct_002.pdf', 'acct_002', '2026-03', 'Base Plan Subscription', 1, 500.0, 500.0, 'base_plan'],
+[?2004l[?2004h>     ['invoice_acct_002.pdf', 'acct_002', '2026-03', 'API Overage 250,000 calls', 250000, 0.0017, 425.0, 'overage'],
+[?2004l[?2004h>     # acct_003
+[?2004l[?2004h>     ['invoice_acct_003.pdf', 'acct_003', '2026-01', 'Base $500.00', 1, 500.0, 500.0, 'base_plan'],
+[?2004l[?2004h>     ['invoice_acct_003.pdf', 'acct_003', '2026-01', 'No API overage charges.', 0, 0.0, 0.0, 'overage'],
+[?2004l[?2004h>     ['invoice_acct_003.pdf', 'acct_003', '2026-02', 'Base $500.00', 1, 500.0, 500.0, 'base_plan'],
+[?2004lE[?2004h>     ['invoice_acct_003.pdf', 'acct_003', '2026-02', 'API Overage: 32,000 calls at $0.002/call = $64.00 (incl. tax $10.24)', 32000, 0.002, 64.0, 'overage'],
+[?2004l[?2004h>     ['invoice_acct_003.pdf', 'acct_003', '2026-02', 'Sales tax on API Overage (incl. tax $10.24)', 0, 0.0, 10.24, 'tax'],
+[?2004ly[?2004h>     ['invoice_acct_003.pdf', 'acct_003', '2026-03', 'Base $500.00', 1, 500.0, 500.0, 'base_plan'],
+[?2004l[?2004h>     ['invoice_acct_003.pdf', 'acct_003', '2026-03', 'API Overage: 120,000 calls at $0.002/call = $240.00', 120000, 0.002, 240.0, 'overage']
+[?2004l[?2004h> ]
+[?2004l[?2004h> df1 = pd.DataFrame(s1_data, columns=s1_cols)
+[?2004l[?2004h> df1 = df1.sort_values(by=['account_id', 'invoice_month', 'line_type']).reset_index(drop=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> # --- SHEET 2: Expected Usage Charges ---
+[?2004laccounts_revie[?2004h> s2_cols = ['account_id', 'service_month', 'actual_calls', 'included_calls', 'billable_calls', 'tier1_calls', 'tier2_calls', 'expected_overage_usd', 'discount_applied', 'pricing_rule_source']
+[?2004l[?2004h> s2_data = [
+[?2004l[?2004h>     # acct_001
+[?2004l[?2004h>     ['acct_001', '2026-01', 85000, 100000, 0, 0, 0, 0.0, False, 'pricing_addendum.pdf: Tier 1'],
+[?2004l[?2004h>     ['acct_001', '2026-02', 145000, 100000, 46000, 46000, 0, 92.0, False, 'legacy_call_adjustments.xlsx: Adjustments; pricing_addendum.pdf: Tier 1'],
+[?2004l[?2004h>     ['acct_001', '2026-03', 92000, 100000, 0, 0, 0, 0.0, False, 'pricing_addendum.pdf: Tier 1'],
+[?2004l[?2004h>     # acct_002
+[?2004lcel(writer[?2004h>     ['acct_002', '2026-01', 175000, 100000, 75000, 75000, 0, 138.0, True, 'pricing_addendum.pdf: Enterprise Legacy Discount'],
+[?2004l[?2004h>     ['acct_002', '2026-02', 88000, 100000, 0, 0, 0, 0.0, True, 'pricing_addendum.pdf: Enterprise Legacy Discount'],
+[?2004l[?2004h>     ['acct_002', '2026-03', 350000, 100000, 250000, 100000, 150000, 391.0, True, 'legacy_call_adjustments.xlsx: Adjustments; pricing_addendum.pdf: Enterprise Legacy Discount'],
+[?2004l[?2004h>     # acct_003
+[?2004l[?2004h>     ['acct_003', '2026-01', 76000, 100000, 0, 0, 0, 0.0, False, 'pricing_addendum.pdf: Tier 1'],
+[?2004l[?2004h>     ['acct_003', '2026-02', 132000, 100000, 32000, 32000, 0, 64.0, False, 'pricing_addendum.pdf: Tier 1'],
+[?2004l[?2004h>     ['acct_003', '2026-03', 220000, 100000, 120000, 100000, 20000, 230.0, False, 'pricing_addendum.pdf: Tier 1']
+[?2004l[?2004h> ]
+[?2004l[?2004h> df2 = pd.DataFrame(s2_data, columns=s2_cols)
+[?2004l[?2004h> df2 = df2.sort_values(by=['account_id', 'service_month']).reset_index(drop=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> # --- SHEET 3: Billing Reconciliation ---
+[?2004l[?2004h> s3_cols = ['account_id', 'service_month', 'expected_overage_usd', 'billed_overage_usd', 'delta_usd', 'tax_excluded_usd', 'discount_delta_usd']
+[?2004l[?2004h> # Conversion rates:
+[?2004l[?2004h> # Jan acct_002: EUR 150 * 1.0850 = 162.75
+[?2004l[?2004h> # Feb acct_002: EUR 0.0 = 0.0
+[?2004l[?2004h> # Mar acct_002: EUR 425 * 1.0790 = 458.575 -> 458.58
+[?2004l[?2004h> # Feb acct_003: 74.24 USD
+[?2004l[?2004h> # Mar acct_003: 240.00 USD
+[?2004l[?2004h> s3_data = [
+[?2004l[?2004h>     # acct_001
+[?2004l[?2004h>     ['acct_001', '2026-01', 0.0, 0.0, 0.0, 0.0, 0.0],
+[?2004l[?2004h>     ['acct_001', '2026-02', 92.0, 92.0, 0.0, 0.0, 0.0],
+[?2004l[?2004h>     ['acct_001', '2026-03', 0.0, 0.0, 0.0, 0.0, 0.0],
+[?2004l[?2004h>     # acct_002
+[?2004l[?2004h>     ['acct_002', '2026-01', 138.0, 162.75, 24.75, 0.0, 12.0],
+[?2004l[?2004h>     ['acct_002', '2026-02', 0.0, 0.0, 0.0, 0.0, 0.0],
+[?2004l[?2004h>     ['acct_002', '2026-03', 391.0, 458.58, 67.58, 0.0, 34.0],
+[?2004l[?2004h>     # acct_003
+[?2004l[?2004h>     ['acct_003', '2026-01', 0.0, 0.0, 0.0, 0.0, 0.0],
+[?2004l[?2004h>     ['acct_003', '2026-02', 64.0, 74.24, 10.24, 10.24, 0.0],
+[?2004l[?2004h>     ['acct_003', '2026-03', 230.0, 240.0, 10.0, 0.0, 0.0]
+[?2004l[?2004h> ]
+[?2004l[?2004h> df3 = pd.DataFrame(s3_data, columns=s3_cols)
+[?2004l[?2004h> df3 = df3.sort_values(by=['account_id', 'service_month']).reset_index(drop=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> # --- SHEET 4: Dispute Exceptions ---
+[?2004l[?2004h> s4_cols = ['exception_id', 'account_id', 'service_month', 'exception_type', 'severity', 'delta_usd', 'source_reference']
+[?2004l[?2004h> s4_data = [
+[?2004l[?2004h>     ['EXC-001', 'acct_002', '2026-01', 'OVERBILLED', 'Medium', 24.75, 'invoices/invoice_acct_002.pdf: Jan overage; pricing_addendum.pdf: Enterprise Legacy Discount'],
+[?2004l[?2004h>     ['EXC-002', 'acct_002', '2026-03', 'OVERBILLED', 'Medium', 67.58, 'invoices/invoice_acct_002.pdf: Mar overage; pricing_addendum.pdf: Enterprise Legacy Discount; legacy_call_adjustments.xlsx: Adjustments'],
+[?2004l[?2004h>     ['EXC-003', 'acct_003', '2026-02', 'TAX_INCLUDED', 'High', 10.24, 'invoices/invoice_acct_003.pdf: Feb overage; pricing_addendum.pdf: Tax Policy'],
+[?2004l[?2004h>     ['EXC-004', 'acct_003', '2026-03', 'WRONG_TIER', 'Medium', 10.0, 'invoices/invoice_acct_003.pdf: Mar overage; pricing_addendum.pdf: Tier 2'],
+[?2004l[?2004h>     ['EXC-005', 'acct_002', '2026-01', 'OVERBILLED', 'Medium', 46.0, 'support_tickets.csv: TKT-001; pricing_addendum.pdf: Enterprise Legacy Discount'],
+[?2004l[?2004h>     ['EXC-006', 'acct_003', '2026-02', 'TAX_INCLUDED', 'High', 10.24, 'support_tickets.csv: TKT-002; pricing_addendum.pdf: Tax Policy']
+[?2004l[?2004h> ]
+[?2004l[?2004h> df4 = pd.DataFrame(s4_data, columns=s4_cols)
+[?2004l[?2004h> 
+[?2004l[?2004h> # --- SHEET 5: Executive Summary ---
+[?2004l[?2004h> s5_cols = ['metric', 'value']
+[?2004l[?2004h> # total_overbilled_usd = sum of positive deltas in Sheet 3 = 24.75 + 67.58 + 10.24 + 10.00 = 112.57
+[?2004l[?2004h> # total_underbilled_usd = 0.00
+[?2004l[?2004h> # highest_risk_account = acct_002 (92.33 absolute total delta)
+[?2004l[?2004h> # recommended_action = Immediate Action (due to severity High exception)
+[?2004l[?2004h> s5_data = [
+[?2004l[?2004h>     ['total_accounts_reviewed', 3],
+[?2004l[?2004h>     ['total_overbilled_usd', 112.57],
+[?2004l[?2004h>     ['total_underbilled_usd', 0.00],
+[?2004l[?2004h>     ['highest_risk_account', 'acct_002'],
+[?2004l[?2004h>     ['recommended_action', 'Immediate Action']
+[?2004l[?2004h> ]
+[?2004l[?2004h> df5 = pd.DataFrame(s5_data, columns=s5_cols)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Save to Excel
+[?2004l[?2004h> with pd.ExcelWriter('/root/out/billing_dispute_audit.xlsx', engine='openpyxl') as writer:
+[?2004l[?2004h>     df1.to_excel(writer, sheet_name='Extracted Invoice Lines', index=False)
+[?2004l[?2004h>     df2.to_excel(writer, sheet_name='Expected Usage Charges', index=False)
+[?2004l[?2004h>     df3.to_excel(writer, sheet_name='Billing Reconciliation', index=False)
+[?2004l[?2004h>     df4.to_excel(writer, sheet_name='Dispute Exceptions', index=False)
+[?2004l[?2004h>     df5.to_excel(writer, sheet_name='Executive Summary', index=False)
+[?2004l[?2004h> 
+[?2004l[?2004h> print("Successfully created /root/out/billing_dispute_audit.xlsx!")
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@03f8f4797f18:~# python3 make_sheets.py
+[?2004lSuccessfully created /root/out/billing_dispute_audit.xlsx!
+[?2004hroot@03f8f4797f18:~# cat << 'EOF' > verify_xlsx.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> 
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/out/billing_dispute_audit.xlsx')
+[?2004l[?2004h> print("Sheet names:", wb.sheetnames)
+[?2004l[?2004h> 
+[?2004l[?2004h> for name in wb.sheetnames:
+[?2004l[?2004h>     print(f"\n=== Sheet: {name} ===")
+[?2004l[?2004h>     df = pd.read_excel('/root/out/billing_dispute_audit.xlsx', sheet_name=name)
+[?2004l[?2004h>     print("Columns:", list(df.columns))
+[?2004l[?2004h>     print("Shape:", df.shape)
+[?2004l[?2004h>     print("First 2 rows:\n", df.head(2))
+[?2004l[?2004h>     print("Types:\n", df.dtypes)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@03f8f4797f18:~# python3 verify_xlsx.py
+[?2004lSheet names: ['Extracted Invoice Lines', 'Expected Usage Charges', 'Billing Reconciliation', 'Dispute Exceptions', 'Executive Summary']
+
+=== Sheet: Extracted Invoice Lines ===
+Columns: ['source_file', 'account_id', 'invoice_month', 'line_description', 'quantity', 'unit_price', 'line_amount', 'line_type']
+Shape: (19, 8)
+First 2 rows:
+             source_file account_id invoice_month      line_description  quantity  unit_price  line_amount  line_type
+0  invoice_acct_001.pdf   acct_001       2026-01  Monthly Subscription         1     500.000        500.0  base_plan
+1  invoice_acct_001.pdf   acct_001       2026-01     API Overage Calls         0       0.002          0.0    overage
+Types:
+ source_file          object
+account_id           object
+invoice_month        object
+line_description     object
+quantity              int64
+unit_price          float64
+line_amount         float64
+line_type            object
+dtype: object
+
+=== Sheet: Expected Usage Charges ===
+Columns: ['account_id', 'service_month', 'actual_calls', 'included_calls', 'billable_calls', 'tier1_calls', 'tier2_calls', 'expected_overage_usd', 'discount_applied', 'pricing_rule_source']
+Shape: (9, 10)
+First 2 rows:
+   account_id service_month  actual_calls  ...  expected_overage_usd  discount_applied                                pricing_rule_source
+0   acct_001       2026-01         85000  ...                     0             False                       pricing_addendum.pdf: Tier 1
+1   acct_001       2026-02        145000  ...                    92             False  legacy_call_adjustments.xlsx: Adjustments; pri...
+
+[2 rows x 10 columns]
+Types:
+ account_id              object
+service_month           object
+actual_calls             int64
+included_calls           int64
+billable_calls           int64
+tier1_calls              int64
+tier2_calls              int64
+expected_overage_usd     int64
+discount_applied          bool
+pricing_rule_source     object
+dtype: object
+
+=== Sheet: Billing Reconciliation ===
+Columns: ['account_id', 'service_month', 'expected_overage_usd', 'billed_overage_usd', 'delta_usd', 'tax_excluded_usd', 'discount_delta_usd']
+Shape: (9, 7)
+First 2 rows:
+   account_id service_month  expected_overage_usd  billed_overage_usd  delta_usd  tax_excluded_usd  discount_delta_usd
+0   acct_001       2026-01                     0                 0.0        0.0               0.0                   0
+1   acct_001       2026-02                    92                92.0        0.0               0.0                   0
+Types:
+ account_id               object
+service_month            object
+expected_overage_usd      int64
+billed_overage_usd      float64
+delta_usd               float64
+tax_excluded_usd        float64
+discount_delta_usd        int64
+dtype: object
+
+=== Sheet: Dispute Exceptions ===
+Columns: ['exception_id', 'account_id', 'service_month', 'exception_type', 'severity', 'delta_usd', 'source_reference']
+Shape: (6, 7)
+First 2 rows:
+   exception_id account_id service_month exception_type severity  delta_usd                                   source_reference
+0      EXC-001   acct_002       2026-01     OVERBILLED   Medium      24.75  invoices/invoice_acct_002.pdf: Jan overage; pr...
+1      EXC-002   acct_002       2026-03     OVERBILLED   Medium      67.58  invoices/invoice_acct_002.pdf: Mar overage; pr...
+Types:
+ exception_id         object
+account_id           object
+service_month        object
+exception_type       object
+severity             object
+delta_usd           float64
+source_reference     object
+dtype: object
+
+=== Sheet: Executive Summary ===
+Columns: ['metric', 'value']
+Shape: (5, 2)
+First 2 rows:
+                     metric   value
+0  total_accounts_reviewed       3
+1     total_overbilled_usd  112.57
+Types:
+ metric    object
+value     object
+dtype: object
+[?2004hroot@03f8f4797f18:~# cat << 'EOF' > inspect_cells.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/out/billing_dispute_audit.xlsx')
+[?2004l[?2004h> sheet = wb['Executive Summary']
+[?2004l[?2004h> for r in range(1, sheet.max_row+1):
+[?2004l[?2004h>     row_vals = [(sheet.cell(r, c).value, type(sheet.cell(r, c).value), sheet.cell(r, c).data_type) for c in range(1, sheet.max_column+1)]
+[?2004l[?2004h>     print(f"Row {r}: {row_vals}")
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@03f8f4797f18:~# python3 inspect_cells.py
+[?2004lRow 1: [('metric', <class 'str'>, 's'), ('value', <class 'str'>, 's')]
+Row 2: [('total_accounts_reviewed', <class 'str'>, 's'), (3, <class 'int'>, 'n')]
+Row 3: [('total_overbilled_usd', <class 'str'>, 's'), (112.57, <class 'float'>, 'n')]
+Row 4: [('total_underbilled_usd', <class 'str'>, 's'), (0, <class 'int'>, 'n')]
+Row 5: [('highest_risk_account', <class 'str'>, 's'), ('acct_002', <class 'str'>, 's')]
+Row 6: [('recommended_action', <class 'str'>, 's'), ('Immediate Action', <class 'str'>, 's')]
+[?2004hroot@03f8f4797f18:~# rm -f read_pdf.py read_xlsx.py read_xlsx_formulas.py read_invoices.py inspect_details.py dump_lines.py generate_report.py make_sheets.py verify_xlsx.py inspect_cells.py
+[?2004l[?2004hroot@03f8f4797f18:~# ls -lh /root/out/billing_dispute_audit.xlsx
+[?2004l-rw-r--r-- 1 root root 9.4K Jun  8 10:07 /root/out/billing_dispute_audit.xlsx
+[?2004hroot@03f8f4797f18:~# 

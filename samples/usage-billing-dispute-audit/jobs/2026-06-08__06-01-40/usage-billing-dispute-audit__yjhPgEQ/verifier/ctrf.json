@@ -1,0 +1,350 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 35,
+            "passed": 30,
+            "failed": 5,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1780913424.7947655,
+            "stop": 1780913425.601894
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::TestStructure::test_workbook_exists",
+                "status": "passed",
+                "duration": 0.0006230549915926531,
+                "start": 1780913425.1232536,
+                "stop": 1780913425.1244376,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestStructure::test_required_sheets_present",
+                "status": "passed",
+                "duration": 0.010402988002169877,
+                "start": 1780913425.1249597,
+                "stop": 1780913425.1359756,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestStructure::test_sheet_order",
+                "status": "passed",
+                "duration": 0.00860253999417182,
+                "start": 1780913425.1365192,
+                "stop": 1780913425.145653,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExtractedInvoiceLines::test_columns_exact",
+                "status": "passed",
+                "duration": 0.008465926999633666,
+                "start": 1780913425.1461866,
+                "stop": 1780913425.1551697,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExtractedInvoiceLines::test_acct_001_feb_overage_extracted",
+                "status": "passed",
+                "duration": 0.015263511988450773,
+                "start": 1780913425.1556811,
+                "stop": 1780913425.1734543,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExtractedInvoiceLines::test_acct_002_jan_overage_extracted",
+                "status": "passed",
+                "duration": 0.017567811002663802,
+                "start": 1780913425.1743183,
+                "stop": 1780913425.1926446,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExtractedInvoiceLines::test_acct_003_mar_overage_extracted",
+                "status": "passed",
+                "duration": 0.014925666000635829,
+                "start": 1780913425.1933398,
+                "stop": 1780913425.2089386,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExtractedInvoiceLines::test_acct_003_feb_overage_and_tax_extracted",
+                "status": "passed",
+                "duration": 0.01006544799747644,
+                "start": 1780913425.2095056,
+                "stop": 1780913425.2204773,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExpectedUsageCharges::test_columns_present",
+                "status": "passed",
+                "duration": 0.017604063999897335,
+                "start": 1780913425.221214,
+                "stop": 1780913425.2394998,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExpectedUsageCharges::test_acct_001_feb_billable_from_legacy_workbook",
+                "status": "passed",
+                "duration": 0.014565495002898388,
+                "start": 1780913425.2401767,
+                "stop": 1780913425.2554054,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExpectedUsageCharges::test_acct_002_jan_expected_with_discount",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.016189697009394877,
+                "start": 1780913425.2560046,
+                "stop": 1780913425.3124068,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestExpectedUsageCharges object at 0x7b85e9f0c710>\n\n    def test_acct_002_jan_expected_with_discount(self):\n        \"\"\"acct_002 Jan: 175,000 calls. 75,000 billable. 8% Enterprise Legacy discount \u2192 $138.00.\"\"\"\n        headers, rows = self._get_rows()\n        acct_col  = headers[\"account_id\"] - 1\n        month_col = headers[\"service_month\"] - 1\n        exp_col   = headers[\"expected_overage_usd\"] - 1\n    \n        row = next((r for r in rows\n                    if str(r[acct_col]).strip() == \"acct_002\"\n                    and str(r[month_col]).strip() == \"2026-01\"), None)\n        assert row is not None, \"acct_002 2026-01 missing from Expected Usage Charges\"\n        v = float(row[exp_col])\n>       assert abs(v - 138.00) <= TOLERANCE, (\n            f\"acct_002 Jan expected_overage_usd: expected 138.00 (150\u00d70.92, Enterprise Legacy discount), \"\n            f\"got {v}. Value 150.00 means discount from pricing_addendum.pdf was not applied.\"\n        )\nE       AssertionError: acct_002 Jan expected_overage_usd: expected 138.00 (150\u00d70.92, Enterprise Legacy discount), got 149.73. Value 150.00 means discount from pricing_addendum.pdf was not applied.\nE       assert 11.72999999999999 <= 0.01\nE        +  where 11.72999999999999 = abs((149.73 - 138.0))\n\n/tests/test_outputs.py:238: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestExpectedUsageCharges::test_acct_002_mar_expected_tiered_with_legacy_tier2",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.01602645800448954,
+                "start": 1780913425.3130481,
+                "stop": 1780913425.3419406,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestExpectedUsageCharges object at 0x7b85e9f0f200>\n\n    def test_acct_002_mar_expected_tiered_with_legacy_tier2(self):\n        \"\"\"acct_002 Mar: 350,000 calls. 250,000 billable. tier2_calls = 150,000 from legacy workbook.\n        Raw total: $425.00. After 8% discount: $391.00.\n        \"\"\"\n        headers, rows = self._get_rows()\n        acct_col  = headers[\"account_id\"] - 1\n        month_col = headers[\"service_month\"] - 1\n        t2_col    = headers.get(\"tier2_calls\", 0) - 1\n        exp_col   = headers[\"expected_overage_usd\"] - 1\n    \n        row = next((r for r in rows\n                    if str(r[acct_col]).strip() == \"acct_002\"\n                    and str(r[month_col]).strip() == \"2026-03\"), None)\n        assert row is not None, \"acct_002 2026-03 missing from Expected Usage Charges\"\n        if t2_col >= 0:\n            t2 = int(row[t2_col])\n            assert t2 == 150000, (\n                f\"acct_002 Mar tier2_calls: expected 150000 (legacy MAX formula), got {t2}. \"\n                f\"NaN/zero means legacy_call_adjustments.xlsx was not evaluated.\"\n            )\n        v = float(row[exp_col])\n>       assert abs(v - 391.00) <= TOLERANCE, (\n            f\"acct_002 Mar expected_overage_usd: expected 391.00 (T1+T2 tiered \u00d7 0.92 discount), \"\n            f\"got {v}. 425.00=no discount, 460.00=wrong tier, 184.00=tier2 formula not evaluated\"\n        )\nE       AssertionError: acct_002 Mar expected_overage_usd: expected 391.00 (T1+T2 tiered \u00d7 0.92 discount), got 421.89. 425.00=no discount, 460.00=wrong tier, 184.00=tier2 formula not evaluated\nE       assert 30.889999999999986 <= 0.01\nE        +  where 30.889999999999986 = abs((421.89 - 391.0))\n\n/tests/test_outputs.py:264: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestExpectedUsageCharges::test_acct_003_feb_expected_excludes_tax",
+                "status": "passed",
+                "duration": 0.008898603002307937,
+                "start": 1780913425.3425813,
+                "stop": 1780913425.351932,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExpectedUsageCharges::test_acct_003_mar_expected_tiered",
+                "status": "passed",
+                "duration": 0.009465437004109845,
+                "start": 1780913425.3523898,
+                "stop": 1780913425.3624175,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExpectedUsageCharges::test_pricing_rule_source_present",
+                "status": "passed",
+                "duration": 0.00872389400319662,
+                "start": 1780913425.3628268,
+                "stop": 1780913425.3719854,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestBillingReconciliation::test_acct_001_feb_delta_zero",
+                "status": "passed",
+                "duration": 0.008418511002673768,
+                "start": 1780913425.372428,
+                "stop": 1780913425.381312,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestBillingReconciliation::test_acct_002_jan_delta_overbilled",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.008612883000751026,
+                "start": 1780913425.3817484,
+                "stop": 1780913425.4016266,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestBillingReconciliation object at 0x7b85e9f0faa0>\n\n    def test_acct_002_jan_delta_overbilled(self):\n        \"\"\"acct_002 Jan: EUR 150 @ 1.0850 = USD 162.75 billed, expected $138 \u2192 delta $24.75.\"\"\"\n        headers, rows = self._get_rows()\n        acct_col  = headers[\"account_id\"] - 1\n        month_col = headers[\"service_month\"] - 1\n        delta_col = headers[\"delta_usd\"] - 1\n        disc_col  = headers.get(\"discount_delta_usd\", 0) - 1\n    \n        row = next((r for r in rows\n                    if str(r[acct_col]).strip() == \"acct_002\"\n                    and str(r[month_col]).strip() == \"2026-01\"), None)\n        assert row is not None, \"acct_002 Jan missing from Billing Reconciliation\"\n        v = float(row[delta_col])\n>       assert abs(v - 24.75) <= TOLERANCE, (\n            f\"acct_002 Jan delta: expected 24.75 (EUR converted, discount missing), got {v}\"\n        )\nE       AssertionError: acct_002 Jan delta: expected 24.75 (EUR converted, discount missing), got 13.02\nE       assert 11.73 <= 0.01\nE        +  where 11.73 = abs((13.02 - 24.75))\n\n/tests/test_outputs.py:362: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestBillingReconciliation::test_acct_002_mar_delta_overbilled",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.00870822500291979,
+                "start": 1780913425.4020638,
+                "stop": 1780913425.420681,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestBillingReconciliation object at 0x7b85e9f0fc50>\n\n    def test_acct_002_mar_delta_overbilled(self):\n        \"\"\"acct_002 Mar: EUR 425 @ 1.0790 = USD 458.58 billed, expected $391 \u2192 delta $67.58.\"\"\"\n        headers, rows = self._get_rows()\n        acct_col  = headers[\"account_id\"] - 1\n        month_col = headers[\"service_month\"] - 1\n        delta_col = headers[\"delta_usd\"] - 1\n        disc_col  = headers.get(\"discount_delta_usd\", 0) - 1\n    \n        row = next((r for r in rows\n                    if str(r[acct_col]).strip() == \"acct_002\"\n                    and str(r[month_col]).strip() == \"2026-03\"), None)\n        assert row is not None, \"acct_002 Mar missing from Billing Reconciliation\"\n        v = float(row[delta_col])\n>       assert abs(v - 67.58) <= TOLERANCE, (\n            f\"acct_002 Mar delta: expected 67.58, got {v}\"\n        )\nE       AssertionError: acct_002 Mar delta: expected 67.58, got 36.69\nE       assert 30.89 <= 0.01\nE        +  where 30.89 = abs((36.69 - 67.58))\n\n/tests/test_outputs.py:383: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestBillingReconciliation::test_acct_003_feb_tax_excluded",
+                "status": "passed",
+                "duration": 0.009142848000919912,
+                "start": 1780913425.4211526,
+                "stop": 1780913425.4309652,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestBillingReconciliation::test_acct_003_mar_delta_wrong_tier",
+                "status": "passed",
+                "duration": 0.009977377005270682,
+                "start": 1780913425.431575,
+                "stop": 1780913425.4422061,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestDisputeExceptions::test_exception_types_valid",
+                "status": "passed",
+                "duration": 0.010147068001970183,
+                "start": 1780913425.44274,
+                "stop": 1780913425.4534392,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestDisputeExceptions::test_acct_002_exception_is_overbilled",
+                "status": "passed",
+                "duration": 0.008702695995452814,
+                "start": 1780913425.4539058,
+                "stop": 1780913425.463132,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestDisputeExceptions::test_acct_002_overbilled_is_medium_severity",
+                "status": "passed",
+                "duration": 0.008520204006345011,
+                "start": 1780913425.4636085,
+                "stop": 1780913425.472619,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestDisputeExceptions::test_acct_003_exception_is_tax_included",
+                "status": "passed",
+                "duration": 0.008450872002867982,
+                "start": 1780913425.4730716,
+                "stop": 1780913425.4819908,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestDisputeExceptions::test_source_references_present",
+                "status": "passed",
+                "duration": 0.009310387998993974,
+                "start": 1780913425.4824667,
+                "stop": 1780913425.4922285,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestDisputeExceptions::test_severity_values_valid",
+                "status": "passed",
+                "duration": 0.008749394997721538,
+                "start": 1780913425.4926877,
+                "stop": 1780913425.502014,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestDisputeExceptions::test_acct_003_is_high_severity",
+                "status": "passed",
+                "duration": 0.008551231985620689,
+                "start": 1780913425.5025072,
+                "stop": 1780913425.5115635,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestDisputeExceptions::test_acct_003_mar_exception_is_wrong_tier",
+                "status": "passed",
+                "duration": 0.008540786999219563,
+                "start": 1780913425.5120523,
+                "stop": 1780913425.521113,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExecutiveSummary::test_total_accounts_reviewed",
+                "status": "passed",
+                "duration": 0.00977553000120679,
+                "start": 1780913425.521576,
+                "stop": 1780913425.5319157,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExecutiveSummary::test_total_overbilled",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.009180022992950398,
+                "start": 1780913425.532391,
+                "stop": 1780913425.5524008,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestExecutiveSummary object at 0x7b85e9f0fe30>\n\n    def test_total_overbilled(self):\n        \"\"\"Total overbilled = 24.75 + 67.58 + 10.24 + 10.00 = 112.57.\"\"\"\n        m = self._get_metrics()\n        assert \"total_overbilled_usd\" in m\n        v = float(m[\"total_overbilled_usd\"])\n>       assert abs(v - 112.57) <= TOLERANCE, (\n            f\"total_overbilled_usd: expected 112.57, got {v}.\"\n        )\nE       AssertionError: total_overbilled_usd: expected 112.57, got 69.95.\nE       assert 42.61999999999999 <= 0.01\nE        +  where 42.61999999999999 = abs((69.95 - 112.57))\n\n/tests/test_outputs.py:582: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestExecutiveSummary::test_total_underbilled",
+                "status": "passed",
+                "duration": 0.008979199999885168,
+                "start": 1780913425.5528843,
+                "stop": 1780913425.5624986,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExecutiveSummary::test_highest_risk_account",
+                "status": "passed",
+                "duration": 0.00843643300322583,
+                "start": 1780913425.5630577,
+                "stop": 1780913425.5720248,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExecutiveSummary::test_recommended_action_immediate",
+                "status": "passed",
+                "duration": 0.009602562007785309,
+                "start": 1780913425.5727227,
+                "stop": 1780913425.5828536,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputFormat::test_summary_metrics_are_literals_not_formulas",
+                "status": "passed",
+                "duration": 0.00848313000460621,
+                "start": 1780913425.583308,
+                "stop": 1780913425.5922844,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputFormat::test_reconciliation_deltas_are_literals_not_formulas",
+                "status": "passed",
+                "duration": 0.008471046996419318,
+                "start": 1780913425.592751,
+                "stop": 1780913425.601783,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            }
+        ]
+    }
+}

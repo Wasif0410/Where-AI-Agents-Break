@@ -1,0 +1,266 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 27,
+            "passed": 26,
+            "failed": 1,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1780910302.4533534,
+            "stop": 1780910303.372849
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::TestOutputFiles::test_required_output_files_exist",
+                "status": "passed",
+                "duration": 0.0010441160047776066,
+                "start": 1780910303.1908846,
+                "stop": 1780910303.1929991,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestSchema::test_parquet_columns_exact",
+                "status": "passed",
+                "duration": 0.025196688999130856,
+                "start": 1780910303.1936858,
+                "stop": 1780910303.2197857,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestSchema::test_json_keys_exact",
+                "status": "passed",
+                "duration": 0.000582350003242027,
+                "start": 1780910303.2204297,
+                "stop": 1780910303.2216299,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestSchema::test_no_duplicate_account_month_rows",
+                "status": "passed",
+                "duration": 0.0038606379966950044,
+                "start": 1780910303.222234,
+                "stop": 1780910303.226901,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestSchema::test_output_row_count",
+                "status": "passed",
+                "duration": 0.002361316990572959,
+                "start": 1780910303.2277093,
+                "stop": 1780910303.230743,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_all_account_month_mrr_values",
+                "status": "passed",
+                "duration": 0.004384337000374217,
+                "start": 1780910303.2312665,
+                "stop": 1780910303.2363381,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_annual_subscription_normalized_to_monthly",
+                "status": "passed",
+                "duration": 0.003928734004148282,
+                "start": 1780910303.236858,
+                "stop": 1780910303.2414765,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_service_month_fx_rate_used_not_invoice_month",
+                "status": "passed",
+                "duration": 0.004020688000309747,
+                "start": 1780910303.2420187,
+                "stop": 1780910303.2466712,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_fx_whitespace_normalization",
+                "status": "passed",
+                "duration": 0.0044711230002576485,
+                "start": 1780910303.2473128,
+                "stop": 1780910303.2524116,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_quarterly_subscription_normalized_to_monthly",
+                "status": "passed",
+                "duration": 0.004308288000174798,
+                "start": 1780910303.252899,
+                "stop": 1780910303.2579231,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_catchup_billing_distributes_to_service_months",
+                "status": "passed",
+                "duration": 0.004905153997242451,
+                "start": 1780910303.2584789,
+                "stop": 1780910303.2640476,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_tax_excluded_from_mrr",
+                "status": "passed",
+                "duration": 0.004314747988246381,
+                "start": 1780910303.2645469,
+                "stop": 1780910303.269749,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_compound_non_recurring_exclusion",
+                "status": "passed",
+                "duration": 0.003943247997085564,
+                "start": 1780910303.2704139,
+                "stop": 1780910303.275143,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_revenue_month_from_service_period_not_invoice_date",
+                "status": "passed",
+                "duration": 0.004322105000028387,
+                "start": 1780910303.2757456,
+                "stop": 1780910303.2806966,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_duplicate_invoice_lines_deduplicated",
+                "status": "passed",
+                "duration": 0.004291685014322866,
+                "start": 1780910303.2814822,
+                "stop": 1780910303.286453,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_compound_proration_with_professional_services",
+                "status": "passed",
+                "duration": 0.0044136639990028925,
+                "start": 1780910303.2870235,
+                "stop": 1780910303.292125,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_negative_subscription_adjustment_included",
+                "status": "passed",
+                "duration": 0.004599164996761829,
+                "start": 1780910303.29266,
+                "stop": 1780910303.297937,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_currency_formatted_amount_parsed",
+                "status": "passed",
+                "duration": 0.004443685000296682,
+                "start": 1780910303.2986846,
+                "stop": 1780910303.304015,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_multi_month_account_continuity",
+                "status": "passed",
+                "duration": 0.004112048001843505,
+                "start": 1780910303.304706,
+                "stop": 1780910303.3095894,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMRRValues::test_multi_subscription_aggregation",
+                "status": "passed",
+                "duration": 0.003911237996362615,
+                "start": 1780910303.3103435,
+                "stop": 1780910303.3148868,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestSummary::test_summary_totals",
+                "status": "passed",
+                "duration": 0.0006423960003303364,
+                "start": 1780910303.3155384,
+                "stop": 1780910303.3169248,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestSummary::test_excluded_non_recurring_covers_all_fee_types",
+                "status": "passed",
+                "duration": 0.0004800560054718517,
+                "start": 1780910303.317533,
+                "stop": 1780910303.318521,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestSummary::test_tax_excluded_total_across_all_months",
+                "status": "passed",
+                "duration": 0.0004357189973234199,
+                "start": 1780910303.319114,
+                "stop": 1780910303.3200986,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMonthlySummary::test_monthly_summary_schema",
+                "status": "passed",
+                "duration": 0.0023276169958990067,
+                "start": 1780910303.3206744,
+                "stop": 1780910303.3236926,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMonthlySummary::test_monthly_summary_row_count",
+                "status": "passed",
+                "duration": 0.001474469005188439,
+                "start": 1780910303.3242855,
+                "stop": 1780910303.3263392,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMonthlySummary::test_monthly_summary_totals_and_counts",
+                "status": "passed",
+                "duration": 0.0018376180014456622,
+                "start": 1780910303.3268626,
+                "stop": 1780910303.3293061,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestMonthlySummary::test_monthly_summary_mom_changes",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.002706970008148346,
+                "start": 1780910303.3300362,
+                "stop": 1780910303.3725448,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestMonthlySummary object at 0x7dbcbb748dd0>\n\n    def test_monthly_summary_mom_changes(self):\n        \"\"\"mrr_change_usd and mrr_change_pct must be blank for Jan and correct for Feb/Mar.\n    \n        Jan has no prior month so both change fields must be null/NaN/blank.\n        Feb: change = 10749.57 - 13459.58 = -2710.01; pct = -2710.01 / 13459.58 = -0.2013\n        Mar: change = 8340.04 - 10749.57 = -2409.53; pct = -2409.53 / 10749.57 = -0.2242\n    \n        Tests that agents perform period-over-period computation from the monthly aggregates,\n        not a fixed lookup. Requires building the parquet first, then deriving this file.\n        \"\"\"\n        df = load_monthly().set_index(\"month\")\n    \n        # January \u2014 no prior period, both fields must be null/NaN\n        jan_change = df.loc[\"2026-01\", \"mrr_change_usd\"]\n        jan_pct    = df.loc[\"2026-01\", \"mrr_change_pct\"]\n        assert pd.isna(jan_change) or jan_change == \"\", (\n            f\"2026-01 mrr_change_usd should be blank (no prior period), got {jan_change}\"\n        )\n        assert pd.isna(jan_pct) or jan_pct == \"\", (\n            f\"2026-01 mrr_change_pct should be blank (no prior period), got {jan_pct}\"\n        )\n    \n        # February\n        feb_change = float(df.loc[\"2026-02\", \"mrr_change_usd\"])\n        feb_pct    = float(df.loc[\"2026-02\", \"mrr_change_pct\"])\n        assert abs(feb_change - (-2710.01)) <= TOLERANCE, (\n            f\"2026-02 mrr_change_usd: expected -2710.01, got {feb_change}\"\n        )\n        assert abs(feb_pct - (-0.2013)) <= 0.0001, (\n            f\"2026-02 mrr_change_pct: expected -0.2013, got {feb_pct}\"\n        )\n    \n        # March\n        mar_change = float(df.loc[\"2026-03\", \"mrr_change_usd\"])\n        mar_pct    = float(df.loc[\"2026-03\", \"mrr_change_pct\"])\n>       assert abs(mar_change - (-2409.53)) <= TOLERANCE, (\n            f\"2026-03 mrr_change_usd: expected -2409.53, got {mar_change}\"\n        )\nE       AssertionError: 2026-03 mrr_change_usd: expected -2409.53, got -2409.52\nE       assert 0.010000000000218279 <= 0.01\nE        +  where 0.010000000000218279 = abs((-2409.52 - -2409.53))\n\n/tests/test_outputs.py:701: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            }
+        ]
+    }
+}

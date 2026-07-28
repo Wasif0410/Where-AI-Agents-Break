@@ -1,0 +1,129 @@
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+Requirement already satisfied: pytest==8.4.1 in /usr/local/lib/python3.12/dist-packages (8.4.1)
+Requirement already satisfied: pytest-json-ctrf==0.3.5 in /usr/local/lib/python3.12/dist-packages (0.3.5)
+Requirement already satisfied: pandas==2.2.3 in /usr/local/lib/python3.12/dist-packages (2.2.3)
+Requirement already satisfied: pyarrow==18.1.0 in /usr/local/lib/python3.12/dist-packages (18.1.0)
+Requirement already satisfied: iniconfig>=1 in /usr/local/lib/python3.12/dist-packages (from pytest==8.4.1) (2.3.0)
+Requirement already satisfied: packaging>=20 in /usr/local/lib/python3.12/dist-packages (from pytest==8.4.1) (26.2)
+Requirement already satisfied: pluggy<2,>=1.5 in /usr/local/lib/python3.12/dist-packages (from pytest==8.4.1) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in /usr/local/lib/python3.12/dist-packages (from pytest==8.4.1) (2.20.0)
+Requirement already satisfied: numpy>=1.26.0 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2.4.6)
+Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2026.2)
+Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2026.2)
+Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.8.2->pandas==2.2.3) (1.17.0)
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /tests
+plugins: json-ctrf-0.3.5
+collecting ... collected 27 items
+
+../tests/test_outputs.py::TestOutputFiles::test_required_output_files_exist PASSED [  3%]
+../tests/test_outputs.py::TestSchema::test_parquet_columns_exact PASSED  [  7%]
+../tests/test_outputs.py::TestSchema::test_json_keys_exact PASSED        [ 11%]
+../tests/test_outputs.py::TestSchema::test_no_duplicate_account_month_rows PASSED [ 14%]
+../tests/test_outputs.py::TestSchema::test_output_row_count PASSED       [ 18%]
+../tests/test_outputs.py::TestMRRValues::test_all_account_month_mrr_values PASSED [ 22%]
+../tests/test_outputs.py::TestMRRValues::test_annual_subscription_normalized_to_monthly PASSED [ 25%]
+../tests/test_outputs.py::TestMRRValues::test_service_month_fx_rate_used_not_invoice_month PASSED [ 29%]
+../tests/test_outputs.py::TestMRRValues::test_fx_whitespace_normalization PASSED [ 33%]
+../tests/test_outputs.py::TestMRRValues::test_quarterly_subscription_normalized_to_monthly PASSED [ 37%]
+../tests/test_outputs.py::TestMRRValues::test_catchup_billing_distributes_to_service_months PASSED [ 40%]
+../tests/test_outputs.py::TestMRRValues::test_tax_excluded_from_mrr PASSED [ 44%]
+../tests/test_outputs.py::TestMRRValues::test_compound_non_recurring_exclusion PASSED [ 48%]
+../tests/test_outputs.py::TestMRRValues::test_revenue_month_from_service_period_not_invoice_date PASSED [ 51%]
+../tests/test_outputs.py::TestMRRValues::test_duplicate_invoice_lines_deduplicated PASSED [ 55%]
+../tests/test_outputs.py::TestMRRValues::test_compound_proration_with_professional_services PASSED [ 59%]
+../tests/test_outputs.py::TestMRRValues::test_negative_subscription_adjustment_included PASSED [ 62%]
+../tests/test_outputs.py::TestMRRValues::test_currency_formatted_amount_parsed PASSED [ 66%]
+../tests/test_outputs.py::TestMRRValues::test_multi_month_account_continuity PASSED [ 70%]
+../tests/test_outputs.py::TestMRRValues::test_multi_subscription_aggregation PASSED [ 74%]
+../tests/test_outputs.py::TestSummary::test_summary_totals PASSED        [ 77%]
+../tests/test_outputs.py::TestSummary::test_excluded_non_recurring_covers_all_fee_types PASSED [ 81%]
+../tests/test_outputs.py::TestSummary::test_tax_excluded_total_across_all_months PASSED [ 85%]
+../tests/test_outputs.py::TestMonthlySummary::test_monthly_summary_schema PASSED [ 88%]
+../tests/test_outputs.py::TestMonthlySummary::test_monthly_summary_row_count PASSED [ 92%]
+../tests/test_outputs.py::TestMonthlySummary::test_monthly_summary_totals_and_counts PASSED [ 96%]
+../tests/test_outputs.py::TestMonthlySummary::test_monthly_summary_mom_changes FAILED [100%]
+
+=================================== FAILURES ===================================
+_____________ TestMonthlySummary.test_monthly_summary_mom_changes ______________
+
+self = <test_outputs.TestMonthlySummary object at 0x7dbcbb748dd0>
+
+    def test_monthly_summary_mom_changes(self):
+        """mrr_change_usd and mrr_change_pct must be blank for Jan and correct for Feb/Mar.
+    
+        Jan has no prior month so both change fields must be null/NaN/blank.
+        Feb: change = 10749.57 - 13459.58 = -2710.01; pct = -2710.01 / 13459.58 = -0.2013
+        Mar: change = 8340.04 - 10749.57 = -2409.53; pct = -2409.53 / 10749.57 = -0.2242
+    
+        Tests that agents perform period-over-period computation from the monthly aggregates,
+        not a fixed lookup. Requires building the parquet first, then deriving this file.
+        """
+        df = load_monthly().set_index("month")
+    
+        # January — no prior period, both fields must be null/NaN
+        jan_change = df.loc["2026-01", "mrr_change_usd"]
+        jan_pct    = df.loc["2026-01", "mrr_change_pct"]
+        assert pd.isna(jan_change) or jan_change == "", (
+            f"2026-01 mrr_change_usd should be blank (no prior period), got {jan_change}"
+        )
+        assert pd.isna(jan_pct) or jan_pct == "", (
+            f"2026-01 mrr_change_pct should be blank (no prior period), got {jan_pct}"
+        )
+    
+        # February
+        feb_change = float(df.loc["2026-02", "mrr_change_usd"])
+        feb_pct    = float(df.loc["2026-02", "mrr_change_pct"])
+        assert abs(feb_change - (-2710.01)) <= TOLERANCE, (
+            f"2026-02 mrr_change_usd: expected -2710.01, got {feb_change}"
+        )
+        assert abs(feb_pct - (-0.2013)) <= 0.0001, (
+            f"2026-02 mrr_change_pct: expected -0.2013, got {feb_pct}"
+        )
+    
+        # March
+        mar_change = float(df.loc["2026-03", "mrr_change_usd"])
+        mar_pct    = float(df.loc["2026-03", "mrr_change_pct"])
+>       assert abs(mar_change - (-2409.53)) <= TOLERANCE, (
+            f"2026-03 mrr_change_usd: expected -2409.53, got {mar_change}"
+        )
+E       AssertionError: 2026-03 mrr_change_usd: expected -2409.53, got -2409.52
+E       assert 0.010000000000218279 <= 0.01
+E        +  where 0.010000000000218279 = abs((-2409.52 - -2409.53))
+
+/tests/test_outputs.py:701: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_outputs.py::TestOutputFiles::test_required_output_files_exist
+PASSED ../tests/test_outputs.py::TestSchema::test_parquet_columns_exact
+PASSED ../tests/test_outputs.py::TestSchema::test_json_keys_exact
+PASSED ../tests/test_outputs.py::TestSchema::test_no_duplicate_account_month_rows
+PASSED ../tests/test_outputs.py::TestSchema::test_output_row_count
+PASSED ../tests/test_outputs.py::TestMRRValues::test_all_account_month_mrr_values
+PASSED ../tests/test_outputs.py::TestMRRValues::test_annual_subscription_normalized_to_monthly
+PASSED ../tests/test_outputs.py::TestMRRValues::test_service_month_fx_rate_used_not_invoice_month
+PASSED ../tests/test_outputs.py::TestMRRValues::test_fx_whitespace_normalization
+PASSED ../tests/test_outputs.py::TestMRRValues::test_quarterly_subscription_normalized_to_monthly
+PASSED ../tests/test_outputs.py::TestMRRValues::test_catchup_billing_distributes_to_service_months
+PASSED ../tests/test_outputs.py::TestMRRValues::test_tax_excluded_from_mrr
+PASSED ../tests/test_outputs.py::TestMRRValues::test_compound_non_recurring_exclusion
+PASSED ../tests/test_outputs.py::TestMRRValues::test_revenue_month_from_service_period_not_invoice_date
+PASSED ../tests/test_outputs.py::TestMRRValues::test_duplicate_invoice_lines_deduplicated
+PASSED ../tests/test_outputs.py::TestMRRValues::test_compound_proration_with_professional_services
+PASSED ../tests/test_outputs.py::TestMRRValues::test_negative_subscription_adjustment_included
+PASSED ../tests/test_outputs.py::TestMRRValues::test_currency_formatted_amount_parsed
+PASSED ../tests/test_outputs.py::TestMRRValues::test_multi_month_account_continuity
+PASSED ../tests/test_outputs.py::TestMRRValues::test_multi_subscription_aggregation
+PASSED ../tests/test_outputs.py::TestSummary::test_summary_totals
+PASSED ../tests/test_outputs.py::TestSummary::test_excluded_non_recurring_covers_all_fee_types
+PASSED ../tests/test_outputs.py::TestSummary::test_tax_excluded_total_across_all_months
+PASSED ../tests/test_outputs.py::TestMonthlySummary::test_monthly_summary_schema
+PASSED ../tests/test_outputs.py::TestMonthlySummary::test_monthly_summary_row_count
+PASSED ../tests/test_outputs.py::TestMonthlySummary::test_monthly_summary_totals_and_counts
+FAILED ../tests/test_outputs.py::TestMonthlySummary::test_monthly_summary_mom_changes
+========================= 1 failed, 26 passed in 0.92s =========================

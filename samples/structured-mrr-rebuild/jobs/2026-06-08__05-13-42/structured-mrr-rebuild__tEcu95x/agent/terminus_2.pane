@@ -1,0 +1,817 @@
+[?2004hroot@0031218ded36:~# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@0031218ded36:~# clear
+[?2004l[H[J[3J[?2004hroot@0031218ded36:~# ls -la /root/data
+[?2004ltotal 32
+drwxr-xr-x 2 root root 4096 Jun  8 07:31 [0m[01;34m.[0m
+drwx------ 1 root root 4096 Jun  8 09:15 [01;34m..[0m
+-rw-r--r-- 1 root root 1064 Jun  8 07:31 customers.csv
+-rw-r--r-- 1 root root  252 Jun  8 07:31 fx_rates.csv
+-rw-r--r-- 1 root root 7081 Jun  8 07:31 invoice_lines.csv
+-rw-r--r-- 1 root root 5504 Jun  8 07:31 subscriptions.jsonl
+[?2004hroot@0031218ded36:~# head -n 5 /root/data/customers.csv
+[?2004laccount_id,customer_name,region,created_at
+acct_001,Northwind Analytics,NA,2025-01-15
+acct_002,Bluebird Retail,NA,2025-02-20
+acct_003,Alpine Cloud Systems,EU,2025-03-12
+acct_004,Redwood Security,NA,2025-04-01
+[?2004hroot@0031218ded36:~# head -n 5 /root/data/subscriptions.jsonl
+[?2004l{"subscription_id": "sub_001", "account_id": "acct_001", "plan_name": "Growth", "billing_interval": "monthly", "currency": "USD", "start_date": "2026-01-01", "end_date": null, "status": "active"}
+{"subscription_id": "sub_002", "account_id": "acct_002", "plan_name": "Enterprise Annual", "billing_interval": "Annual", "currency": "USD", "start_date": "2026-01-01", "end_date": "2026-12-31", "status": "active"}
+{"subscription_id": "sub_003", "account_id": "acct_003", "plan_name": "Pro Annual EU", "billing_interval": "annual", "currency": "EUR", "start_date": "2026-02-01", "end_date": "2027-01-31", "status": "active"}
+{"subscription_id": "sub_004", "account_id": "acct_004", "plan_name": "Standard", "billing_interval": "monthly", "currency": "USD", "start_date": "2026-01-01", "end_date": null, "status": "active"}
+{"subscription_id": "sub_005", "account_id": "acct_005", "plan_name": "Starter", "billing_interval": "monthly", "currency": "USD", "start_date": "2026-01-01", "end_date": null, "status": "active"}
+[?2004hroot@0031218ded36:~# head -n 5 /root/data/invoice_lines.csv
+[?2004linvoice_line_id,invoice_id,account_id,subscription_id,invoice_date,service_start,service_end,line_type,description,amount,tax_amount,currency,is_proration
+il_001,inv_001,acct_001,sub_001,2026-01-05,2026-01-01,2026-01-31,subscription,Growth Monthly,523.75,0.00,USD,false
+il_002,inv_002,acct_001,sub_001,2026-02-05,2026-02-01,2026-02-28,subscription,Growth Monthly,523.75,0.00,USD,false
+il_003,inv_003,acct_001,sub_001,2026-03-05,2026-03-01,2026-03-31,subscription,Growth Monthly,523.75,0.00,USD,false
+il_004,inv_004,acct_002,sub_002,2026-01-05,2026-01-01,2026-12-31,subscription,Enterprise Annual,13476.00,0.00,USD,false
+[?2004hroot@0031218ded36:~# head -n 5 /root/data/fx_rates.csv
+[?2004lmonth,currency,usd_rate
+2026-01,USD,1.0000
+2026-01,EUR,1.1050
+2026-01,CAD,0.7380
+2026-01,GBP,1.2640
+[?2004hroot@0031218ded36:~# python3 -c "import pandas, polars, pyarrow, duckdb; print('ok')" 2>&1
+[?2004lTraceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'polars'
+[?2004hroot@0031218ded36:~# python3 -c "import pandas; print('pandas ok')" 2>/dev/null || true
+[?2004lpython3 -c "import pyarrow; print('pyarrow ok')" 2>/dev/null || true
+python3 -c "import duckdb; print('duckdb ok')" 2>/dev/null || true
+pandas ok
+[?2004hroot@0031218ded36:~# python3 -c "import pyarrow; print('pyarrow ok')" 2>/dev/null || true
+[?2004lpython3 -c "import json; print('json ok')" 2>/dev/null || true
+pyarrow ok
+[?2004hroot@0031218ded36:~# python3 -c "import duckdb; print('duckdb ok')" 2>/dev/null || true
+[?2004l[?2004hroot@0031218ded36:~# python3 -c "import json; print('json ok')" 2>/dev/null || true
+[?2004ljson ok
+[?2004hroot@0031218ded36:~# pip list
+[?2004l[33mWARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'[0m[33m
+[0mPackage          Version
+---------------- -----------
+asciinema        2.4.0
+iniconfig        2.3.0
+numpy            2.4.6
+packaging        26.2
+pandas           2.2.3
+pip              24.0
+pluggy           1.6.0
+pyarrow          18.1.0
+Pygments         2.20.0
+pytest           8.4.1
+pytest-json-ctrf 0.3.5
+python-dateutil  2.9.0.post0
+pytz             2026.2
+setuptools       68.1.2
+six              1.17.0
+tzdata           2026.2
+wheel            0.42.0
+[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/explore.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import json
+[?2004l[?2004h> 
+[?2004l[?2004h> customers = pd.read_csv('/root/data/customers.csv')
+[?2004l[?2004h> print("Customers shape:", customers.shape)
+[?2004l[?2004h> print(customers.head(2))
+[?2004l[?2004h> print()
+[?2004l[?2004h> 
+[?2004l[?2004h> with open('/root/data/subscriptions.jsonl') as f:
+[?2004l[?2004h>     subs = [json.loads(line) for line in f]
+[?2004l[?2004h> subs_df = pd.DataFrame(subs)
+[?2004l[?2004h> print("Subscriptions shape:", subs_df.shape)
+[?2004l[?2004h> print(subs_df.head(2))
+[?2004l[?2004h> print(subs_df['billing_interval'].unique())
+[?2004l[?2004h> print(subs_df['currency'].unique())
+[?2004l[?2004h> print()
+[?2004l[?2004h> 
+[?2004l[?2004h> invoices = pd.read_csv('/root/data/invoice_lines.csv')
+[?2004l[?2004h> print("Invoices shape:", invoices.shape)
+[?2004l[?2004h> print(invoices.head(2))
+[?2004l[?2004h> print("Line types:", invoices['line_type'].unique())
+[?2004l[?2004h> print("Currencies:", invoices['currency'].unique())
+[?2004l[?2004h> print()
+[?2004l[?2004h> 
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> print("FX shape:", fx.shape)
+[?2004l[?2004h> print(fx.head(5))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/explore.py
+[?2004lCustomers shape: (25, 4)
+  account_id        customer_name region  created_at
+0   acct_001  Northwind Analytics    NaN  2025-01-15
+1   acct_002      Bluebird Retail    NaN  2025-02-20
+
+Subscriptions shape: (27, 8)
+  subscription_id account_id          plan_name billing_interval currency  start_date    end_date  status
+0         sub_001   acct_001             Growth          monthly      USD  2026-01-01        None  active
+1         sub_002   acct_002  Enterprise Annual           Annual      USD  2026-01-01  2026-12-31  active
+['monthly' 'Annual' 'annual' 'quarterly']
+['USD' 'EUR' 'CAD' 'GBP']
+
+Invoices shape: (59, 13)
+  invoice_line_id invoice_id account_id subscription_id invoice_date service_start  ...     line_type     description  amount tax_amount  currency is_proration
+0          il_001    inv_001   acct_001         sub_001   2026-01-05    2026-01-01  ...  subscription  Growth Monthly  523.75        0.0       USD        False
+1          il_002    inv_002   acct_001         sub_001   2026-02-05    2026-02-01  ...  subscription  Growth Monthly  523.75        0.0       USD        False
+
+[2 rows x 13 columns]
+Line types: ['subscription' 'setup_fee' 'professional_services' 'Subscription' 'usage']
+Currencies: ['USD' 'EUR' ' CAD' 'CAD' 'GBP']
+
+FX shape: (12, 3)
+     month currency  usd_rate
+0  2026-01      USD     1.000
+1  2026-01      EUR     1.105
+2  2026-01      CAD     0.738
+3  2026-01      GBP     1.264
+4  2026-02      USD     1.000
+[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/check_details.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import json
+[?2004l[?2004h> 
+[?2004l[?2004h> invoices = pd.read_csv('/root/data/invoice_lines.csv')
+[?2004l[?2004h> print("Total lines in csv:", len(invoices))
+[?2004l[?2004h> print("Unique invoice_line_id count:", invoices['invoice_line_id'].nunique())
+[?2004l[?2004h> print("Full duplicate rows count:", invoices.duplicated().sum())
+[?2004l[?2004h> print("Duplicate invoice_line_id rows:")
+[?2004l[?2004h> print(invoices[invoices.duplicated(subset=['invoice_line_id'], keep=False)].sort_values('invoice_line_id')[['invoice_line_id', 'amount', 'currency']])
+[?2004l[?2004h> 
+[?2004l[?2004h> # Let's inspect the types of amount and tax_amount in csv
+[?2004l[?2004h> # Since pandas may parse them as float or object, let's see their types
+[?2004l[?2004h> print("Amount type in pandas:", invoices['amount'].dtype)
+[?2004l[?2004h> print("Tax amount type:", invoices['tax_amount'].dtype)
+[?2004l[?2004h> print("Sample of amount:", invoices['amount'].head(15).tolist())
+[?2004l[?2004h> 
+[?2004l[?2004h> # Let's inspect unique values for key columns in invoices after strip/lower
+[?2004l[?2004h> print("Normalized line_type:", invoices['line_type'].astype(str).str.strip().str.lower().unique())
+[?2004l[?2004h> print("Normalized currency:", invoices['currency'].astype(str).str.strip().str.upper().unique())
+[?2004l[?2004h> 
+[?2004l[?2004h> # Let's check FX rates table
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> print("Unique currencies in FX:", fx['currency'].unique())
+[?2004l[?2004h> print("Unique months in FX:", fx['month'].unique())
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/check_details.py
+[?2004lTotal lines in csv: 59
+Unique invoice_line_id count: 57
+Full duplicate rows count: 2
+Duplicate invoice_line_id rows:
+   invoice_line_id   amount currency
+13          il_014   617.50      USD
+57          il_014   617.50      USD
+39          il_041  8940.00      USD
+58          il_041  8940.00      USD
+Amount type in pandas: object
+Tax amount type: float64
+Sample of amount: ['523.75', '523.75', '523.75', '13476.00', '14400.00', '731.45', '731.45', '489.20', '2500.00', '1950.00', '960.00', '960.00', '960.00', '617.50', '875.00']
+Normalized line_type: ['subscription' 'setup_fee' 'professional_services' 'usage']
+Normalized currency: ['USD' 'EUR' 'CAD' 'GBP']
+Unique currencies in FX: ['USD' 'EUR' 'CAD' 'GBP']
+Unique months in FX: ['2026-01' '2026-02' '2026-03']
+[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/check_amounts.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> invoices = pd.read_csv('/root/data/invoice_lines.csv')
+[?2004l[?2004h> for val in invoices['amount']:
+[?2004l[?2004h>     try:
+[?2004l[?2004h>         float(val)
+[?2004l[?2004h>     except ValueError:
+[?2004l[?2004h>         print("Non-float amount:", repr(val))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/check_amounts.py
+[?2004lNon-float amount: '$319.00'
+[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/check_subs.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import json
+[?2004l[?2004h> 
+[?2004l[?2004h> with open('/root/data/subscriptions.jsonl') as f:
+[?2004l[?2004h>     subs_df = pd.DataFrame([json.loads(line) for line in f])
+[?2004l[?2004h> 
+[?2004l[?2004h> # Let's inspect subscription columns and unique values
+[?2004l[?2004h> print(subs_df[['subscription_id', 'account_id', 'billing_interval', 'currency']].to_string())
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/check_subs.py
+[?2004l   subscription_id account_id billing_interval currency
+0          sub_001   acct_001          monthly      USD
+1          sub_002   acct_002           Annual      USD
+2          sub_003   acct_003           annual      EUR
+3          sub_004   acct_004          monthly      USD
+4          sub_005   acct_005          monthly      USD
+5          sub_006   acct_006          monthly      CAD
+6          sub_007   acct_007          monthly      USD
+7          sub_008   acct_008          monthly      USD
+8          sub_009   acct_009          monthly      USD
+9          sub_010   acct_010           annual      CAD
+10         sub_011   acct_011          monthly      USD
+11         sub_012   acct_012          monthly      USD
+12        sub_013a   acct_013          monthly      USD
+13        sub_013b   acct_013          monthly      USD
+14        sub_013c   acct_013          monthly      USD
+15         sub_014   acct_014        quarterly      USD
+16         sub_015   acct_015          monthly      USD
+17         sub_016   acct_016           annual      GBP
+18         sub_017   acct_017          monthly      USD
+19         sub_018   acct_018          monthly      EUR
+20         sub_019   acct_019           annual      USD
+21         sub_020   acct_020          monthly      CAD
+22         sub_021   acct_021          monthly      USD
+23         sub_022   acct_022          monthly      USD
+24         sub_023   acct_023          monthly      EUR
+25         sub_024   acct_024          monthly      USD
+26         sub_025   acct_025           annual      GBP
+[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/check_joins.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import json
+[?2004l[?2004h> 
+[?2004l[?2004h> # Load datasets
+[?2004l[?2004h> customers = pd.read_csv('/root/data/customers.csv')
+[?2004l[?2004h> with open('/root/data/subscriptions.jsonl') as f:
+[?2004l[?2004h>     subs_df = pd.DataFrame([json.loads(line) for line in f])
+[?2004l[?2004h> invoices = pd.read_csv('/root/data/invoice_lines.csv')
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Clean invoices
+[?2004l[?2004h> in_sub_ids = set(invoices['subscription_id'].dropna().unique())
+[?2004l[?2004h> sub_ids = set(subs_df['subscription_id'].unique())
+[?2004l[?2004h> print("Subscription IDs in invoices but not in subscriptions:", in_sub_ids - sub_ids)
+[?2004l[?2004h> print("Subscription IDs in subscriptions but not in invoices:", sub_ids - in_sub_ids)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Let's check if all invoice lines have subscription_id
+[?2004l[?2004h> print("Invoice lines with null subscription_id:", invoices['subscription_id'].isnull().sum())
+[?2004l[?2004h> print("Null subscription_id lines sample:", invoices[invoices['subscription_id'].isnull()])
+[?2004l[?2004h> 
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/check_joins.py
+[?2004lSubscription IDs in invoices but not in subscriptions: set()
+Subscription IDs in subscriptions but not in invoices: set()
+Invoice lines with null subscription_id: 5
+Null subscription_id lines sample:    invoice_line_id invoice_id account_id subscription_id invoice_date  ...              description   amount tax_amount currency is_proration
+8           il_009    inv_008   acct_005             NaN   2026-01-05  ...       One-time Setup Fee  2500.00        0.0      USD        False
+9           il_010    inv_008   acct_005             NaN   2026-01-05  ...      Onboarding Services  1950.00        0.0      USD        False
+17          il_018    inv_014   acct_009             NaN   2026-01-12  ...  Implementation Services  1800.00        0.0      USD        False
+36          il_038    inv_029   acct_017             NaN   2026-03-05  ...          API Overage Mar   125.50        0.0      USD        False
+47          il_049    inv_039   acct_022             NaN   2026-01-05  ...           Onboarding Fee   500.00        0.0      USD        False
+
+[5 rows x 13 columns]
+[?2004hroot@0031218ded36:~# python3 /tmp/check_joins.py
+[?2004lSubscription IDs in invoices but not in subscriptions: set()
+Subscription IDs in subscriptions but not in invoices: set()
+Invoice lines with null subscription_id: 5
+Null subscription_id lines sample:    invoice_line_id invoice_id account_id subscription_id invoice_date  ...              description   amount tax_amount currency is_proration
+8           il_009    inv_008   acct_005             NaN   2026-01-05  ...       One-time Setup Fee  2500.00        0.0      USD        False
+9           il_010    inv_008   acct_005             NaN   2026-01-05  ...      Onboarding Services  1950.00        0.0      USD        False
+17          il_018    inv_014   acct_009             NaN   2026-01-12  ...  Implementation Services  1800.00        0.0      USD        False
+36          il_038    inv_029   acct_017             NaN   2026-03-05  ...          API Overage Mar   125.50        0.0      USD        False
+47          il_049    inv_039   acct_022             NaN   2026-01-05  ...           Onboarding Fee   500.00        0.0      USD        False
+
+[5 rows x 13 columns]
+[?2004hroot@0031218ded36:~# python3 -c "import pandas as pd; df = pd.read_csv('/root/data/invoice_lines.csv'); print(df[df['subscription_id'].isnull()][['invoice_line_id', 'line_type', 'description', 'amount']])"
+[?2004l   invoice_line_id              line_type              description   amount
+8           il_009              setup_fee       One-time Setup Fee  2500.00
+9           il_010  professional_services      Onboarding Services  1950.00
+17          il_018  professional_services  Implementation Services  1800.00
+36          il_038                  usage          API Overage Mar   125.50
+47          il_049              setup_fee           Onboarding Fee   500.00
+[?2004hroot@0031218ded36:~# 
+[?2004l[?2004hroot@0031218ded36:~# python3 -c "import pandas as pd; df = pd.read_csv('/root/data/invoice_lines.csv'); df['line_type_norm'] = df['line_type'].astype(str).str.strip().str.lower(); print(df.groupby('line_type_norm').size())"
+[?2004lline_type_norm
+professional_services     2
+setup_fee                 2
+subscription             54
+usage                     1
+dtype: int64
+[?2004hroot@0031218ded36:~# 
+[?2004l[?2004hroot@0031218ded36:~# python3 -c "import pandas as pd; df = pd.read_csv('/root/data/invoice_lines.csv').drop_duplicates(subset=['invoice_line_id']); df['line_type_norm'] = df['line_type'].astype(str).str.strip().str.lower(); print(df.groupby('line_type_norm').size())"
+[?2004lline_type_norm
+professional_services     2
+setup_fee                 2
+subscription             52
+usage                     1
+dtype: int64
+[?2004hroot@0031218ded36:~# 
+[?2004l[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/check_mrr_calc.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import json
+[?2004l[?2004h> 
+[?2004l[?2004h> # Read all files
+[?2004l[?2004h> customers = pd.read_csv('/root/data/customers.csv')
+[?2004l[?2004h> with open('/root/data/subscriptions.jsonl') as f:
+[?2004l[?2004h>     subs = pd.DataFrame([json.loads(line) for line in f])
+[?2004l[?2004h> invoices = pd.read_csv('/root/data/invoice_lines.csv')
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Drop duplicates in invoices
+[?2004l[?2004h> invoices = invoices.drop_duplicates(subset=['invoice_line_id']).copy()
+[?2004l[?2004h> 
+[?2004l[?2004h> # Normalize invoice strings
+[?2004l[?2004h> invoices['line_type_norm'] = invoices['line_type'].astype(str).str.strip().str.lower()
+[?2004l[?2004h> invoices['currency_norm'] = invoices['currency'].astype(str).str.strip().str.upper()
+[?2004l[?2004h> 
+[?2004l[?2004h> # Clean amounts
+[?2004l[?2004h> def clean_amount(val):
+[?2004l[?2004h>     if pd.isnull(val):
+[?2004l[?2004h>         return 0.0
+[?2004l[?2004h>     if isinstance(val, (int, float)):
+[?2004l[?2004h>         return float(val)
+[?2004l[?2004h>     val_str = str(val).strip().replace('$', '').replace(',', '')
+[?2004l[?2004h>     return float(val_str)
+[?2004l[?2004h> 
+[?2004l[?2004h> invoices['amount_clean'] = invoices['amount'].apply(clean_amount)
+[?2004l[?2004h> invoices['tax_amount_clean'] = invoices['tax_amount'].apply(clean_amount)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Join subscriptions to get billing_interval and check if there are any mismatches
+[?2004l[?2004h> subs['subscription_id_norm'] = subs['subscription_id'].astype(str).str.strip()
+[?2004l[?2004h> in_with_sub = invoices.merge(subs, left_on='subscription_id', right_on='subscription_id_norm', how='left')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Service month
+[?2004l[?2004h> in_with_sub['service_start_month'] = in_with_sub['service_start'].apply(lambda x: str(x)[:7])
+[?2004l[?2004h> print("Unique service start months:", in_with_sub['service_start_month'].unique())
+[?2004l[?2004h> 
+[?2004l[?2004h> # Let's inspect rows with billing_interval
+[?2004l[?2004h> print(in_with_sub.groupby(['line_type_norm', 'billing_interval'], dropna=False).size())
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/check_mrr_calc.py
+[?2004lUnique service start months: ['2026-01' '2026-02' '2026-03']
+line_type_norm         billing_interval
+professional_services  NaN                  2
+setup_fee              NaN                  2
+subscription           Annual               1
+                       annual               5
+                       monthly             45
+                       quarterly            1
+usage                  NaN                  1
+dtype: int64
+[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/check_fx.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> invoices = pd.read_csv('/root/data/invoice_lines.csv')
+[?2004l[?2004h> invoices['service_month'] = invoices['service_start'].apply(lambda x: str(x)[:7])
+[?2004l[?2004h> invoices['currency_norm'] = invoices['currency'].astype(str).str.strip().str.upper()
+[?2004l[?2004h> print("Unique invoice service_month + currency combinations:")
+[?2004l[?2004h> print(invoices.groupby(['service_month', 'currency_norm']).size())
+[?2004l[?2004h> 
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> fx['currency_norm'] = fx['currency'].astype(str).str.strip().str.upper()
+[?2004l[?2004h> fx['month_norm'] = fx['month'].astype(str).str.strip()
+[?2004l[?2004h> print("Available FX rates combinations:")
+[?2004l[?2004h> print(fx.set_index(['month_norm', 'currency_norm'])['usd_rate'])
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/check_fx.py
+[?2004lUnique invoice service_month + currency combinations:
+service_month  currency_norm
+2026-01        CAD               2
+               GBP               1
+               USD              26
+2026-02        CAD               3
+               EUR               2
+               USD              10
+2026-03        CAD               2
+               EUR               2
+               GBP               1
+               USD              10
+dtype: int64
+Available FX rates combinations:
+month_norm  currency_norm
+2026-01     USD              1.0000
+            EUR              1.1050
+            CAD              0.7380
+            GBP              1.2640
+2026-02     USD              1.0000
+            EUR              1.0830
+            CAD              0.7510
+            GBP              1.2710
+2026-03     USD              1.0000
+            EUR              1.0920
+            CAD              0.7445
+            GBP              1.2580
+Name: usd_rate, dtype: float64
+[?2004hroot@0031218ded36:~# 
+[?2004l[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/check_accounts.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> invoices = pd.read_csv('/root/data/invoice_lines.csv')
+[?2004l[?2004h> customers = pd.read_csv('/root/data/customers.csv')
+[?2004l[?2004h> 
+[?2004l[?2004h> invoices_accts = set(invoices[invoices['line_type'].astype(str).str.strip().str.lower() == 'subscription']['account_id'].dropna().unique())
+[?2004l[?2004h> cust_accts = set(customers['account_id'].unique())
+[?2004l[?2004h> 
+[?2004l[?2004h> print("Accounts in subscription invoices:", invoices_accts)
+[?2004l[?2004h> print("Accounts in customers table:", cust_accts)
+[?2004l[?2004h> print("Mismatched accounts:", invoices_accts - cust_accts)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/check_accounts.py
+[?2004lAccounts in subscription invoices: {'acct_001', 'acct_022', 'acct_024', 'acct_003', 'acct_016', 'acct_014', 'acct_012', 'acct_006', 'acct_008', 'acct_010', 'acct_005', 'acct_015', 'acct_020', 'acct_017', 'acct_004', 'acct_023', 'acct_018', 'acct_019', 'acct_021', 'acct_009', 'acct_007', 'acct_011', 'acct_002', 'acct_025', 'acct_013'}
+Accounts in customers table: {'acct_001', 'acct_022', 'acct_024', 'acct_003', 'acct_016', 'acct_014', 'acct_012', 'acct_006', 'acct_008', 'acct_010', 'acct_005', 'acct_015', 'acct_020', 'acct_017', 'acct_004', 'acct_023', 'acct_018', 'acct_019', 'acct_021', 'acct_009', 'acct_007', 'acct_011', 'acct_002', 'acct_025', 'acct_013'}
+Mismatched accounts: set()
+[?2004hroot@0031218ded36:~# python3 /tmp/process_mrr.py
+[?2004lpython3: can't open file '/tmp/process_mrr.py': [Errno 2] No such file or directory
+[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/process_mrr.py
+[?2004l[?2004h> import os
+[?2004l[?2004h> import json
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> 
+[?2004l[?2004h> customers = pd.read_csv('/root/data/customers.csv')
+[?2004l[?2004h> with open('/root/data/subscriptions.jsonl') as f:
+[?2004lsd'].d[?2004h>     subs = pd.DataFrame([json.loads(line) for line in f])
+[?2004l[?2004h> invoices = pd.read_csv('/root/data/invoice_lines.csv')
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> 
+[?2004ly[?2004h> invoices = invoices.drop_duplicates(subset=['invoice_line_id']).copy()
+[?2004l[?2004h> 
+[?2004l[?2004h> invoices['line_type_norm'] = invoices['line_type'].astype(str).str.strip().str.lower()
+[?2004l[?2004h> invoices['currency_norm'] = invoices['currency'].astype(str).str.strip().str.upper()
+[?2004l[?2004h> invoices['service_month'] = invoices['service_start'].astype(str).str.strip().str.slice(0, 7)
+[?2004l[?2004h> 
+[?2004l[?2004h> def clean_amount(val):
+[?2004l[?2004h>     if pd.isnull(val):
+[?2004l[?2004h>         return 0.0
+[?2004l[?2004h>     if isinstance(val, (int, float)):
+[?2004l[?2004h>         return float(val)
+[?2004l[?2004h>     s = str(val).strip().replace('$', '').replace(',', '').strip()
+[?2004l[?2004h>     return float(s) if s else 0.0
+[?2004l[?2004h> 
+[?2004l[?2004h> invoices['amount_clean'] = invoices['amount'].apply(clean_amount)
+[?2004l[?2004h> invoices['tax_amount_clean'] = invoices['tax_amount'].apply(clean_amount)
+[?2004l[?2004h> 
+[?2004l[?2004h> subs['subscription_id_norm'] = subs['subscription_id'].astype(str).str.strip()
+[?2004l[?2004h> subs['billing_interval_norm'] = subs['billing_interval'].astype(str).str.strip().str.lower()
+[?2004l[?2004h> 
+[?2004l[?2004h> fx['currency_norm'] = fx['currency'].astype(str).str.strip().str.upper()
+[?2004l[?2004h> fx['month_norm'] = fx['month'].astype(str).str.strip()
+[?2004l[?2004h> 
+[?2004l[?2004h> customers['account_id_norm'] = customers['account_id'].astype(str).str.strip()
+[?2004l[?2004h> customers_clean = customers[['account_id_norm', 'customer_name']].drop_duplicates()
+[?2004l[?2004h> 
+[?2004l[?2004h> merged = invoices.merge(subs, left_on='subscription_id', right_on='subscription_id_norm', how='left')
+[?2004l[?2004h> merged = merged.merge(fx, left_on=['service_month', 'currency_norm'], right_on=['month_norm', 'currency_norm'], how='left')
+[?2004l[?2004h> 
+[?2004l[?2004h> is_sub = merged['line_type_norm'] == 'subscription'
+[?2004l[?2004h> excluded_lines = merged[~is_sub].copy()
+[?2004l[?2004h> excluded_lines['amount_usd'] = excluded_lines['amount_clean'] * excluded_lines['usd_rate']
+[?2004l[?2004h> excluded_total_usd = excluded_lines['amount_usd'].sum()
+[?2004l[?2004h> 
+[?2004l[?2004h> sub_lines = merged[is_sub].copy()
+[?2004l[?2004h> sub_lines['tax_amount_usd'] = sub_lines['tax_amount_clean'] * sub_lines['usd_rate']
+[?2004l[?2004h> tax_excluded_total_usd = sub_lines['tax_amount_usd'].sum()
+[?2004l[?2004h> 
+[?2004l[?2004h> def calc_mrr_factor(row):
+[?2004l[?2004h>     interval = row['billing_interval_norm']
+[?2004l[?2004h>     if interval == 'annual':
+[?2004l[?2004h>         return 1.0 / 12.0
+[?2004l[?2004h>     elif interval == 'quarterly':
+[?2004l[?2004h>         return 1.0 / 3.0
+[?2004l[?2004h>     elif interval == 'monthly':
+[?2004l[?2004h>         return 1.0
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         raise ValueError(f'Unknown interval: {interval}')
+[?2004l[?2004h> 
+[?2004l[?2004h> sub_lines['interval_factor'] = sub_lines.apply(calc_mrr_factor, axis=1)
+[?2004l[?2004h> sub_lines['mrr_trans'] = sub_lines['amount_clean'] * sub_lines['interval_factor']
+[?2004l[?2004h> sub_lines['mrr_usd'] = sub_lines['mrr_trans'] * sub_lines['usd_rate']
+[?2004l[?2004h> 
+[?2004l[?2004h> sub_lines = sub_lines.merge(customers_clean, left_on='account_id_x', right_on='account_id_norm', how='left')
+[?2004l[?2004h> 
+[?2004l[?2004h> grouped = sub_lines.groupby(['account_id_x', 'customer_name', 'service_month']).agg(
+[?2004l[?2004h>     mrr_usd=('mrr_usd', 'sum'),
+[?2004l[?2004h>     source_line_count=('invoice_line_id', 'count')
+[?2004l[?2004h> ).reset_index()
+[?2004l[?2004h> 
+[?2004l[?2004h> grouped = grouped.rename(columns={
+[?2004l[?2004h>     'account_id_x': 'account_id',
+[?2004l[?2004h>     'service_month': 'month'
+[?2004l[?2004h> })
+[?2004l[?2004h> 
+[?2004l[?2004h> grouped['mrr_usd'] = grouped['mrr_usd'].round(2)
+[?2004l[?2004h> grouped = grouped.sort_values(by=['month', 'account_id']).reset_index(drop=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> print('mrr_by_account head:')
+[?2004l[?2004h> print(grouped.head(10))
+[?2004l[?2004h> print('mrr_by_account columns:', grouped.columns.tolist())
+[?2004l[?2004h> print('mrr_by_account shape:', grouped.shape)
+[?2004l[?2004h> 
+[?2004l[?2004h> total_mrr_usd = grouped['mrr_usd'].sum()
+[?2004l[?2004h> account_count = grouped['account_id'].nunique()
+[?2004l[?2004h> month_count = grouped['month'].nunique()
+[?2004l[?2004h> 
+[?2004l[?2004h> max_mrr_account_id = grouped.groupby('account_id')['mrr_usd'].sum().idxmax()
+[?2004l[?2004h> max_mrr_month = grouped.groupby('month')['mrr_usd'].sum().idxmax()
+[?2004l[?2004h> 
+[?2004l[?2004h> print('\nSummary values:')
+[?2004l[?2004h> print('total_mrr_usd:', total_mrr_usd)
+[?2004l[?2004h> print('account_count:', account_count)
+[?2004l[?2004h> print('month_count:', month_count)
+[?2004l[?2004h> print('max_mrr_account_id:', max_mrr_account_id)
+[?2004l[?2004h> print('max_mrr_month:', max_mrr_month)
+[?2004l[?2004h> print('excluded_non_recurring_total_usd:', excluded_total_usd)
+[?2004l[?2004h> print('tax_excluded_total_usd:', tax_excluded_total_usd)
+[?2004l[?2004h> 
+[?2004l[?2004h> monthly = grouped.groupby('month').agg(
+[?2004l[?2004h>     total_mrr_usd=('mrr_usd', 'sum'),
+[?2004l[?2004h>     account_count=('account_id', 'count')
+[?2004l[?2004h> ).reset_index().sort_values('month')
+[?2004l[?2004h> 
+[?2004l[?2004h> monthly['total_mrr_usd'] = monthly['total_mrr_usd'].round(2)
+[?2004l[?2004h> monthly['mrr_change_usd'] = monthly['total_mrr_usd'].diff().round(2)
+[?2004l[?2004h> monthly['mrr_change_pct'] = (monthly['mrr_change_usd'] / monthly['total_mrr_usd'].shift(1)).round(4)
+[?2004l[?2004h> 
+[?2004l[?2004h> print('\nMonthly summary:')
+[?2004l[?2004h> print(monthly)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/process_mrr.py
+[?2004lmrr_by_account head:
+  account_id          customer_name    month  mrr_usd  source_line_count
+0   acct_001    Northwind Analytics  2026-01   523.75                  1
+1   acct_002        Bluebird Retail  2026-01  1123.00                  1
+2   acct_004       Redwood Security  2026-01   731.45                  1
+3   acct_005       MetroHealth SaaS  2026-01   489.20                  1
+4   acct_006      Horizon Education  2026-01   708.48                  1
+5   acct_007        Quantum Finance  2026-01   617.50                  1
+6   acct_009      PixelWorks Studio  2026-01  1312.50                  2
+7   acct_011      Birchwood Capital  2026-01  1012.50                  2
+8   acct_012  Streamline Operations  2026-01   645.00                  1
+9   acct_013       Fusion Analytics  2026-01  1285.00                  3
+mrr_by_account columns: ['account_id', 'customer_name', 'month', 'mrr_usd', 'source_line_count']
+mrr_by_account shape: (46, 5)
+
+Summary values:
+total_mrr_usd: 32549.190000000002
+account_count: 25
+month_count: 3
+max_mrr_account_id: acct_022
+max_mrr_month: 2026-01
+excluded_non_recurring_total_usd: 6875.5
+tax_excluded_total_usd: 190.18
+
+Monthly summary:
+     month  total_mrr_usd  account_count  mrr_change_usd  mrr_change_pct
+0  2026-01       13459.58             19             NaN             NaN
+1  2026-02       10749.57             14        -2710.01         -0.2013
+2  2026-03        8340.04             13        -2409.53         -0.2242
+[?2004hroot@0031218ded36:~# python3 -c "import pandas as pd; df = pd.read_parquet('/tmp/process_mrr.py')" 2>&1 || true
+[?2004lpython3 -c "import pandas as pd; print('Null customer names:', pd.isnull(pd.DataFrame()).any())" # Let's write a small script instead
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/local/lib/python3.12/dist-packages/pandas/io/parquet.py", line 667, in read_parquet
+    return impl.read(
+           ^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/pandas/io/parquet.py", line 274, in read
+    pa_table = self.api.parquet.read_table(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/pyarrow/parquet/core.py", line 1793, in read_table
+    dataset = ParquetDataset(
+              ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/pyarrow/parquet/core.py", line 1360, in __init__
+    [fragment], schema=schema or fragment.physical_schema,
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pyarrow/_dataset.pyx", line 1431, in pyarrow._dataset.Fragment.physical_schema.__get__
+  File "pyarrow/error.pxi", line 155, in pyarrow.lib.pyarrow_internal_check_status
+  File "pyarrow/error.pxi", line 92, in pyarrow.lib.check_status
+pyarrow.lib.ArrowInvalid: Could not open Parquet input source '<Buffer>': Parquet magic bytes not found in footer. Either the file is corrupted or this is not a parquet file.
+[?2004hroot@0031218ded36:~# python3 -c "import pandas as pd; print('Null customer names:', pd.isnull(pd.DataFrame()).any())" # Let's write a small script instead
+[?2004lNull customer names: Series([], dtype: bool)
+[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/generate_final.py
+[?2004l[?2004h> import os
+[?2004l'm[?2004h> import json
+[?2004lo[?2004h> import pandas as pd
+[?2004l[?2004h> import numpy as np
+[?2004l[?2004h> 
+[?2004l[?2004h> # Create /root/out directory if it does not exist
+[?2004l[?2004h> os.makedirs('/root/out', exist_ok=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> # 1. Load the raw data
+[?2004l[?2004h> customers = pd.read_csv('/root/data/customers.csv')
+[?2004l[?2004h> with open('/root/data/subscriptions.jsonl') as f:
+[?2004l[?2004h>     subs = pd.DataFrame([json.loads(line) for line in f])
+[?2004l[?2004h> invoices = pd.read_csv('/root/data/invoice_lines.csv')
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> 
+[?2004l[?2004h> # 2. Clean inputs
+[?2004l[?2004h> # Clean invoices (drop full duplicate rows and duplicate invoice_line_id)
+[?2004l[?2004h> invoices = invoices.drop_duplicates(subset=['invoice_line_id']).copy()
+[?2004l[?2004h> 
+[?2004l[?2004h> # Whitespace & casing normalization
+[?2004l[?2004h> invoices['line_type_norm'] = invoices['line_type'].astype(str).str.strip().str.lower()
+[?2004l[?2004h> invoices['currency_norm'] = invoices['currency'].astype(str).str.strip().str.upper()
+[?2004l[?2004h> invoices['service_month'] = invoices['service_start'].astype(str).str.strip().str.slice(0, 7)
+[?2004l[?2004h> 
+[?2004l[?2004h> def clean_amount(val):
+[?2004l_js[?2004h>     if pd.isnull(val):
+[?2004l[?2004h>         return 0.0
+[?2004l[?2004h>     if isinstance(val, (int, float)):
+[?2004l[?2004h>         return float(val)
+[?2004l[?2004h>     # Strip currency, space, comma
+[?2004l[?2004h>     s = str(val).strip().replace('$', '').replace(',', '').strip()
+[?2004ldex([?2004h>     return float(s) if s else 0.0
+[?2004l[?2004h> 
+[?2004l [?2004h> invoices['amount_clean'] = invoices['amount'].apply(clean_amount)
+[?2004l[?2004h> invoices['tax_amount_clean'] = invoices['tax_amount'].apply(clean_amount)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Clean subscriptions
+[?2004l[?2004h> subs['subscription_id_norm'] = subs['subscription_id'].astype(str).str.strip()
+[?2004l[?2004h> subs['billing_interval_norm'] = subs['billing_interval'].astype(str).str.strip().str.lower()
+[?2004l[?2004h> 
+[?2004l[?2004h> # Clean FX rates
+[?2004l[?2004h> fx['currency_norm'] = fx['currency'].astype(str).str.strip().str.upper()
+[?2004l[?2004h> fx['month_norm'] = fx['month'].astype(str).str.strip()
+[?2004l[?2004h> 
+[?2004ln[?2004h> # Clean customers
+[?2004l first mo[?2004h> customers['account_id_norm'] = customers['account_id'].astype(str).str.strip()
+[?2004l[?2004h> customers_clean = customers[['account_id_norm', 'customer_name']].drop_duplicates()
+[?2004l[?2004h> 
+[?2004l_[?2004h> # Join subscriptions with invoice lines
+[?2004lu[?2004h> merged = invoices.merge(subs, left_on='subscription_id', right_on='subscription_id_norm', how='left')
+[?2004lsummary[?2004h> 
+[?2004l[?2004h> # Join FX rates on (service_month, currency_norm)
+[?2004l[?2004h> merged = merged.merge(fx, left_on=['service_month', 'currency_norm'], right_on=['month_norm', 'currency_norm'], how='left')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Clean subscription/non-subscription split
+[?2004l[?2004h> is_sub = merged['line_type_norm'] == 'subscription'
+[?2004l[?2004h> 
+[?2004l[?2004h> # Excluded lines
+[?2004l[?2004h> excluded_lines = merged[~is_sub].copy()
+[?2004l[?2004h> excluded_lines['amount_usd'] = excluded_lines['amount_clean'] * excluded_lines['usd_rate']
+[?2004l[?2004h> excluded_total_usd = float(round(excluded_lines['amount_usd'].sum(), 2))
+[?2004l[?2004h> 
+[?2004l[?2004h> # Subscription lines
+[?2004l[?2004h> sub_lines = merged[is_sub].copy()
+[?2004l[?2004h> sub_lines['tax_amount_usd'] = sub_lines['tax_amount_clean'] * sub_lines['usd_rate']
+[?2004l[?2004h> tax_excluded_total_usd = float(round(sub_lines['tax_amount_usd'].sum(), 2))
+[?2004l[?2004h> 
+[?2004l[?2004h> def calc_mrr_factor(row):
+[?2004l[?2004h>     interval = row['billing_interval_norm']
+[?2004l[?2004h>     if interval == 'annual':
+[?2004l[?2004h>         return 1.0 / 12.0
+[?2004l[?2004h>     elif interval == 'quarterly':
+[?2004l[?2004h>         return 1.0 / 3.0
+[?2004l[?2004h>     elif interval == 'monthly':
+[?2004l[?2004h>         return 1.0
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         raise ValueError(f'Unknown interval: {interval}')
+[?2004l[?2004h> 
+[?2004l[?2004h> sub_lines['interval_factor'] = sub_lines.apply(calc_mrr_factor, axis=1)
+[?2004l[?2004h> sub_lines['mrr_trans'] = sub_lines['amount_clean'] * sub_lines['interval_factor']
+[?2004l[?2004h> sub_lines['mrr_usd'] = sub_lines['mrr_trans'] * sub_lines['usd_rate']
+[?2004l[?2004h> 
+[?2004l[?2004h> sub_lines = sub_lines.merge(customers_clean, left_on='account_id_x', right_on='account_id_norm', how='left')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Quality checks:
+[?2004l[?2004h> assert sub_lines['customer_name'].isnull().sum() == 0, "Some customer names are null!"
+[?2004l[?2004h> assert sub_lines['mrr_usd'].isnull().sum() == 0, "Some mrr_usd are null!"
+[?2004l[?2004h> 
+[?2004l[?2004h> # Grouping for Output 1
+[?2004l[?2004h> grouped = sub_lines.groupby(['account_id_x', 'customer_name', 'service_month']).agg(
+[?2004l[?2004h>     mrr_usd=('mrr_usd', 'sum'),
+[?2004l[?2004h>     source_line_count=('invoice_line_id', 'count')
+[?2004l[?2004h> ).reset_index()
+[?2004l[?2004h> 
+[?2004l[?2004h> grouped = grouped.rename(columns={
+[?2004l[?2004h>     'account_id_x': 'account_id',
+[?2004l[?2004h>     'service_month': 'month'
+[?2004l[?2004h> })
+[?2004l[?2004h> 
+[?2004l[?2004h> grouped['mrr_usd'] = grouped['mrr_usd'].round(2)
+[?2004l[?2004h> grouped['source_line_count'] = grouped['source_line_count'].astype(int)
+[?2004l[?2004h> grouped = grouped.sort_values(by=['month', 'account_id']).reset_index(drop=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Ensure columns of parquet
+[?2004l[?2004h> parquet_cols = ['account_id', 'customer_name', 'month', 'mrr_usd', 'source_line_count']
+[?2004l[?2004h> grouped_parquet = grouped[parquet_cols]
+[?2004l[?2004h> grouped_parquet.to_parquet('/root/out/mrr_by_account.parquet', index=False)
+[?2004l[?2004h> print("Saved mrr_by_account.parquet")
+[?2004l[?2004h> 
+[?2004l[?2004h> # Grouping for Output 2
+[?2004l[?2004h> total_mrr_usd = float(round(grouped['mrr_usd'].sum(), 2))
+[?2004l[?2004h> account_count = int(grouped['account_id'].nunique())
+[?2004l[?2004h> month_count = int(grouped['month'].nunique())
+[?2004l[?2004h> 
+[?2004l[?2004h> max_mrr_account_id = str(grouped.groupby('account_id')['mrr_usd'].sum().idxmax())
+[?2004l[?2004h> max_mrr_month = str(grouped.groupby('month')['mrr_usd'].sum().idxmax())
+[?2004l[?2004h> 
+[?2004l[?2004h> summary_json = {
+[?2004l[?2004h>     'total_mrr_usd': total_mrr_usd,
+[?2004l[?2004h>     'account_count': account_count,
+[?2004l[?2004h>     'month_count': month_count,
+[?2004l[?2004h>     'max_mrr_account_id': max_mrr_account_id,
+[?2004l[?2004h>     'max_mrr_month': max_mrr_month,
+[?2004l[?2004h>     'excluded_non_recurring_total_usd': excluded_total_usd,
+[?2004l[?2004h>     'tax_excluded_total_usd': tax_excluded_total_usd
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> with open('/root/out/mrr_summary.json', 'w') as f:
+[?2004l[?2004h>     json.dump(summary_json, f, indent=2)
+[?2004l[?2004h> print("Saved mrr_summary.json")
+[?2004l[?2004h> 
+[?2004l[?2004h> # Grouping for Output 3
+[?2004l[?2004h> monthly = grouped.groupby('month').agg(
+[?2004l[?2004h>     total_mrr_usd=('mrr_usd', 'sum'),
+[?2004l[?2004h>     account_count=('account_id', 'count')
+[?2004l[?2004h> ).reset_index().sort_values('month')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Wait, is total_mrr_usd in monthly_summary also rounded to 2 decimal places?
+[?2004l[?2004h> # Let's sum up mrr_usd directly. We already rounded mrr_usd in grouped, so summing it up might result in exact values.
+[?2004l[?2004h> # Let's make sure it's rounded to 2 decimal places
+[?2004l[?2004h> monthly['total_mrr_usd'] = monthly['total_mrr_usd'].round(2)
+[?2004l[?2004h> monthly['mrr_change_usd'] = monthly['total_mrr_usd'].diff().round(2)
+[?2004l[?2004h> monthly['mrr_change_pct'] = (monthly['mrr_change_usd'] / monthly['total_mrr_usd'].shift(1)).round(4)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Ensure blank for the first month
+[?2004l[?2004h> # In pandas, diff() and division on shift(1) automatically produces NaN/NaT for the first row
+[?2004l[?2004h> # When saving to csv, pandas writes NaN as empty (blank)
+[?2004l[?2004h> 
+[?2004l[?2004h> monthly_cols = ['month', 'total_mrr_usd', 'account_count', 'mrr_change_usd', 'mrr_change_pct']
+[?2004l[?2004h> monthly[monthly_cols].to_csv('/root/out/monthly_summary.csv', index=False)
+[?2004l[?2004h> print("Saved monthly_summary.csv")
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/generate_final.py
+[?2004lSaved mrr_by_account.parquet
+Saved mrr_summary.json
+Saved monthly_summary.csv
+[?2004hroot@0031218ded36:~# cat << 'EOF' > /tmp/verify_outputs.py
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import json
+[?2004l[?2004h> 
+[?2004l[?2004h> print("=== VERIFY PARQUET ===")
+[?2004l[?2004h> df_parquet = pd.read_parquet('/root/out/mrr_by_account.parquet')
+[?2004l[?2004h> print("Columns:", df_parquet.columns.tolist())
+[?2004l[?2004h> print("Dtypes:\n", df_parquet.dtypes)
+[?2004l[?2004h> print("Shape:", df_parquet.shape)
+[?2004l[?2004h> print("First 5 rows:\n", df_parquet.head(5))
+[?2004l[?2004h> print("Last 5 rows:\n", df_parquet.tail(5))
+[?2004l[?2004h> print("Is sorted by month, then account_id?", df_parquet.equals(df_parquet.sort_values(['month', 'account_id'])))
+[?2004l[?2004h> 
+[?2004l[?2004h> print("\n=== VERIFY JSON ===")
+[?2004l[?2004h> with open('/root/out/mrr_summary.json') as f:
+[?2004l[?2004h>     summary_json = json.load(f)
+[?2004l[?2004h> print(json.dumps(summary_json, indent=2))
+[?2004l[?2004h> # Check exact keys
+[?2004l[?2004h> expected_keys = {
+[?2004l[?2004h>     'total_mrr_usd',
+[?2004l[?2004h>     'account_count',
+[?2004l[?2004h>     'month_count',
+[?2004l[?2004h>     'max_mrr_account_id',
+[?2004l[?2004h>     'max_mrr_month',
+[?2004l[?2004h>     'excluded_non_recurring_total_usd',
+[?2004l[?2004h>     'tax_excluded_total_usd'
+[?2004l[?2004h> }
+[?2004l[?2004h> print("Keys match exactly?", set(summary_json.keys()) == expected_keys)
+[?2004l[?2004h> 
+[?2004l[?2004h> print("\n=== VERIFY CSV ===")
+[?2004l[?2004h> df_csv = pd.read_csv('/root/out/monthly_summary.csv', keep_default_na=False)
+[?2004l[?2004h> print("Columns:", df_csv.columns.tolist())
+[?2004l[?2004h> print("Contents:\n", df_csv)
+[?2004l[?2004h> 
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0031218ded36:~# python3 /tmp/verify_outputs.py
+[?2004l=== VERIFY PARQUET ===
+Columns: ['account_id', 'customer_name', 'month', 'mrr_usd', 'source_line_count']
+Dtypes:
+ account_id            object
+customer_name         object
+month                 object
+mrr_usd              float64
+source_line_count      int64
+dtype: object
+Shape: (46, 5)
+First 5 rows:
+   account_id        customer_name    month  mrr_usd  source_line_count
+0   acct_001  Northwind Analytics  2026-01   523.75                  1
+1   acct_002      Bluebird Retail  2026-01  1123.00                  1
+2   acct_004     Redwood Security  2026-01   731.45                  1
+3   acct_005     MetroHealth SaaS  2026-01   489.20                  1
+4   acct_006    Horizon Education  2026-01   708.48                  1
+Last 5 rows:
+    account_id         customer_name    month  mrr_usd  source_line_count
+41   acct_020      Pacific Ventures  2026-03   461.59                  1
+42   acct_021       Clearwater Tech  2026-03   319.00                  1
+43   acct_022  Iron Bridge Software  2026-03  1125.00                  1
+44   acct_023         Volare Design  2026-03   857.22                  1
+45   acct_024         Baseline Corp  2026-03   275.00                  1
+Is sorted by month, then account_id? True
+
+=== VERIFY JSON ===
+{
+  "total_mrr_usd": 32549.19,
+  "account_count": 25,
+  "month_count": 3,
+  "max_mrr_account_id": "acct_022",
+  "max_mrr_month": "2026-01",
+  "excluded_non_recurring_total_usd": 6875.5,
+  "tax_excluded_total_usd": 190.18
+}
+Keys match exactly? True
+
+=== VERIFY CSV ===
+Columns: ['month', 'total_mrr_usd', 'account_count', 'mrr_change_usd', 'mrr_change_pct']
+Contents:
+      month  total_mrr_usd  account_count mrr_change_usd mrr_change_pct
+0  2026-01       13459.58             19                              
+1  2026-02       10749.57             14       -2710.01        -0.2013
+2  2026-03        8340.04             13       -2409.53        -0.2242
+[?2004hroot@0031218ded36:~# ls -la /root/out
+[?2004ltotal 24
+drwxr-xr-x 2 root root 4096 Jun  8 09:17 [0m[01;34m.[0m
+drwx------ 1 root root 4096 Jun  8 09:17 [01;34m..[0m
+-rw-r--r-- 1 root root  159 Jun  8 09:17 monthly_summary.csv
+-rw-r--r-- 1 root root 4332 Jun  8 09:17 mrr_by_account.parquet
+-rw-r--r-- 1 root root  222 Jun  8 09:17 mrr_summary.json
+[?2004hroot@0031218ded36:~# rm -f /tmp/explore.py /tmp/check_details.py /tmp/check_amounts.py /tmp/check_subs.py /tmp/check_joins.py /tmp/check_mrr_calc.py /tmp/check_fx.py /tmp/check_accounts.py /tmp/generate_final.py /tmp/verify_outputs.py
+[?2004l[?2004hroot@0031218ded36:~# 

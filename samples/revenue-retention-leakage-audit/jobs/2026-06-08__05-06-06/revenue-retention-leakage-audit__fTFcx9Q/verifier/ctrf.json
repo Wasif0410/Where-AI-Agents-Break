@@ -1,0 +1,518 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 55,
+            "passed": 54,
+            "failed": 1,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1780909948.7920687,
+            "stop": 1780909952.414953
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::TestPipelineRuns::test_train_model_runs_without_error",
+                "status": "passed",
+                "duration": 2.033978339000896,
+                "start": 1780909949.3370285,
+                "stop": 1780909951.3719492,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPipelineRuns::test_output_files_written_by_pipeline",
+                "status": "passed",
+                "duration": 0.0006142810016172007,
+                "start": 1780909951.3726668,
+                "stop": 1780909951.373898,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_selected_features_match_pipeline_columns",
+                "status": "passed",
+                "duration": 0.13546565599972382,
+                "start": 1780909951.3746161,
+                "stop": 1780909951.5107574,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_prohibited_closure_classification_not_selected",
+                "status": "passed",
+                "duration": 0.00045731299178441986,
+                "start": 1780909951.5113983,
+                "stop": 1780909951.5124466,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_prohibited_advance_charge_not_selected",
+                "status": "passed",
+                "duration": 0.00046073600242380053,
+                "start": 1780909951.5129926,
+                "stop": 1780909951.5140743,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_prohibited_post_period_drift_not_selected",
+                "status": "passed",
+                "duration": 0.0004583199988701381,
+                "start": 1780909951.5146036,
+                "stop": 1780909951.5156364,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_in_period_settlement_not_selected",
+                "status": "passed",
+                "duration": 0.0004750320076709613,
+                "start": 1780909951.516261,
+                "stop": 1780909951.5172646,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_drop_only_starter_columns_not_selected",
+                "status": "passed",
+                "duration": 0.0004320410007494502,
+                "start": 1780909951.5178742,
+                "stop": 1780909951.518872,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_supplementary_aggregates_not_selected_with_primary",
+                "status": "passed",
+                "duration": 0.0004361689934739843,
+                "start": 1780909951.5193853,
+                "stop": 1780909951.520345,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_rolling_engagement_aggregate_selected",
+                "status": "passed",
+                "duration": 0.0004543940012808889,
+                "start": 1780909951.5209737,
+                "stop": 1780909951.5221696,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_case_volume_selected",
+                "status": "passed",
+                "duration": 0.0005136960025993176,
+                "start": 1780909951.5228426,
+                "stop": 1780909951.5238998,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestNoLeakyFeatures::test_at_least_one_feature_kept",
+                "status": "passed",
+                "duration": 0.0005695770014426671,
+                "start": 1780909951.5245812,
+                "stop": 1780909951.5257266,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFeatureValueIntegrity::test_no_closed_churn_disposition_in_feature_matrix",
+                "status": "passed",
+                "duration": 0.11252428599982522,
+                "start": 1780909951.5262396,
+                "stop": 1780909951.63941,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFeatureValueIntegrity::test_usage_events_strictly_before_prediction_date",
+                "status": "passed",
+                "duration": 0.14472981999279,
+                "start": 1780909951.6399903,
+                "stop": 1780909951.785378,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFeatureValueIntegrity::test_health_score_respects_prev_month_boundary",
+                "status": "passed",
+                "duration": 0.12937560000136727,
+                "start": 1780909951.7860377,
+                "stop": 1780909951.916212,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFeatureValueIntegrity::test_support_ticket_count_respects_prediction_boundary",
+                "status": "passed",
+                "duration": 0.12537351498758653,
+                "start": 1780909951.916801,
+                "stop": 1780909952.042784,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFeatureValueIntegrity::test_prior_cycle_invoice_respects_due_date_rule",
+                "status": "passed",
+                "duration": 0.12571349099016516,
+                "start": 1780909952.0434089,
+                "stop": 1780909952.1698453,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_required_keys_present",
+                "status": "passed",
+                "duration": 0.0004826929944101721,
+                "start": 1780909952.1704295,
+                "stop": 1780909952.1715417,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_holdout_month_correct",
+                "status": "passed",
+                "duration": 0.0004848100070375949,
+                "start": 1780909952.1720536,
+                "stop": 1780909952.17305,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_dropped_features_is_list",
+                "status": "passed",
+                "duration": 0.0005069879916845821,
+                "start": 1780909952.1736424,
+                "stop": 1780909952.1747026,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_forward_billing",
+                "status": "passed",
+                "duration": 0.0004607159935403615,
+                "start": 1780909952.1752436,
+                "stop": 1780909952.1761904,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_evaluation_mrr",
+                "status": "passed",
+                "duration": 0.0005445910064736381,
+                "start": 1780909952.1766984,
+                "stop": 1780909952.1777894,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_ticket_disposition",
+                "status": "passed",
+                "duration": 0.0004907559923594818,
+                "start": 1780909952.1784258,
+                "stop": 1780909952.179463,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_current_cycle_invoice",
+                "status": "passed",
+                "duration": 0.0005293680078466423,
+                "start": 1780909952.1800685,
+                "stop": 1780909952.1811676,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_usage_window_repair",
+                "status": "passed",
+                "duration": 0.0005200920058996417,
+                "start": 1780909952.181749,
+                "stop": 1780909952.1828218,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_audit_documents_health_score_boundary_repair",
+                "status": "passed",
+                "duration": 0.0005606200065813027,
+                "start": 1780909952.1834586,
+                "stop": 1780909952.1846693,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_audit_documents_ticket_volume_boundary_repair",
+                "status": "passed",
+                "duration": 0.0004901520005660132,
+                "start": 1780909952.1852314,
+                "stop": 1780909952.1862626,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_audit_documents_prior_cycle_invoice_repair",
+                "status": "passed",
+                "duration": 0.0005458009982248768,
+                "start": 1780909952.186801,
+                "stop": 1780909952.1878607,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_audit_lists_repaired_boundary_features",
+                "status": "passed",
+                "duration": 0.0006085060012992471,
+                "start": 1780909952.188597,
+                "stop": 1780909952.1898398,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_boundary_fixes_not_only_in_kept_features",
+                "status": "passed",
+                "duration": 0.0005040640025981702,
+                "start": 1780909952.1904342,
+                "stop": 1780909952.1914613,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_next_invoice",
+                "status": "passed",
+                "duration": 0.0004918669947073795,
+                "start": 1780909952.1919713,
+                "stop": 1780909952.1929855,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_dropped_features_documents_label_delta",
+                "status": "passed",
+                "duration": 0.0005017459916416556,
+                "start": 1780909952.1935997,
+                "stop": 1780909952.1946275,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_kept_features_is_list",
+                "status": "passed",
+                "duration": 0.00044730700756190345,
+                "start": 1780909952.195172,
+                "stop": 1780909952.1961112,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_dropped_features_cover_prohibited_columns",
+                "status": "passed",
+                "duration": 0.00046807499893475324,
+                "start": 1780909952.1966498,
+                "stop": 1780909952.1976802,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_repaired_entries_are_substantive",
+                "status": "passed",
+                "duration": 0.00044700500438921154,
+                "start": 1780909952.1982183,
+                "stop": 1780909952.199103,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_repaired_and_kept_features_disjoint",
+                "status": "passed",
+                "duration": 0.00047543399705318734,
+                "start": 1780909952.1995807,
+                "stop": 1780909952.200498,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestLeakageAuditJson::test_leakage_risk_summary_non_empty",
+                "status": "passed",
+                "duration": 0.0005122299990034662,
+                "start": 1780909952.201028,
+                "stop": 1780909952.2020702,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestBacktestTemporalSplit::test_backtest_has_required_columns",
+                "status": "passed",
+                "duration": 0.002220503993157763,
+                "start": 1780909952.2025342,
+                "stop": 1780909952.2052655,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestBacktestTemporalSplit::test_backtest_validate_months_match_windows_csv",
+                "status": "passed",
+                "duration": 0.0019582890017773025,
+                "start": 1780909952.20582,
+                "stop": 1780909952.2084126,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestBacktestTemporalSplit::test_backtest_has_all_windows",
+                "status": "passed",
+                "duration": 0.001298772003792692,
+                "start": 1780909952.2090118,
+                "stop": 1780909952.210878,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestBacktestTemporalSplit::test_holdout_month_not_in_backtest_as_validate",
+                "status": "passed",
+                "duration": 0.0011983609947492369,
+                "start": 1780909952.2114472,
+                "stop": 1780909952.2131677,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestBacktestTemporalSplit::test_backtest_row_counts_exact",
+                "status": "passed",
+                "duration": 0.0027449320041341707,
+                "start": 1780909952.213653,
+                "stop": 1780909952.2170298,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestBacktestTemporalSplit::test_backtest_row_counts_positive",
+                "status": "passed",
+                "duration": 0.00148245099990163,
+                "start": 1780909952.2175663,
+                "stop": 1780909952.219502,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestHoldoutPredictions::test_holdout_has_required_columns",
+                "status": "passed",
+                "duration": 0.012222849996760488,
+                "start": 1780909952.2199886,
+                "stop": 1780909952.2328384,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestHoldoutPredictions::test_holdout_prediction_month_is_april_2026",
+                "status": "passed",
+                "duration": 0.002462856995407492,
+                "start": 1780909952.2334082,
+                "stop": 1780909952.2365162,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestHoldoutPredictions::test_holdout_row_count_matches_accounts",
+                "status": "passed",
+                "duration": 0.002155883004888892,
+                "start": 1780909952.237102,
+                "stop": 1780909952.239812,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestHoldoutPredictions::test_holdout_no_duplicate_accounts",
+                "status": "passed",
+                "duration": 0.00254713800677564,
+                "start": 1780909952.2403026,
+                "stop": 1780909952.2435434,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestHoldoutPredictions::test_churn_probability_in_range",
+                "status": "passed",
+                "duration": 0.0025290910052717663,
+                "start": 1780909952.2441525,
+                "stop": 1780909952.2472394,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestHoldoutPredictions::test_predicted_label_is_binary",
+                "status": "passed",
+                "duration": 0.002501065995602403,
+                "start": 1780909952.2477422,
+                "stop": 1780909952.2508893,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestHonestAucRange::test_validation_auc_better_than_random",
+                "status": "passed",
+                "duration": 0.002244092996988911,
+                "start": 1780909952.251499,
+                "stop": 1780909952.2542827,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPipelineSourceIntegrity::test_no_resolution_code_in_project_source",
+                "status": "passed",
+                "duration": 0.0007108310019248165,
+                "start": 1780909952.254792,
+                "stop": 1780909952.2560148,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPipelineSourceIntegrity::test_no_inclusive_horizon_window_in_source",
+                "status": "passed",
+                "duration": 0.0008344280067831278,
+                "start": 1780909952.2565956,
+                "stop": 1780909952.2580621,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPipelineSourceIntegrity::test_no_label_horizon_helpers_in_feature_assembly",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0014371870056493208,
+                "start": 1780909952.258577,
+                "stop": 1780909952.3042195,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestPipelineSourceIntegrity object at 0x759503ad3530>\n\n    def test_no_label_horizon_helpers_in_feature_assembly(self):\n        \"\"\"ts_he / pm_next tie starter features to the outcome observation window.\"\"\"\n        src = _feature_assembly_sources().lower()\n>       assert 'ts_he(' not in src and 'ts_he_month' not in src, (\n            \"Feature assembly still references label-horizon helpers (ts_he). \"\n            \"Rolling features must end at period open per feature_availability.pdf.\"\n        )\nE       AssertionError: Feature assembly still references label-horizon helpers (ts_he). Rolling features must end at period open per feature_availability.pdf.\nE       assert ('ts_he(' not in '\"\"\"primary ...sd.month))\\n'\nE         \nE         'ts_he(' is contained here:\nE           \"\"\"primary feature assembly (core matrix).\"\"\"\nE           import sqlite3\nE           \nE           import pandas as pd\nE           ...\nE         \nE         ...Full output truncated (221 lines hidden), use '-vv' to show)\n\n/tests/test_outputs.py:1042: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestPipelineSourceIntegrity::test_no_shuffle_split_in_train_model",
+                "status": "passed",
+                "duration": 0.0006072960022720508,
+                "start": 1780909952.304793,
+                "stop": 1780909952.3059828,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPipelineSourceIntegrity::test_drop_columns_not_in_feature_matrix",
+                "status": "passed",
+                "duration": 0.10765932600043016,
+                "start": 1780909952.3065426,
+                "stop": 1780909952.4148397,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            }
+        ]
+    }
+}

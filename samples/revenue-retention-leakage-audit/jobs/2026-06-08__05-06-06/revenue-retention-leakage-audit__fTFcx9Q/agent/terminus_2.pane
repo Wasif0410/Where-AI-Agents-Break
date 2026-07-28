@@ -1,0 +1,1591 @@
+[?2004hroot@c102beee4148:~# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@c102beee4148:~# clear
+[?2004l[H[J[3J[?2004hroot@c102beee4148:~# ls -la /root/data
+[?2004ltotal 468
+drwxr-xr-x 2 root root   4096 Jun  8 06:45 [0m[01;34m.[0m
+drwx------ 1 root root   4096 Jun  8 09:07 [01;34m..[0m
+-rw-r--r-- 1 root root     95 Jun  8 06:45 backtest_windows.csv
+-rw-r--r-- 1 root root   3649 Jun  8 06:45 feature_availability.pdf
+-rw-r--r-- 1 root root    678 Jun  8 06:45 model_readme.md
+-rw-r--r-- 1 root root 458752 Jun  8 06:45 revenue_warehouse.sqlite
+[?2004hroot@c102beee4148:~# ls -la /root/project
+[?2004ltotal 36
+drwxr-xr-x 2 root root 4096 Jun  8 06:45 [0m[01;34m.[0m
+drwx------ 1 root root 4096 Jun  8 09:07 [01;34m..[0m
+-rw-r--r-- 1 root root  694 Jun  8 06:45 alt_aggregates.py
+-rw-r--r-- 1 root root  450 Jun  8 06:45 config.yaml
+-rw-r--r-- 1 root root 1941 Jun  8 06:45 feature_blocks.py
+-rw-r--r-- 1 root root 1030 Jun  8 06:45 feature_pipeline.py
+-rw-r--r-- 1 root root 1112 Jun  8 06:45 period_utils.py
+-rw-r--r-- 1 root root 1524 Jun  8 06:45 train_model.py
+-rw-r--r-- 1 root root 2603 Jun  8 06:45 warehouse_ops.py
+[?2004hroot@c102beee4148:~# cat /root/data/model_readme.md
+[?2004l# MRR-Loss Churn Prediction Model
+
+## Overview
+
+This model predicts which accounts will lose at least $500 MRR in the 30 days
+following the prediction date. It was originally trained on account-month data
+from November 2025 through March 2026 and deployed for April 2026 predictions.
+
+## Background
+
+Stakeholders flagged the model as suspiciously accurate relative to the customer
+signals available at prediction time. An internal audit was recommended before
+any further production use. The feature pipeline and training script have not
+been formally reviewed for temporal leakage.
+
+## Data Sources
+
+- revenue_warehouse.sqlite
+- feature_availability.pdf
+- backtest_windows.csv
+[?2004hroot@c102beee4148:~# cat /root/data/backtest_windows.csv
+[?2004lvalidate_month,train_end_month
+2025-12,2025-11
+2026-01,2025-12
+2026-02,2026-01
+2026-03,2026-02
+[?2004hroot@c102beee4148:~# pdftotext /root/data/feature_availability.pdf - || python3 -c "import pypdf; reader = pypdf.PdfReader('/root/data/feature_availability.pdf'); print(''.join([page.extract_text() for page in reader.pages]))" || python3 -c "import fitz; doc = fitz.open('/root/data/feature_availability.pdf'); print(''.join([page.get_text() for page in doc]))"
+[?2004lbash: pdftotext: command not found
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'pypdf'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'fitz'
+[?2004hroot@c102beee4148:~# pip install pypdf || apt-get update && apt-get install -y poppler-utils
+[?2004l[1;31merror[0m: [1mexternally-managed-environment[0m
+
+[31m×[0m This environment is externally managed
+[31m╰─>[0m To install Python packages system-wide, try apt install
+[31m   [0m python3-xyz, where xyz is the package you are trying to
+[31m   [0m install.
+[31m   [0m 
+[31m   [0m If you wish to install a non-Debian-packaged Python package,
+[31m   [0m create a virtual environment using python3 -m venv path/to/venv.
+[31m   [0m Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+[31m   [0m sure you have python3-full installed.
+[31m   [0m 
+[31m   [0m If you wish to install a non-Debian packaged Python application,
+[31m   [0m it may be easiest to use pipx install xyz, which will manage a
+[31m   [0m virtual environment for you. Make sure you have pipx installed.
+[31m   [0m 
+[31m   [0m See /usr/share/doc/python3.12/README.venv for more information.
+
+[1;35mnote[0m: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+[1;36mhint[0m: See PEP 668 for the detailed specification.
+0% [Working]            Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
+            Hit:2 http://security.ubuntu.com/ubuntu noble-security InRelease
+0% [Working]            Hit:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+0% [Working]            Hit:4 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+0% [Working]0% [Working]0% [Working]0% [Working]20% [Working]             Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 4%Reading package lists... 4%Reading package lists... 50%Reading package lists... 50%Reading package lists... 50%Reading package lists... 50%Reading package lists... 51%Reading package lists... 51%Reading package lists... 58%Reading package lists... 58%Reading package lists... 59%Reading package lists... 65%Reading package lists... 65%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 83%Reading package lists... 83%Reading package lists... 88%Reading package lists... 88%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... Done
+Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 4%Reading package lists... 4%Reading package lists... 50%Reading package lists... 50%Reading package lists... 50%Reading package lists... 50%Reading package lists... 51%Reading package lists... 51%Reading package lists... 56%Reading package lists... 58%Reading package lists... 58%Reading package lists... 65%Reading package lists... 65%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 77%Reading package lists... 83%Reading package lists... 83%Reading package lists... 88%Reading package lists... 88%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... Done
+Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... Done
+Reading state information... 0% Reading state information... 0%Reading state information... Done
+The following additional packages will be installed:
+  krb5-locales libcairo2 libcurl3t64-gnutls libgssapi-krb5-2 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libnghttp2-14 libnspr4 libnss3
+  libopenjp2-7 libpixman-1-0 libpoppler134 libpsl5t64 librtmp1 libssh-4 libxcb-render0 libxcb-shm0 libxext6 libxrender1 poppler-data publicsuffix
+Suggested packages:
+  krb5-doc krb5-user liblcms2-utils ghostscript fonts-japanese-mincho | fonts-ipafont-mincho fonts-japanese-gothic | fonts-ipafont-gothic fonts-arphic-ukai
+  fonts-arphic-uming fonts-nanum
+The following NEW packages will be installed:
+  krb5-locales libcairo2 libcurl3t64-gnutls libgssapi-krb5-2 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libnghttp2-14 libnspr4 libnss3
+  libopenjp2-7 libpixman-1-0 libpoppler134 libpsl5t64 librtmp1 libssh-4 libxcb-render0 libxcb-shm0 libxext6 libxrender1 poppler-data poppler-utils
+  publicsuffix
+0 upgraded, 25 newly installed, 0 to remove and 2 not upgraded.
+Need to get 7676 kB of archives.
+After this operation, 29.8 MB of additional disk space will be used.
+0% [Working]            Get:1 http://archive.ubuntu.com/ubuntu noble/main amd64 poppler-data all 0.4.12-1 [2060 kB]
+0% [1 poppler-data 9652 B/2060 kB 0%]14% [1 poppler-data 1308 kB/2060 kB 63%]15% [1 poppler-data 1410 kB/2060 kB 68%]                                        22% [Working]             Get:2 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 krb5-locales all 1.20.1-6ubuntu2.6 [14.8 kB]
+22% [2 krb5-locales 3551 B/14.8 kB 24%]                                       23% [Waiting for headers]                         Get:3 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libkrb5support0 amd64 1.20.1-6ubuntu2.6 [34.4 kB]
+23% [3 libkrb5support0 3550 B/34.4 kB 10%]                                          24% [Waiting for headers]                         Get:4 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libk5crypto3 amd64 1.20.1-6ubuntu2.6 [82.0 kB]
+24% [4 libk5crypto3 644 B/82.0 kB 1%]                                     26% [Waiting for headers]                         Get:5 http://archive.ubuntu.com/ubuntu noble/main amd64 libkeyutils1 amd64 1.6.3-3build1 [9490 B]
+26% [5 libkeyutils1 5606 B/9490 B 59%]                                      27% [Waiting for headers]                         Get:6 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libkrb5-3 amd64 1.20.1-6ubuntu2.6 [348 kB]
+27% [6 libkrb5-3 5623 B/348 kB 2%]                                  31% [Waiting for headers]                         Get:7 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libgssapi-krb5-2 amd64 1.20.1-6ubuntu2.6 [143 kB]
+31% [7 libgssapi-krb5-2 1909 B/143 kB 1%]                                         34% [Waiting for headers]                         Get:8 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libnghttp2-14 amd64 1.59.0-1ubuntu0.3 [74.4 kB]
+34% [8 libnghttp2-14 4201 B/74.4 kB 6%]                                       35% [Waiting for headers]                         Get:9 http://archive.ubuntu.com/ubuntu noble/main amd64 libpsl5t64 amd64 0.21.2-1.1build1 [57.1 kB]
+35% [9 libpsl5t64 3523 B/57.1 kB 6%]                                    37% [Waiting for headers]                         Get:10 http://archive.ubuntu.com/ubuntu noble/main amd64 libxext6 amd64 2:1.3.4-1build2 [30.4 kB]
+37% [10 libxext6 5600 B/30.4 kB 18%]                                    38% [Waiting for headers]                         Get:11 http://archive.ubuntu.com/ubuntu noble/main amd64 publicsuffix all 20231001.0357-0.1 [129 kB]
+38% [11 publicsuffix 3681 B/129 kB 3%]                                      40% [Waiting for headers]                         Get:12 http://archive.ubuntu.com/ubuntu noble/main amd64 libpixman-1-0 amd64 0.42.2-1build1 [279 kB]
+40% [12 libpixman-1-0 4096 B/279 kB 1%]                                       44% [Waiting for headers]                         Get:13 http://archive.ubuntu.com/ubuntu noble/main amd64 libxcb-render0 amd64 1.15-1ubuntu2 [16.2 kB]
+44% [13 libxcb-render0 10.1 kB/16.2 kB 62%]                                           45% [Waiting for headers]                         Get:14 http://archive.ubuntu.com/ubuntu noble/main amd64 libxcb-shm0 amd64 1.15-1ubuntu2 [5756 B]
+45% [14 libxcb-shm0 426 B/5756 B 7%]                                    45% [Waiting for headers]                         Get:15 http://archive.ubuntu.com/ubuntu noble/main amd64 libxrender1 amd64 1:0.9.10-1.1build1 [19.0 kB]
+45% [15 libxrender1 1259 B/19.0 kB 7%]                                      46% [Waiting for headers]                         Get:16 http://archive.ubuntu.com/ubuntu noble/main amd64 libcairo2 amd64 1.18.0-3build1 [566 kB]
+46% [16 libcairo2 4890 B/566 kB 1%]                                   53% [Waiting for headers]                         Get:17 http://archive.ubuntu.com/ubuntu noble/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2build7 [56.3 kB]
+53% [17 librtmp1 1447 B/56.3 kB 3%]                                   55% [Waiting for headers]                         Get:18 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libssh-4 amd64 0.10.6-2ubuntu0.4 [190 kB]
+55% [18 libssh-4 4253 B/190 kB 2%]                                  57% [Waiting for headers]                         Get:19 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcurl3t64-gnutls amd64 8.5.0-2ubuntu10.9 [334 kB]
+57% [19 libcurl3t64-gnutls 3123 B/334 kB 1%]                                            62% [Waiting for headers]                         Get:20 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 liblcms2-2 amd64 2.14-2ubuntu0.1 [161 kB]
+62% [20 liblcms2-2 809 B/161 kB 1%]                                   64% [Waiting for headers]                         Get:21 http://archive.ubuntu.com/ubuntu noble/main amd64 libnspr4 amd64 2:4.35-1.1build1 [117 kB]
+64% [21 libnspr4 4096 B/117 kB 3%]                                  66% [Waiting for headers]                         Get:22 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libnss3 amd64 2:3.98-1ubuntu0.1 [1445 kB]
+66% [22 libnss3 2866 B/1445 kB 0%]                                  82% [Waiting for headers]                         Get:23 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libopenjp2-7 amd64 2.5.0-2ubuntu0.5 [174 kB]
+82% [23 libopenjp2-7 8398 B/174 kB 5%]                                      85% [Waiting for headers]                         Get:24 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpoppler134 amd64 24.02.0-1ubuntu9.8 [1118 kB]
+85% [24 libpoppler134 10.8 kB/1118 kB 1%]                                         97% [Waiting for headers]                         Get:25 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 poppler-utils amd64 24.02.0-1ubuntu9.8 [212 kB]
+97% [25 poppler-utils 5724 B/212 kB 3%]                                       100% [Working]              Fetched 7676 kB in 4s (2095 kB/s)
+debconf: delaying package configuration, since apt-utils is not installed
+Selecting previously unselected package poppler-data.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 17208 files and directories currently installed.)
+Preparing to unpack .../00-poppler-data_0.4.12-1_all.deb ...
+Unpacking poppler-data (0.4.12-1) ...
+Selecting previously unselected package krb5-locales.
+Preparing to unpack .../01-krb5-locales_1.20.1-6ubuntu2.6_all.deb ...
+Unpacking krb5-locales (1.20.1-6ubuntu2.6) ...
+Selecting previously unselected package libkrb5support0:amd64.
+Preparing to unpack .../02-libkrb5support0_1.20.1-6ubuntu2.6_amd64.deb ...
+Unpacking libkrb5support0:amd64 (1.20.1-6ubuntu2.6) ...
+Selecting previously unselected package libk5crypto3:amd64.
+Preparing to unpack .../03-libk5crypto3_1.20.1-6ubuntu2.6_amd64.deb ...
+Unpacking libk5crypto3:amd64 (1.20.1-6ubuntu2.6) ...
+Selecting previously unselected package libkeyutils1:amd64.
+Preparing to unpack .../04-libkeyutils1_1.6.3-3build1_amd64.deb ...
+Unpacking libkeyutils1:amd64 (1.6.3-3build1) ...
+Selecting previously unselected package libkrb5-3:amd64.
+Preparing to unpack .../05-libkrb5-3_1.20.1-6ubuntu2.6_amd64.deb ...
+Unpacking libkrb5-3:amd64 (1.20.1-6ubuntu2.6) ...
+Selecting previously unselected package libgssapi-krb5-2:amd64.
+Preparing to unpack .../06-libgssapi-krb5-2_1.20.1-6ubuntu2.6_amd64.deb ...
+Unpacking libgssapi-krb5-2:amd64 (1.20.1-6ubuntu2.6) ...
+Selecting previously unselected package libnghttp2-14:amd64.
+Preparing to unpack .../07-libnghttp2-14_1.59.0-1ubuntu0.3_amd64.deb ...
+Unpacking libnghttp2-14:amd64 (1.59.0-1ubuntu0.3) ...
+Selecting previously unselected package libpsl5t64:amd64.
+Preparing to unpack .../08-libpsl5t64_0.21.2-1.1build1_amd64.deb ...
+Unpacking libpsl5t64:amd64 (0.21.2-1.1build1) ...
+Selecting previously unselected package libxext6:amd64.
+Preparing to unpack .../09-libxext6_2%3a1.3.4-1build2_amd64.deb ...
+Unpacking libxext6:amd64 (2:1.3.4-1build2) ...
+Selecting previously unselected package publicsuffix.
+Preparing to unpack .../10-publicsuffix_20231001.0357-0.1_all.deb ...
+Unpacking publicsuffix (20231001.0357-0.1) ...
+Selecting previously unselected package libpixman-1-0:amd64.
+Preparing to unpack .../11-libpixman-1-0_0.42.2-1build1_amd64.deb ...
+Unpacking libpixman-1-0:amd64 (0.42.2-1build1) ...
+Selecting previously unselected package libxcb-render0:amd64.
+Preparing to unpack .../12-libxcb-render0_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-render0:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxcb-shm0:amd64.
+Preparing to unpack .../13-libxcb-shm0_1.15-1ubuntu2_amd64.deb ...
+Unpacking libxcb-shm0:amd64 (1.15-1ubuntu2) ...
+Selecting previously unselected package libxrender1:amd64.
+Preparing to unpack .../14-libxrender1_1%3a0.9.10-1.1build1_amd64.deb ...
+Unpacking libxrender1:amd64 (1:0.9.10-1.1build1) ...
+Selecting previously unselected package libcairo2:amd64.
+Preparing to unpack .../15-libcairo2_1.18.0-3build1_amd64.deb ...
+Unpacking libcairo2:amd64 (1.18.0-3build1) ...
+Selecting previously unselected package librtmp1:amd64.
+Preparing to unpack .../16-librtmp1_2.4+20151223.gitfa8646d.1-2build7_amd64.deb ...
+Unpacking librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2build7) ...
+Selecting previously unselected package libssh-4:amd64.
+Preparing to unpack .../17-libssh-4_0.10.6-2ubuntu0.4_amd64.deb ...
+Unpacking libssh-4:amd64 (0.10.6-2ubuntu0.4) ...
+Selecting previously unselected package libcurl3t64-gnutls:amd64.
+Preparing to unpack .../18-libcurl3t64-gnutls_8.5.0-2ubuntu10.9_amd64.deb ...
+Unpacking libcurl3t64-gnutls:amd64 (8.5.0-2ubuntu10.9) ...
+Selecting previously unselected package liblcms2-2:amd64.
+Preparing to unpack .../19-liblcms2-2_2.14-2ubuntu0.1_amd64.deb ...
+Unpacking liblcms2-2:amd64 (2.14-2ubuntu0.1) ...
+Selecting previously unselected package libnspr4:amd64.
+Preparing to unpack .../20-libnspr4_2%3a4.35-1.1build1_amd64.deb ...
+Unpacking libnspr4:amd64 (2:4.35-1.1build1) ...
+Selecting previously unselected package libnss3:amd64.
+Preparing to unpack .../21-libnss3_2%3a3.98-1ubuntu0.1_amd64.deb ...
+Unpacking libnss3:amd64 (2:3.98-1ubuntu0.1) ...
+Selecting previously unselected package libopenjp2-7:amd64.
+Preparing to unpack .../22-libopenjp2-7_2.5.0-2ubuntu0.5_amd64.deb ...
+Unpacking libopenjp2-7:amd64 (2.5.0-2ubuntu0.5) ...
+Selecting previously unselected package libpoppler134:amd64.
+Preparing to unpack .../23-libpoppler134_24.02.0-1ubuntu9.8_amd64.deb ...
+Unpacking libpoppler134:amd64 (24.02.0-1ubuntu9.8) ...
+Selecting previously unselected package poppler-utils.
+Preparing to unpack .../24-poppler-utils_24.02.0-1ubuntu9.8_amd64.deb ...
+Unpacking poppler-utils (24.02.0-1ubuntu9.8) ...
+Setting up liblcms2-2:amd64 (2.14-2ubuntu0.1) ...
+Setting up libpixman-1-0:amd64 (0.42.2-1build1) ...
+Setting up libkeyutils1:amd64 (1.6.3-3build1) ...
+Setting up libxrender1:amd64 (1:0.9.10-1.1build1) ...
+Setting up libxcb-render0:amd64 (1.15-1ubuntu2) ...
+Setting up libpsl5t64:amd64 (0.21.2-1.1build1) ...
+Setting up libnghttp2-14:amd64 (1.59.0-1ubuntu0.3) ...
+Setting up libxext6:amd64 (2:1.3.4-1build2) ...
+Setting up krb5-locales (1.20.1-6ubuntu2.6) ...
+Setting up libxcb-shm0:amd64 (1.15-1ubuntu2) ...
+Setting up libcairo2:amd64 (1.18.0-3build1) ...
+Setting up poppler-data (0.4.12-1) ...
+Setting up libkrb5support0:amd64 (1.20.1-6ubuntu2.6) ...
+Setting up libnspr4:amd64 (2:4.35-1.1build1) ...
+Setting up librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2build7) ...
+Setting up libk5crypto3:amd64 (1.20.1-6ubuntu2.6) ...
+Setting up libopenjp2-7:amd64 (2.5.0-2ubuntu0.5) ...
+Setting up libkrb5-3:amd64 (1.20.1-6ubuntu2.6) ...
+Setting up publicsuffix (20231001.0357-0.1) ...
+Setting up libnss3:amd64 (2:3.98-1ubuntu0.1) ...
+Setting up libgssapi-krb5-2:amd64 (1.20.1-6ubuntu2.6) ...
+Setting up libssh-4:amd64 (0.10.6-2ubuntu0.4) ...
+Setting up libcurl3t64-gnutls:amd64 (8.5.0-2ubuntu10.9) ...
+Setting up libpoppler134:amd64 (24.02.0-1ubuntu9.8) ...
+Setting up poppler-utils (24.02.0-1ubuntu9.8) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.7) ...
+[?2004hroot@c102beee4148:~# pdftotext /root/data/feature_availability.pdf - 
+[?2004lFeature Availability Reference — Abundant Revenue Platform
+Version 2.1 · Effective October 2025
+
+PURPOSE
+This document defines the exact availability timing for each feature family used in
+the MRR-loss churn prediction pipeline. A feature is available for a prediction made
+on date D only when the availability condition is satisfied strictly before D.
+
+FEATURE AVAILABILITY TABLE
+Column headers: Feature Family | Available When
+Ledger balance at period open
+Use the recurring-revenue ledger reading from the billing period immediately before the
+prediction period begins.
+
+Rolling engagement signal (30-day)
+Sum activity records whose timestamps fall strictly before the period open date. The
+window spans the 30 days ending at period open.
+
+Case file volume (30-day rolling)
+Count case records opened in the 30-day window ending at period open. Only cases with
+open timestamps strictly before period open may be included.
+
+Case closure classification
+PROHIBITED. Closure categories are assigned only after a case closes; for accounts
+entering the outcome window, closure typically occurs after period open and the category
+encodes outcome information.
+
+Prior billing-cycle settlement indicator
+Available for the billing cycle before prediction only when (a) the stated due date plus
+a three-day grace period is strictly before period open, and (b) the settlement
+timestamp recorded in the warehouse is also strictly before period open.
+
+In-period billing settlement indicator
+NOT available at period open. The current-period invoice is not due until mid-period.
+
+Advance billing-cycle charge
+PROHIBITED. Charges for the billing cycle after the prediction period are not finalized
+at period open.
+
+Customer vitality score
+Use the latest vitality reading whose date is on or before the last day of the billing
+period before prediction. Readings stamped on or after period open must not be used.
+
+Post-period ledger drift
+PROHIBITED. Any ledger delta computed using readings taken after the outcome observation
+horizon has begun.
+
+Period-span ledger comparison
+PROHIBITED when the comparison uses a ledger reading taken after period open, even if
+the earlier leg uses an otherwise valid prior-period reading.
+
+Relationship tenure
+Always available from enrollment date and period open.
+
+FOOTNOTE
+Families marked PROHIBITED or NOT available must not appear in the model, even when
+the warehouse export contains values that were finalized after period open.
+Map each engineered column in the pipeline to one family above by inspecting which
+warehouse fields and date boundaries the column uses — column names are not reliable.
+Rolling windows end at period open (strictly before, not on or after).
+
+[?2004hroot@c102beee4148:~# cat /root/project/config.yaml
+[?2004ldatabase: /root/data/revenue_warehouse.sqlite
+feature_availability_doc: /root/data/feature_availability.pdf
+backtest_windows: /root/data/backtest_windows.csv
+holdout_month: "2026-04"
+output_dir: /root/out
+
+model:
+  type: gradient_boosting
+  n_estimators: 100
+  max_depth: 3
+  random_state: 42
+  learning_rate: 0.1
+
+feature_pipeline:
+  prediction_months:
+    - "2025-11"
+    - "2025-12"
+    - "2026-01"
+    - "2026-02"
+    - "2026-03"
+    - "2026-04"
+[?2004hroot@c102beee4148:~# cat /root/project/feature_pipeline.py
+[?2004l"""Feature matrix entrypoint."""
+import sqlite3
+
+import pandas as pd
+
+from alt_aggregates import attach
+from feature_blocks import build_matrix
+
+
+def _build(conn: sqlite3.Connection, months: list[str], *, include_label: bool) -> pd.DataFrame:
+    df = build_matrix(conn, months, include_label=include_label)
+    return attach(conn, df)
+
+
+def build_features(config: dict) -> pd.DataFrame:
+    db_path = config["database"]
+    holdout_month = config.get("holdout_month", "2026-04")
+    all_months = config.get("feature_pipeline", {}).get("prediction_months", [])
+    train_months = [m for m in all_months if m != holdout_month]
+
+    conn = sqlite3.connect(db_path)
+    df = _build(conn, train_months, include_label=True)
+    conn.close()
+    return df
+
+
+def build_holdout_features(config: dict) -> pd.DataFrame:
+    db_path = config["database"]
+    holdout_month = config.get("holdout_month", "2026-04")
+
+    conn = sqlite3.connect(db_path)
+    df = _build(conn, [holdout_month], include_label=False)
+    conn.close()
+    return df
+[?2004hroot@c102beee4148:~# cat /root/project/feature_blocks.py
+[?2004l"""Primary feature assembly (core matrix)."""
+import sqlite3
+
+import pandas as pd
+
+from period_utils import (
+    months_enrolled,
+    pm_next,
+    pm_prior,
+    ts_he,
+    ts_he_month,
+    ts_open,
+    ts_ws,
+)
+from warehouse_ops import wq_a, wq_b, wq_c, wq_d, wq_e, wq_f, wq_g
+
+
+def build_matrix(
+    conn: sqlite3.Connection,
+    prediction_months: list[str],
+    *,
+    include_label: bool,
+) -> pd.DataFrame:
+    accounts = pd.read_sql("SELECT * FROM accounts", conn)
+    rows = []
+
+    for pred_month in prediction_months:
+        t_open = ts_open(pred_month)
+        t_prev = pm_prior(pred_month)
+        t_nxt = pm_next(pred_month)
+        t_he = ts_he(pred_month)
+        t_span = ts_he_month(pred_month)
+        t_ws = ts_ws(pred_month)
+
+        for _, acct in accounts.iterrows():
+            aid = acct["account_id"]
+
+            row = {
+                "account_id": aid,
+                "prediction_month": pred_month,
+                "f01": wq_a(conn, aid, t_prev),
+                "f02": wq_b(conn, aid, t_ws, t_he, inc=True),
+                "f08": wq_g(conn, aid, t_open),
+                "f03": wq_c(conn, aid, t_ws, t_he, inc=True),
+                "f04": wq_d(conn, aid),
+                "f07": wq_e(conn, aid, t_nxt),
+                "f09": wq_a(conn, aid, pred_month) - wq_a(conn, aid, t_span),
+                "f10": wq_a(conn, aid, t_prev) - wq_a(conn, aid, t_span),
+                "f06": wq_f(conn, aid, pred_month),
+                "f05": wq_f(conn, aid, t_prev),
+                "f11": float(months_enrolled(acct["signup_date"], pred_month)),
+            }
+
+            if include_label:
+                lbl = conn.execute(
+                    "SELECT churned_500 FROM labels WHERE account_id=? AND prediction_month=?",
+                    (aid, pred_month),
+                ).fetchone()
+                row["churned_500"] = int(lbl[0]) if lbl else 0
+
+            rows.append(row)
+
+    return pd.DataFrame(rows)
+[?2004hroot@c102beee4148:~# cat /root/project/period_utils.py
+[?2004l"""Period boundary helpers."""
+from datetime import date, timedelta
+import calendar
+
+
+def pm_prior(ym: str) -> str:
+    y, m = int(ym[:4]), int(ym[5:])
+    return f"{y - 1}-12" if m == 1 else f"{y}-{m - 1:02d}"
+
+
+def pm_next(ym: str) -> str:
+    y, m = int(ym[:4]), int(ym[5:])
+    return f"{y + 1}-01" if m == 12 else f"{y}-{m + 1:02d}"
+
+
+def ts_open(ym: str) -> str:
+    return f"{ym}-01"
+
+
+def ts_he(ym: str) -> str:
+    y, m = int(ym[:4]), int(ym[5:])
+    return (date(y, m, 1) + timedelta(days=30)).strftime("%Y-%m-%d")
+
+
+def ts_he_month(ym: str) -> str:
+    return ts_he(ym)[:7]
+
+
+def ts_ws(ym: str) -> str:
+    y, m = int(ym[:4]), int(ym[5:])
+    return (date(y, m, 1) - timedelta(days=30)).strftime("%Y-%m-%d")
+
+
+def ts_prior_last(ym: str) -> str:
+    prev_m = pm_prior(ym)
+    y, m = int(prev_m[:4]), int(prev_m[5:])
+    last = calendar.monthrange(y, m)[1]
+    return f"{prev_m}-{last:02d}"
+
+
+def months_enrolled(signup_date: str, ym: str) -> int:
+    sd = date.fromisoformat(signup_date)
+    pd_ = date(int(ym[:4]), int(ym[5:]), 1)
+    return max(0, (pd_.year - sd.year) * 12 + (pd_.month - sd.month))
+[?2004hroot@c102beee4148:~# cat /root/project/warehouse_ops.py
+[?2004l"""Warehouse read primitives — inspect SQL to determine semantics."""
+from collections import Counter
+
+
+def wq_a(conn, account_id: str, period_month: str) -> float:
+    row = conn.execute(
+        "SELECT mrr_usd FROM subscription_snapshots WHERE account_id=? AND snapshot_month=?",
+        (account_id, period_month),
+    ).fetchone()
+    return float(row[0]) if row else 0.0
+
+
+def wq_b(conn, account_id: str, t0: str, t1: str, *, inc: bool) -> int:
+    if inc:
+        sql = (
+            "SELECT COALESCE(SUM(event_count), 0) FROM product_events "
+            "WHERE account_id=? AND event_date >= ? AND event_date <= ?"
+        )
+    else:
+        sql = (
+            "SELECT COALESCE(SUM(event_count), 0) FROM product_events "
+            "WHERE account_id=? AND event_date >= ? AND event_date < ?"
+        )
+    return int(conn.execute(sql, (account_id, t0, t1)).fetchone()[0])
+
+
+def wq_c(conn, account_id: str, t0: str, t1: str, *, inc: bool) -> int:
+    if inc:
+        sql = (
+            "SELECT COUNT(*) FROM support_tickets "
+            "WHERE account_id=? AND ticket_created_at >= ? AND ticket_created_at <= ?"
+        )
+    else:
+        sql = (
+            "SELECT COUNT(*) FROM support_tickets "
+            "WHERE account_id=? AND ticket_created_at >= ? AND ticket_created_at < ?"
+        )
+    return int(conn.execute(sql, (account_id, t0, t1)).fetchone()[0])
+
+
+def wq_d(conn, account_id: str) -> str:
+    rows = conn.execute(
+        "SELECT resolution_code FROM support_tickets "
+        "WHERE account_id=? AND ticket_closed_at IS NOT NULL",
+        (account_id,),
+    ).fetchall()
+    codes = [r[0] for r in rows if r[0]]
+    return Counter(codes).most_common(1)[0][0] if codes else "NONE"
+
+
+def wq_e(conn, account_id: str, period_month: str) -> float:
+    row = conn.execute(
+        "SELECT amount_usd FROM invoices WHERE account_id=? AND invoice_month=?",
+        (account_id, period_month),
+    ).fetchone()
+    return float(row[0]) if row else 0.0
+
+
+def wq_f(conn, account_id: str, period_month: str) -> int:
+    row = conn.execute(
+        "SELECT paid_status FROM invoices WHERE account_id=? AND invoice_month=?",
+        (account_id, period_month),
+    ).fetchone()
+    status = row[0] if row else "unknown"
+    return 1 if status == "paid" else 0
+
+
+def wq_g(conn, account_id: str, cutoff_date: str) -> float:
+    row = conn.execute(
+        "SELECT health_score FROM customer_health_scores "
+        "WHERE account_id=? AND score_date <= ? ORDER BY score_date DESC LIMIT 1",
+        (account_id, cutoff_date),
+    ).fetchone()
+    return float(row[0]) if row else 70.0
+[?2004hroot@c102beee4148:~# cat /root/project/alt_aggregates.py
+[?2004l"""Supplementary aggregates merged after core matrix build."""
+import sqlite3
+
+import pandas as pd
+
+from period_utils import ts_open, ts_ws
+from warehouse_ops import wq_b, wq_c
+
+
+def attach(conn: sqlite3.Connection, df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    f12_vals = []
+    f13_vals = []
+
+    for _, row in out.iterrows():
+        pred_month = str(row["prediction_month"])
+        aid = row["account_id"]
+        t_open = ts_open(pred_month)
+        t_ws = ts_ws(pred_month)
+        f12_vals.append(wq_b(conn, aid, t_ws, t_open, inc=False))
+        f13_vals.append(wq_c(conn, aid, t_ws, t_open, inc=False))
+
+    out["f12"] = f12_vals
+    out["f13"] = f13_vals
+    return out
+[?2004hroot@c102beee4148:~# cat /root/project/train_model.py
+[?2004l"""
+Train churn / MRR-loss prediction model.
+
+Usage:
+    python3 train_model.py --config config.yaml
+"""
+import argparse
+import sys
+
+import pandas as pd
+import yaml
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+
+sys.path.insert(0, "/root/project")
+from feature_pipeline import build_features
+
+parser = argparse.ArgumentParser(description="Train churn prediction model")
+parser.add_argument("--config", default="/root/project/config.yaml")
+args = parser.parse_args()
+
+with open(args.config) as fh:
+    config = yaml.safe_load(fh)
+
+print("Building features...")
+df = build_features(config)
+print(f"Feature matrix: {df.shape[0]} rows x {df.shape[1]} columns")
+print(f"Positive rate:  {df['churned_500'].mean():.3f}")
+
+FEATURE_COLS = [
+    c for c in df.columns if c not in ("account_id", "prediction_month", "churned_500")
+]
+
+X = df[FEATURE_COLS]
+y = df["churned_500"]
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X, y, test_size=0.2, random_state=42, shuffle=True
+)
+
+model = GradientBoostingClassifier(
+    n_estimators=100, max_depth=3, learning_rate=0.1, random_state=42
+)
+model.fit(X_train, y_train)
+
+val_proba = model.predict_proba(X_val)[:, 1]
+val_auc = roc_auc_score(y_val, val_proba)
+
+print("\n=== MODEL PERFORMANCE ===")
+print(f"Validation AUC : {val_auc:.4f}")
+print(f"Features used  : {FEATURE_COLS}")
+print("\nOutput files have NOT been written. Run the full audit pipeline to produce /root/out/.")
+[?2004hroot@c102beee4148:~# sqlite3 /root/data/revenue_warehouse.sqlite ".tables"
+[?2004lbash: sqlite3: command not found
+[?2004hroot@c102beee4148:~# sqlite3 /root/data/revenue_warehouse.sqlite ".schema"
+[?2004lbash: sqlite3: command not found
+[?2004hroot@c102beee4148:~# python3 -c "import sqlite3; conn = sqlite3.connect('/root/data/revenue_warehouse.sqlite'); cursor = conn.cursor(); cursor.execute(\"SELECT name, sql FROM sqlite_master WHERE type='table'\"); [print(f'{name}: {sql}') for name, sql in cursor.fetchall()]"
+[?2004laccounts: CREATE TABLE accounts (
+    account_id   TEXT PRIMARY KEY,
+    company_name TEXT NOT NULL,
+    segment      TEXT NOT NULL,
+    base_mrr_usd REAL NOT NULL,
+    signup_date  TEXT NOT NULL
+)
+subscription_snapshots: CREATE TABLE subscription_snapshots (
+    snapshot_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id     TEXT NOT NULL,
+    snapshot_month TEXT NOT NULL,
+    mrr_usd        REAL NOT NULL,
+    snapshot_date  TEXT NOT NULL
+)
+sqlite_sequence: CREATE TABLE sqlite_sequence(name,seq)
+invoices: CREATE TABLE invoices (
+    invoice_id   TEXT PRIMARY KEY,
+    account_id   TEXT NOT NULL,
+    invoice_month TEXT NOT NULL,
+    amount_usd   REAL NOT NULL,
+    due_date     TEXT NOT NULL,
+    paid_date    TEXT,
+    paid_status  TEXT NOT NULL,
+    finalized_at TEXT NOT NULL
+)
+product_events: CREATE TABLE product_events (
+    event_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id  TEXT NOT NULL,
+    event_type  TEXT NOT NULL,
+    event_date  TEXT NOT NULL,
+    event_count INTEGER NOT NULL
+)
+support_tickets: CREATE TABLE support_tickets (
+    ticket_id        TEXT PRIMARY KEY,
+    account_id       TEXT NOT NULL,
+    ticket_created_at TEXT NOT NULL,
+    ticket_closed_at  TEXT,
+    resolution_code   TEXT,
+    priority          TEXT NOT NULL
+)
+customer_health_scores: CREATE TABLE customer_health_scores (
+    score_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id   TEXT NOT NULL,
+    score_date   TEXT NOT NULL,
+    health_score REAL NOT NULL
+)
+labels: CREATE TABLE labels (
+    label_id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id        TEXT NOT NULL,
+    prediction_month  TEXT NOT NULL,
+    prediction_date   TEXT NOT NULL,
+    label_window_start TEXT NOT NULL,
+    label_window_end   TEXT NOT NULL,
+    mrr_loss_usd      REAL NOT NULL,
+    churned_500       INTEGER NOT NULL
+)
+[?2004hroot@c102beee4148:~# python3 -c "import sqlite3; conn = sqlite3.connect('/root/data/revenue_warehouse.sqlite'); cursor = conn.cursor(); cursor.execute(\"SELECT * FROM invoices LIMIT 5\"); [print(row) for row in cursor.fetchall()]"
+[?2004l('INV-acc_001-2025-10', 'acc_001', '2025-10', 6000.0, '2025-10-16', '2025-10-19', 'paid', '2025-10-02')
+('INV-acc_002-2025-10', 'acc_002', '2025-10', 5000.0, '2025-10-30', '2025-11-06', 'paid', '2025-10-02')
+('INV-acc_003-2025-10', 'acc_003', '2025-10', 8000.0, '2025-10-16', '2025-10-19', 'paid', '2025-10-02')
+('INV-acc_004-2025-10', 'acc_004', '2025-10', 7000.0, '2025-10-30', '2025-11-06', 'paid', '2025-10-02')
+('INV-acc_005-2025-10', 'acc_005', '2025-10', 4500.0, '2025-10-16', '2025-10-19', 'paid', '2025-10-02')
+[?2004hroot@c102beee4148:~# python3 -c "import sqlite3; conn = sqlite3.connect('/root/data/revenue_warehouse.sqlite'); cursor = conn.cursor(); cursor.execute(\"SELECT DISTINCT paid_status FROM invoices\"); [print(row) for row in cursor.fetchall()]"
+[?2004l('paid',)
+('overdue',)
+('cancelled',)
+[?2004hroot@c102beee4148:~# python3 -c "import sqlite3; conn = sqlite3.connect('/root/data/revenue_warehouse.sqlite'); cursor = conn.cursor(); cursor.execute(\"SELECT distinct due_date, paid_date, paid_status FROM invoices LIMIT 20\"); [print(row) for row in cursor.fetchall()]"
+[?2004l('2025-10-16', '2025-10-19', 'paid')
+('2025-10-30', '2025-11-06', 'paid')
+('2025-11-29', '2025-12-06', 'paid')
+('2025-11-16', None, 'overdue')
+('2025-11-16', '2025-11-19', 'paid')
+('2025-12-16', None, 'overdue')
+('2025-12-16', None, 'cancelled')
+('2025-12-30', '2026-01-06', 'paid')
+('2025-12-16', '2025-12-19', 'paid')
+('2026-01-16', None, 'cancelled')
+('2026-01-16', '2026-01-19', 'paid')
+('2026-01-16', None, 'overdue')
+('2026-01-30', '2026-02-06', 'paid')
+('2026-02-16', '2026-02-19', 'paid')
+('2026-02-16', None, 'cancelled')
+('2026-02-16', None, 'overdue')
+('2026-02-27', '2026-03-06', 'paid')
+('2026-03-16', '2026-03-19', 'paid')
+('2026-03-16', None, 'cancelled')
+('2026-03-16', None, 'overdue')
+[?2004hroot@c102beee4148:~# python3 -c "import sqlite3; conn = sqlite3.connect('/root/data/revenue_warehouse.sqlite'); cursor = conn.cursor(); cursor.execute(\"SELECT distinct snapshot_month, snapshot_date FROM subscription_snapshots LIMIT 10\"); [print(row) for row in cursor.fetchall()]"
+[?2004l('2025-10', '2025-10-01')
+('2025-11', '2025-11-01')
+('2025-12', '2025-12-01')
+('2026-01', '2026-01-01')
+('2026-02', '2026-02-01')
+('2026-03', '2026-03-01')
+('2026-04', '2026-04-01')
+('2026-05', '2026-05-01')
+[?2004hroot@c102beee4148:~# grep -rn "wq_" /root/project/
+[?2004l[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K15[m[K[36m[K:[m[Kfrom warehouse_ops import [01;31m[Kwq_[m[Ka, [01;31m[Kwq_[m[Kb, [01;31m[Kwq_[m[Kc, [01;31m[Kwq_[m[Kd, [01;31m[Kwq_[m[Ke, [01;31m[Kwq_[m[Kf, [01;31m[Kwq_[m[Kg
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K41[m[K[36m[K:[m[K                "f01": [01;31m[Kwq_[m[Ka(conn, aid, t_prev),
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K42[m[K[36m[K:[m[K                "f02": [01;31m[Kwq_[m[Kb(conn, aid, t_ws, t_he, inc=True),
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K43[m[K[36m[K:[m[K                "f08": [01;31m[Kwq_[m[Kg(conn, aid, t_open),
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K44[m[K[36m[K:[m[K                "f03": [01;31m[Kwq_[m[Kc(conn, aid, t_ws, t_he, inc=True),
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K45[m[K[36m[K:[m[K                "f04": [01;31m[Kwq_[m[Kd(conn, aid),
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K46[m[K[36m[K:[m[K                "f07": [01;31m[Kwq_[m[Ke(conn, aid, t_nxt),
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K47[m[K[36m[K:[m[K                "f09": [01;31m[Kwq_[m[Ka(conn, aid, pred_month) - [01;31m[Kwq_[m[Ka(conn, aid, t_span),
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K48[m[K[36m[K:[m[K                "f10": [01;31m[Kwq_[m[Ka(conn, aid, t_prev) - [01;31m[Kwq_[m[Ka(conn, aid, t_span),
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K49[m[K[36m[K:[m[K                "f06": [01;31m[Kwq_[m[Kf(conn, aid, pred_month),
+[35m[K/root/project/feature_blocks.py[m[K[36m[K:[m[K[32m[K50[m[K[36m[K:[m[K                "f05": [01;31m[Kwq_[m[Kf(conn, aid, t_prev),
+[35m[K/root/project/alt_aggregates.py[m[K[36m[K:[m[K[32m[K7[m[K[36m[K:[m[Kfrom warehouse_ops import [01;31m[Kwq_[m[Kb, [01;31m[Kwq_[m[Kc
+[35m[K/root/project/alt_aggregates.py[m[K[36m[K:[m[K[32m[K20[m[K[36m[K:[m[K        f12_vals.append([01;31m[Kwq_[m[Kb(conn, aid, t_ws, t_open, inc=False))
+[35m[K/root/project/alt_aggregates.py[m[K[36m[K:[m[K[32m[K21[m[K[36m[K:[m[K        f13_vals.append([01;31m[Kwq_[m[Kc(conn, aid, t_ws, t_open, inc=False))
+[35m[K/root/project/warehouse_ops.py[m[K[36m[K:[m[K[32m[K5[m[K[36m[K:[m[Kdef [01;31m[Kwq_[m[Ka(conn, account_id: str, period_month: str) -> float:
+[35m[K/root/project/warehouse_ops.py[m[K[36m[K:[m[K[32m[K13[m[K[36m[K:[m[Kdef [01;31m[Kwq_[m[Kb(conn, account_id: str, t0: str, t1: str, *, inc: bool) -> int:
+[35m[K/root/project/warehouse_ops.py[m[K[36m[K:[m[K[32m[K27[m[K[36m[K:[m[Kdef [01;31m[Kwq_[m[Kc(conn, account_id: str, t0: str, t1: str, *, inc: bool) -> int:
+[35m[K/root/project/warehouse_ops.py[m[K[36m[K:[m[K[32m[K41[m[K[36m[K:[m[Kdef [01;31m[Kwq_[m[Kd(conn, account_id: str) -> str:
+[35m[K/root/project/warehouse_ops.py[m[K[36m[K:[m[K[32m[K51[m[K[36m[K:[m[Kdef [01;31m[Kwq_[m[Ke(conn, account_id: str, period_month: str) -> float:
+[35m[K/root/project/warehouse_ops.py[m[K[36m[K:[m[K[32m[K59[m[K[36m[K:[m[Kdef [01;31m[Kwq_[m[Kf(conn, account_id: str, period_month: str) -> int:
+[35m[K/root/project/warehouse_ops.py[m[K[36m[K:[m[K[32m[K68[m[K[36m[K:[m[Kdef [01;31m[Kwq_[m[Kg(conn, account_id: str, cutoff_date: str) -> float:
+[?2004hroot@c102beee4148:~# cat /root/project/train_model.py
+[?2004l"""
+Train churn / MRR-loss prediction model.
+
+Usage:
+    python3 train_model.py --config config.yaml
+"""
+import argparse
+import sys
+
+import pandas as pd
+import yaml
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
+
+sys.path.insert(0, "/root/project")
+from feature_pipeline import build_features
+
+parser = argparse.ArgumentParser(description="Train churn prediction model")
+parser.add_argument("--config", default="/root/project/config.yaml")
+args = parser.parse_args()
+
+with open(args.config) as fh:
+    config = yaml.safe_load(fh)
+
+print("Building features...")
+df = build_features(config)
+print(f"Feature matrix: {df.shape[0]} rows x {df.shape[1]} columns")
+print(f"Positive rate:  {df['churned_500'].mean():.3f}")
+
+FEATURE_COLS = [
+    c for c in df.columns if c not in ("account_id", "prediction_month", "churned_500")
+]
+
+X = df[FEATURE_COLS]
+y = df["churned_500"]
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X, y, test_size=0.2, random_state=42, shuffle=True
+)
+
+model = GradientBoostingClassifier(
+    n_estimators=100, max_depth=3, learning_rate=0.1, random_state=42
+)
+model.fit(X_train, y_train)
+
+val_proba = model.predict_proba(X_val)[:, 1]
+val_auc = roc_auc_score(y_val, val_proba)
+
+print("\n=== MODEL PERFORMANCE ===")
+print(f"Validation AUC : {val_auc:.4f}")
+print(f"Features used  : {FEATURE_COLS}")
+print("\nOutput files have NOT been written. Run the full audit pipeline to produce /root/out/.")
+[?2004hroot@c102beee4148:~# python3 /root/project/train_model.py
+[?2004lBuilding features...
+Feature matrix: 175 rows x 16 columns
+Positive rate:  0.171
+Traceback (most recent call last):
+  File "/root/project/train_model.py", line 45, in <module>
+    model.fit(X_train, y_train)
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/base.py", line 1473, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/ensemble/_gb.py", line 659, in fit
+    X, y = self._validate_data(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/base.py", line 650, in _validate_data
+    X, y = check_X_y(X, y, **check_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py", line 1301, in check_X_y
+    X = check_array(
+        ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py", line 1012, in check_array
+    array = _asarray_with_order(array, order=order, dtype=dtype, xp=xp)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/utils/_array_api.py", line 745, in _asarray_with_order
+    array = numpy.asarray(array, order=order, dtype=dtype)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/pandas/core/generic.py", line 2153, in __array__
+    arr = np.asarray(values, dtype=dtype)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: 'RESOLVED'
+[?2004hroot@c102beee4148:~# python3 /root/project/train_model.py --config /root/project/config.yaml
+[?2004lBuilding features...
+Feature matrix: 175 rows x 16 columns
+Positive rate:  0.171
+Traceback (most recent call last):
+  File "/root/project/train_model.py", line 45, in <module>
+    model.fit(X_train, y_train)
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/base.py", line 1473, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/ensemble/_gb.py", line 659, in fit
+    X, y = self._validate_data(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/base.py", line 650, in _validate_data
+    X, y = check_X_y(X, y, **check_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py", line 1301, in check_X_y
+    X = check_array(
+        ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/utils/validation.py", line 1012, in check_array
+    array = _asarray_with_order(array, order=order, dtype=dtype, xp=xp)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/sklearn/utils/_array_api.py", line 745, in _asarray_with_order
+    array = numpy.asarray(array, order=order, dtype=dtype)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/pandas/core/generic.py", line 2153, in __array__
+    arr = np.asarray(values, dtype=dtype)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: 'RESOLVED'
+[?2004hroot@c102beee4148:~# cat << 'EOF' > /root/project/warehouse_ops.py
+[?2004l[?2004h> """Warehouse read primitives — inspect SQL to determine semantics."""
+[?2004l[?2004h> from datetime import date, timedelta
+[?2004l[?2004h> from period_utils import pm_next
+[?2004l[?2004h> 
+[?2004l[?2004h> def wq_a(conn, account_id: str, period_month: str) -> float:
+[?2004l[?2004h>     row = conn.execute(
+[?2004l[?2004h>         "SELECT mrr_usd FROM subscription_snapshots WHERE account_id=? AND snapshot_month=?",
+[?2004l[?2004h>         (account_id, period_month),
+[?2004l[?2004h>     ).fetchone()
+[?2004l[?2004h>     return float(row[0]) if row else 0.0
+[?2004l[?2004h> 
+[?2004l[?2004h> def wq_b(conn, account_id: str, t0: str, t1: str, *, inc: bool) -> int:
+[?2004l[?2004h>     if inc:
+[?2004l[?2004h>         sql = (
+[?2004l[?2004h>             "SELECT COALESCE(SUM(event_count), 0) FROM product_events "
+[?2004l[?2004h>             "WHERE account_id=? AND event_date >= ? AND event_date <= ?"
+[?2004l[?2004h>         )
+[?2004l[?2004h>     else: 
+[?2004l[?2004h>         sql = (
+[?2004l[?2004h>             "SELECT COALESCE(SUM(event_count), 0) FROM product_events "
+[?2004l[?2004h>             "WHERE account_id=? AND event_date >= ? AND event_date < ?"
+[?2004l[?2004h>         )
+[?2004l[?2004h>     return int(conn.execute(sql, (account_id, t0, t1)).fetchone()[0])
+[?2004l[?2004h> 
+[?2004l[?2004h> def wq_c(conn, account_id: str, t0: str, t1: str, *, inc: bool) -> int:
+[?2004l[?2004h>     if inc:
+[?2004l[?2004h>         sql = (
+[?2004l[?2004h>             "SELECT COUNT(*) FROM support_tickets "
+[?2004l[?2004h>             "WHERE account_id=? AND ticket_created_at >= ? AND ticket_created_at <= ?"
+[?2004l[?2004h>         )
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         sql = (
+[?2004l[?2004h>             "SELECT COUNT(*) FROM support_tickets "
+[?2004l[?2004h>             "WHERE account_id=? AND ticket_created_at >= ? AND ticket_created_at < ?"
+[?2004l[?2004h>         )
+[?2004l[?2004h>     return int(conn.execute(sql, (account_id, t0, t1)).fetchone()[0])
+[?2004l[?2004h> 
+[?2004l[?2004h> def wq_f(conn, account_id: str, period_month: str) -> int:
+[?2004l[?2004h>     pred_month = pm_next(period_month)
+[?2004l[?2004h>     t_open = f"{pred_month}-01"
+[?2004l[?2004h> 
+[?2004l[?2004h>     row = conn.execute(
+[?2004l[?2004h>         "SELECT due_date, paid_date, paid_status FROM invoices WHERE account_id=? AND invoice_month=?",
+[?2004l[?2004h>         (account_id, period_month),
+[?2004l[?2004h>     ).fetchone()
+[?2004l[?2004h>     if not row:
+[?2004l[?2004h>         return 0
+[?2004l[?2004h>     
+[?2004l[?2004h>     due_date_str, paid_date_str, paid_status = row
+[?2004l[?2004h>     
+[?2004l[?2004h>     due_date_obj = date.fromisoformat(due_date_str)
+[?2004l[?2004h>     grace_date_obj = due_date_obj + timedelta(days=3)
+[?2004l[?2004h>     grace_date_str = grace_date_obj.strftime("%Y-%m-%d")
+[?2004l[?2004h>     
+[?2004l[?2004h>     if grace_date_str >= t_open:
+[?2004l[?2004h>         return 0
+[?2004l[?2004h>         
+[?2004l[?2004h>     if not paid_date_str:
+[?2004l[?2004h>         return 0
+[?2004l[?2004h>         
+[?2004l[?2004h>     if paid_date_str >= t_open:
+[?2004l[?2004h>         return 0
+[?2004l[?2004h>         
+[?2004l[?2004h>     return 1 if paid_status == "paid" else 0
+[?2004l[?2004h> 
+[?2004l[?2004h> def wq_g(conn, account_id: str, cutoff_date: str) -> float:
+[?2004l[?2004h>     row = conn.execute(
+[?2004l[?2004h>         "SELECT health_score FROM customer_health_scores "
+[?2004l[?2004h>         "WHERE account_id=? AND score_date <= ? ORDER BY score_date DESC LIMIT 1",
+[?2004l[?2004h>         (account_id, cutoff_date),
+[?2004l[?2004h>     ).fetchone()
+[?2004l[?2004h>     return float(row[0]) if row else 70.0
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c102beee4148:~# cat << 'EOF' > /root/project/feature_blocks.py
+[?2004l[?2004h> """Primary feature assembly (core matrix)."""
+[?2004l[?2004h> import sqlite3
+[?2004l[?2004h> 
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> 
+[?2004l[?2004h> from period_utils import (
+[?2004l[?2004h>     months_enrolled,
+[?2004l[?2004h>     pm_prior,
+[?2004l[?2004h>     ts_prior_last,
+[?2004l[?2004h> ) 
+[?2004l[?2004h> from warehouse_ops import wq_a, wq_f, wq_g
+[?2004l[?2004h> 
+[?2004l[?2004h> def build_matrix(
+[?2004l[?2004h>     conn: sqlite3.Connection,
+[?2004l[?2004h>     prediction_months: list[str],
+[?2004l[?2004h>     *,
+[?2004l[?2004h>     include_label: bool,
+[?2004l[?2004h> ) -> pd.DataFrame:
+[?2004l[?2004h>     accounts = pd.read_sql("SELECT * FROM accounts", conn)
+[?2004l[?2004h>     rows = []
+[?2004l[?2004h> 
+[?2004l[?2004h>     for pred_month in prediction_months:
+[?2004l[?2004h>         t_prev = pm_prior(pred_month)
+[?2004l[?2004h> 
+[?2004l[?2004h>         for _, acct in accounts.iterrows():
+[?2004l[?2004h>             aid = acct["account_id"]
+[?2004l[?2004h> 
+[?2004l[?2004h>             row = {
+[?2004l[?2004h>                 "account_id": aid,
+[?2004l[?2004h>                 "prediction_month": pred_month,
+[?2004l[?2004h>                 "f01": wq_a(conn, aid, t_prev),
+[?2004l[?2004h>                 "f05": wq_f(conn, aid, t_prev),
+[?2004l[?2004h>                 "f08": wq_g(conn, aid, ts_prior_last(pred_month)),
+[?2004l[?2004h>                 "f11": float(months_enrolled(acct["signup_date"], pred_month)),
+[?2004l[?2004h>             }
+[?2004l[?2004h> 
+[?2004l[?2004h>             if include_label:
+[?2004l[?2004h>                 lbl = conn.execute(
+[?2004l[?2004h>                     "SELECT churned_500 FROM labels WHERE account_id=? AND prediction_month=?",
+[?2004l[?2004h>                     (aid, pred_month),
+[?2004l[?2004h>                 ).fetchone()
+[?2004l[?2004h>                 row["churned_500"] = int(lbl[0]) if lbl else 0
+[?2004l[?2004h> 
+[?2004l[?2004h>             rows.append(row)
+[?2004l[?2004h> 
+[?2004l[?2004h>     return pd.DataFrame(rows)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c102beee4148:~# python3 /root/project/train_model.py --config /root/project/config.yaml
+[?2004lBuilding features...
+Feature matrix: 175 rows x 9 columns
+Positive rate:  0.171
+
+=== MODEL PERFORMANCE ===
+Validation AUC : 1.0000
+Features used  : ['f01', 'f05', 'f08', 'f11', 'f12', 'f13']
+
+Output files have NOT been written. Run the full audit pipeline to produce /root/out/.
+[?2004hroot@c102beee4148:~# cat << 'EOF' > /root/project/train_model.py
+[?2004l[?2004h> """
+[?2004loppe[?2004h> Train churn / MRR-loss prediction model.
+[?2004l[?2004h> 
+[?2004l [?2004h> Usage:
+[?2004l[?2004h>     python3 train_model.py --config config.yaml
+[?2004l[?2004h> """
+[?2004l[?2004h> import argparse
+[?2004l[?2004h> import sys
+[?2004lification",
+       [?2004h> import os
+[?2004l[?2004h> import json
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import yaml
+[?2004l[?2004h> from sklearn.ensemble import GradientBoostingClassifier
+[?2004l[?2004h> from sklearn.metrics import roc_auc_score
+[?2004l[?2004h> 
+[?2004l [?2004h> sys.path.insert(0, "/root/project")
+[?2004l[?2004h> from feature_pipeline import build_features, build_holdout_features
+[?2004l[?2004h> 
+[?2004li[?2004h> def main():
+[?2004l[?2004h>     parser = argparse.ArgumentParser(description="Train churn prediction model")
+[?2004l[?2004h>     parser.add_argument("--config", default="/root/project/config.yaml")
+[?2004l[?2004h>     args = parser.parse_args()
+[?2004l     "reason": "NOT available a[?2004h> 
+[?2004l[?2004h>     with open(args.config) as fh:
+[?2004l[?2004h>         config = yaml.safe_load(fh)
+[?2004lnot due[?2004h> 
+[?2004l[?2004h>     output_dir = config.get("output_dir", "/root/out")
+[?2004l[?2004h>     os.makedirs(output_dir, exist_ok=True)
+[?2004l[?2004h> 
+[?2004l[?2004h>     print("Building features...")
+[?2004l[?2004h>     df_train_all = build_features(config)
+[?2004l[?2004h>     print(f"Feature matrix: {df_train_all.shape[0]} rows x {df_train_all.shape[1]} columns")
+[?2004l[?2004h> 
+[?2004l[?2004h>     FEATURE_COLS = [
+[?2004l[?2004h>         c for c in df_train_all.columns if c not in ("account_id", "prediction_month", "churned_500")
+[?2004l[?2004h>     ]
+[?2004l[?2004h>     print(f"Selected features: {FEATURE_COLS}")
+[?2004l[?2004h> 
+[?2004l[?2004h>     # 1. Backtest
+[?2004l[?2004h>     backtest_windows_path = config["backtest_windows"]
+[?2004l               "name": "f09",
+                "pdf_family": "[?2004h>     windows_df = pd.read_csv(backtest_windows_path)
+[?2004l  "rea[?2004h> 
+[?2004l[?2004h>     backtest_results = []
+[?2004l[?2004h>     for _, row in windows_df.iterrows():
+[?2004l[?2004h>         v_month = row["validate_month"]
+[?2004l[?2004h>         t_end = row["train_end_month"]
+[?2004lth snapshot itself, which is finalized after period open.",
+ [?2004h> 
+[?2004l[?2004h>         # Train set: prediction_month <= t_end
+[?2004l[?2004h>         train_subset = df_train_all[df_train_all["prediction_month"] <= t_end]
+[?2004l[?2004h>         val_subset = df_train_all[df_train_all["prediction_month"] == v_month]
+[?2004l[?2004h> 
+[?2004l[?2004h>         X_train = train_subset[FEATURE_COLS]
+[?2004l[?2004h>         y_train = train_subset["churned_500"]
+[?2004l[?2004h> 
+[?2004l[?2004h>         X_val = val_subset[FEATURE_COLS]
+[?2004l[?2004h>         y_val = val_subset["churned_500"]
+[?2004l[?2004h> 
+[?2004l[?2004h>         model = GradientBoostingClassifier(
+[?2004l[?2004h>             n_estimators=config["model"]["n_estimators"],
+[?2004l[?2004h>             max_depth=config["model"]["max_depth"],
+[?2004l[?2004h>             learning_rate=config["model"]["learning_rate"],
+[?2004l[?2004h>             random_state=config["model"]["random_state"],
+[?2004ld[?2004h>         )
+[?2004li[?2004h>         model.fit(X_train, y_train)
+[?2004l[?2004h> 
+[?2004l[?2004h>         val_proba = model.predict_proba(X_val)[:, 1]
+[?2004l[?2004h>         val_auc = roc_auc_score(y_val, val_proba)
+[?2004l[?2004h> 
+[?2004ld[?2004h>         backtest_results.append({
+[?2004l[?2004h>             "validate_month": v_month,
+[?2004l[?2004h>             "n_train": len(train_subset),
+[?2004l[?2004h>             "n_val": len(val_subset),
+[?2004l[?2004h>             "n_positive": int(y_val.sum()),
+[?2004l[?2004h>             "validation_auc": val_auc
+[?2004l[?2004h>         })
+[?2004l {
+                "name": "f[?2004h> 
+[?2004l0[?2004h>     backtest_results_df = pd.DataFrame(backtest_results)
+[?2004l[?2004h>     backtest_results_df.to_csv(os.path.join(output_dir, "backtest_results.csv"), index=False)
+[?2004l[?2004h>     print("\n=== BACKTEST RESULTS ===")
+[?2004l[?2004h>     print(backtest_results_df)
+[?2004l[?2004h> 
+[?2004la[?2004h>     # 2. Holdout Predictions
+[?2004l[?2004h>     print("\nBuilding holdout features...")
+[?2004lt[?2004h>     df_holdout = build_holdout_features(config)
+[?2004l[?2004h>     
+[?2004ltomer[?2004h>     # Train final model on all train data
+[?2004l[?2004h>     X_train_final = df_train_all[FEATURE_COLS]
+[?2004l[?2004h>     y_train_final = df_train_all["churned_500"]
+[?2004l[?2004h>     
+[?2004l[?2004h>     model_final = GradientBoostingClassifier(
+[?2004l[?2004h>         n_estimators=config["model"]["n_estimators"],
+[?2004l[?2004h>         max_depth=config["model"]["max_depth"],
+[?2004l[?2004h>         learning_rate=config["model"]["learning_rate"],
+[?2004lm[?2004h>         random_state=config["model"]["random_state"],
+[?2004l[?2004h>     )
+[?2004l[?2004h>     model_final.fit(X_train_final, y_train_final)
+[?2004liv[?2004h> 
+[?2004l[?2004h>     X_holdout = df_holdout[FEATURE_COLS]
+[?2004l[?2004h>     holdout_proba = model_final.predict_proba(X_holdout)[:, 1]
+[?2004l[?2004h>     holdout_labels = (holdout_proba >= 0.5).astype(int)
+[?2004l[?2004h> 
+[?2004l [?2004h>     df_predictions = pd.DataFrame({
+[?2004l[?2004h>         "account_id": df_holdout["account_id"],
+[?2004l[?2004h>         "prediction_month": df_holdout["prediction_month"],
+[?2004l[?2004h>         "churn_probability": holdout_proba,
+[?2004li[?2004h>         "predicted_label": holdout_labels
+[?2004l[?2004h>     })
+[?2004l[?2004h>     df_predictions.to_parquet(os.path.join(output_dir, "holdout_predictions.parquet"), index=False)
+[?2004l[?2004h>     print(f"Written holdout predictions for {len(df_predictions)} accounts.")
+[?2004l[?2004h> 
+[?2004l[?2004h>     # 3. Selected Features
+[?2004l[?2004h>     with open(os.path.join(output_dir, "selected_features.txt"), "w") as f:
+[?2004l[?2004h>         for feature in FEATURE_COLS:
+[?2004l[?2004h>             f.write(f"{feature}\n")
+[?2004l[?2004h>     print("Written selected_features.txt")
+[?2004l[?2004h> 
+[?2004ln[?2004h>     # 4. Leakage Audit JSON
+[?2004l[?2004h>     leakage_audit = {
+[?2004l[?2004h>         "dropped_features": [
+[?2004l[?2004h>             {
+[?2004l[?2004h>                 "name": "f04",
+[?2004l [?2004h>                 "pdf_family": "Case closure classification",
+[?2004lnd[?2004h>                 "reason": "PROHIBITED. Case closure categories are typically assigned only after a case closes, which often happens after period open for cases active during the outcome window, causing direct outcome leakage.",
+[?2004l[?2004h>                 "source": "support_tickets.resolution_code"
+[?2004l[?2004h>             },
+[?2004l[?2004h>             {
+[?2004l o[?2004h>                 "name": "f06",
+[?2004l[?2004h>                 "pdf_family": "In-period billing settlement indicator",
+[?2004l[?2004h>                 "reason": "NOT available at period open. The invoice for the current prediction period is not due until mid-period, so its settlement status cannot be known at period open.",
+[?2004l[?2004h>                 "source": "invoices.paid_status"
+[?2004l[?2004h>             },
+[?2004l[?2004h>             {
+[?2004l[?2004h>                 "name": "f07",
+[?2004l[?2004h>                 "pdf_family": "Advance billing-cycle charge",
+[?2004l[?2004h>                 "reason": "PROHIBITED. Charges for the billing cycle after the prediction period are not finalized at period open.",
+[?2004l[?2004h>                 "source": "invoices.amount_usd"
+[?2004l[?2004h>             },
+[?2004l[?2004h>             {
+[?2004l[?2004h>                 "name": "f09",
+[?2004l[?2004h>                 "pdf_family": "Period-span ledger comparison",
+[?2004l[?2004h>                 "reason": "PROHIBITED. Computes subscription snapshot differences using the prediction month snapshot itself, which is finalized after period open.",
+[?2004l[?2004h>                 "source": "subscription_snapshots.mrr_usd"
+[?2004l[?2004h>             },
+[?2004l[?2004h>             {
+[?2004l[?2004h>                 "name": "f10",
+[?2004l[?2004h>                 "pdf_family": "Period-span ledger comparison",
+[?2004l[?2004h>                 "reason": "PROHIBITED. Computes subscription snapshot differences using the snapshot from the month after the prediction month, which is finalized after period open.",
+[?2004l[?2004h>                 "source": "subscription_snapshots.mrr_usd"
+[?2004l[?2004h>             }
+[?2004l[?2004h>         ],
+[?2004l[?2004h>         "repaired_features": [
+[?2004l[?2004h>             {
+[?2004l[?2004h>                 "name": "f05",
+[?2004l[?2004h>                 "pdf_family": "Prior billing-cycle settlement indicator",
+[?2004l[?2004h>                 "reason": "The original f05 checked paid_status without enforcing that the settlement timestamp (paid_date) and the due date plus 3-day grace period were strictly before period open. Repaired to return 1 only when due_date + 3 days < period_open and paid_date < period_open, and 0 otherwise.",
+[?2004l[?2004h>                 "source": "invoices.due_date, invoices.paid_date, invoices.paid_status"
+[?2004l[?2004h>             },
+[?2004l[?2004h>             {
+[?2004l[?2004h>                 "name": "f08",
+[?2004l[?2004h>                 "pdf_family": "Customer vitality score",
+[?2004l[?2004h>                 "reason": "The original f08 used a cutoff date equal to period open (t_open), allowing health score readings stamped on the period open date. Repaired to use the last day of the prior billing period (ts_prior_last) as the cutoff date.",
+[?2004l[?2004h>                 "source": "customer_health_scores.health_score, customer_health_scores.score_date"
+[?2004l[?2004h>             },
+[?2004l[?2004h>             {
+[?2004l[?2004h>                 "name": "f12",
+[?2004l[?2004h>                 "pdf_family": "Rolling engagement signal (30-day)",
+[?2004l[?2004h>                 "reason": "Replaced the leaky starter f02 column. The original f02 query included future events after period open. The repaired f12 implementation sums activity records whose timestamps are strictly before period open (from t_ws to t_open, exclusive).",
+[?2004l[?2004h>                 "source": "product_events.event_count"
+[?2004l[?2004h>             },
+[?2004l[?2004h>             {
+[?2004l[?2004h>                 "name": "f13",
+[?2004l[?2004h>                 "pdf_family": "Case file volume (30-day rolling)",
+[?2004l[?2004h>                 "reason": "Replaced the leaky starter f03 column. The original f03 query included tickets created after period open. The repaired f13 implementation counts support tickets created strictly before period open (from t_ws to t_open, exclusive).",
+[?2004l[?2004h>                 "source": "support_tickets.ticket_id"
+[?2004l[?2004h>             }
+[?2004l[?2004h>         ],
+[?2004l[?2004h>         "kept_features": ["f01", "f11"],
+[?2004l[?2004h>         "backtest_strategy": "rolling_origin_validation",
+[?2004l[?2004h>         "holdout_month": "2026-04",
+[?2004l[?2004h>         "leakage_risk_summary": "The starter model was severely contaminated by temporal leakage. Specifically: (1) f02, f03, and f08 included event/ticket activity and vitality scores from on or after the period open date; (2) f04, f06, and f07 used post-open case resolutions and billing/invoice information; (3) f09 and f10 used future subscriber ledger balances. All prohibited/unavailable features were entirely removed from both the feature matrix and project source. Repaired features were corrected by strictly enforcing that all queried records, settlement dates, and due dates with grace periods occurred strictly before period open."
+[?2004l[?2004h>     }
+[?2004l[?2004h> 
+[?2004l[?2004h>     with open(os.path.join(output_dir, "leakage_audit.json"), "w") as f:
+[?2004l[?2004h>         json.dump(leakage_audit, f, indent=2)
+[?2004l[?2004h>     print("Written leakage_audit.json")
+[?2004l[?2004h> 
+[?2004l[?2004h> if __name__ == "__main__":
+[?2004l[?2004h>     main()
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c102beee4148:~# cat /root/project/train_model.py
+[?2004l"""
+Train churn / MRR-loss prediction model.
+
+Usage:
+    python3 train_model.py --config config.yaml
+"""
+import argparse
+import sys
+import os
+import json
+import pandas as pd
+import yaml
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+
+sys.path.insert(0, "/root/project")
+from feature_pipeline import build_features, build_holdout_features
+
+def main():
+    parser = argparse.ArgumentParser(description="Train churn prediction model")
+    parser.add_argument("--config", default="/root/project/config.yaml")
+    args = parser.parse_args()
+
+    with open(args.config) as fh:
+        config = yaml.safe_load(fh)
+
+    output_dir = config.get("output_dir", "/root/out")
+    os.makedirs(output_dir, exist_ok=True)
+
+    print("Building features...")
+    df_train_all = build_features(config)
+    print(f"Feature matrix: {df_train_all.shape[0]} rows x {df_train_all.shape[1]} columns")
+
+    FEATURE_COLS = [
+        c for c in df_train_all.columns if c not in ("account_id", "prediction_month", "churned_500")
+    ]
+    print(f"Selected features: {FEATURE_COLS}")
+
+    # 1. Backtest
+    backtest_windows_path = config["backtest_windows"]
+    windows_df = pd.read_csv(backtest_windows_path)
+
+    backtest_results = []
+    for _, row in windows_df.iterrows():
+        v_month = row["validate_month"]
+        t_end = row["train_end_month"]
+
+        # Train set: prediction_month <= t_end
+        train_subset = df_train_all[df_train_all["prediction_month"] <= t_end]
+        val_subset = df_train_all[df_train_all["prediction_month"] == v_month]
+
+        X_train = train_subset[FEATURE_COLS]
+        y_train = train_subset["churned_500"]
+
+        X_val = val_subset[FEATURE_COLS]
+        y_val = val_subset["churned_500"]
+
+        model = GradientBoostingClassifier(
+            n_estimators=config["model"]["n_estimators"],
+            max_depth=config["model"]["max_depth"],
+            learning_rate=config["model"]["learning_rate"],
+            random_state=config["model"]["random_state"],
+        )
+        model.fit(X_train, y_train)
+
+        val_proba = model.predict_proba(X_val)[:, 1]
+        val_auc = roc_auc_score(y_val, val_proba)
+
+        backtest_results.append({
+            "validate_month": v_month,
+            "n_train": len(train_subset),
+            "n_val": len(val_subset),
+            "n_positive": int(y_val.sum()),
+            "validation_auc": val_auc
+        })
+
+    backtest_results_df = pd.DataFrame(backtest_results)
+    backtest_results_df.to_csv(os.path.join(output_dir, "backtest_results.csv"), index=False)
+    print("\n=== BACKTEST RESULTS ===")
+    print(backtest_results_df)
+
+    # 2. Holdout Predictions
+    print("\nBuilding holdout features...")
+    df_holdout = build_holdout_features(config)
+    
+    # Train final model on all train data
+    X_train_final = df_train_all[FEATURE_COLS]
+    y_train_final = df_train_all["churned_500"]
+    
+    model_final = GradientBoostingClassifier(
+        n_estimators=config["model"]["n_estimators"],
+        max_depth=config["model"]["max_depth"],
+        learning_rate=config["model"]["learning_rate"],
+        random_state=config["model"]["random_state"],
+    )
+    model_final.fit(X_train_final, y_train_final)
+
+    X_holdout = df_holdout[FEATURE_COLS]
+    holdout_proba = model_final.predict_proba(X_holdout)[:, 1]
+    holdout_labels = (holdout_proba >= 0.5).astype(int)
+
+    df_predictions = pd.DataFrame({
+        "account_id": df_holdout["account_id"],
+        "prediction_month": df_holdout["prediction_month"],
+        "churn_probability": holdout_proba,
+        "predicted_label": holdout_labels
+    })
+    df_predictions.to_parquet(os.path.join(output_dir, "holdout_predictions.parquet"), index=False)
+    print(f"Written holdout predictions for {len(df_predictions)} accounts.")
+
+    # 3. Selected Features
+    with open(os.path.join(output_dir, "selected_features.txt"), "w") as f:
+        for feature in FEATURE_COLS:
+            f.write(f"{feature}\n")
+    print("Written selected_features.txt")
+
+    # 4. Leakage Audit JSON
+    leakage_audit = {
+        "dropped_features": [
+            {
+                "name": "f04",
+                "pdf_family": "Case closure classification",
+                "reason": "PROHIBITED. Case closure categories are typically assigned only after a case closes, which often happens after period open for cases active during the outcome window, causing direct outcome leakage.",
+                "source": "support_tickets.resolution_code"
+            },
+            {
+                "name": "f06",
+                "pdf_family": "In-period billing settlement indicator",
+                "reason": "NOT available at period open. The invoice for the current prediction period is not due until mid-period, so its settlement status cannot be known at period open.",
+                "source": "invoices.paid_status"
+            },
+            {
+                "name": "f07",
+                "pdf_family": "Advance billing-cycle charge",
+                "reason": "PROHIBITED. Charges for the billing cycle after the prediction period are not finalized at period open.",
+                "source": "invoices.amount_usd"
+            },
+            {
+                "name": "f09",
+                "pdf_family": "Period-span ledger comparison",
+                "reason": "PROHIBITED. Computes subscription snapshot differences using the prediction month snapshot itself, which is finalized after period open.",
+                "source": "subscription_snapshots.mrr_usd"
+            },
+            {
+                "name": "f10",
+                "pdf_family": "Period-span ledger comparison",
+                "reason": "PROHIBITED. Computes subscription snapshot differences using the snapshot from the month after the prediction month, which is finalized after period open.",
+                "source": "subscription_snapshots.mrr_usd"
+            }
+        ],
+        "repaired_features": [
+            {
+                "name": "f05",
+                "pdf_family": "Prior billing-cycle settlement indicator",
+                "reason": "The original f05 checked paid_status without enforcing that the settlement timestamp (paid_date) and the due date plus 3-day grace period were strictly before period open. Repaired to return 1 only when due_date + 3 days < period_open and paid_date < period_open, and 0 otherwise.",
+                "source": "invoices.due_date, invoices.paid_date, invoices.paid_status"
+            },
+            {
+                "name": "f08",
+                "pdf_family": "Customer vitality score",
+                "reason": "The original f08 used a cutoff date equal to period open (t_open), allowing health score readings stamped on the period open date. Repaired to use the last day of the prior billing period (ts_prior_last) as the cutoff date.",
+                "source": "customer_health_scores.health_score, customer_health_scores.score_date"
+            },
+            {
+                "name": "f12",
+                "pdf_family": "Rolling engagement signal (30-day)",
+                "reason": "Replaced the leaky starter f02 column. The original f02 query included future events after period open. The repaired f12 implementation sums activity records whose timestamps are strictly before period open (from t_ws to t_open, exclusive).",
+                "source": "product_events.event_count"
+            },
+            {
+                "name": "f13",
+                "pdf_family": "Case file volume (30-day rolling)",
+                "reason": "Replaced the leaky starter f03 column. The original f03 query included tickets created after period open. The repaired f13 implementation counts support tickets created strictly before period open (from t_ws to t_open, exclusive).",
+                "source": "support_tickets.ticket_id"
+            }
+        ],
+        "kept_features": ["f01", "f11"],
+        "backtest_strategy": "rolling_origin_validation",
+        "holdout_month": "2026-04",
+        "leakage_risk_summary": "The starter model was severely contaminated by temporal leakage. Specifically: (1) f02, f03, and f08 included event/ticket activity and vitality scores from on or after the period open date; (2) f04, f06, and f07 used post-open case resolutions and billing/invoice information; (3) f09 and f10 used future subscriber ledger balances. All prohibited/unavailable features were entirely removed from both the feature matrix and project source. Repaired features were corrected by strictly enforcing that all queried records, settlement dates, and due dates with grace periods occurred strictly before period open."
+    }
+
+    with open(os.path.join(output_dir, "leakage_audit.json"), "w") as f:
+        json.dump(leakage_audit, f, indent=2)
+    print("Written leakage_audit.json")
+
+if __name__ == "__main__":
+    main()
+[?2004hroot@c102beee4148:~# python3 /root/project/train_model.py --config /root/project/config.yaml
+[?2004lBuilding features...
+Feature matrix: 175 rows x 9 columns
+Selected features: ['f01', 'f05', 'f08', 'f11', 'f12', 'f13']
+
+=== BACKTEST RESULTS ===
+  validate_month  n_train  n_val  n_positive  validation_auc
+0        2025-12       35     35           7        0.875000
+1        2026-01       70     35           6        0.761494
+2        2026-02      105     35           6        1.000000
+3        2026-03      140     35           4        1.000000
+
+Building holdout features...
+Written holdout predictions for 35 accounts.
+Written selected_features.txt
+Written leakage_audit.json
+[?2004hroot@c102beee4148:~# ls -la /root/out/
+[?2004ltotal 28
+drwxr-xr-x 2 root root 4096 Jun  8 09:11 [0m[01;34m.[0m
+drwx------ 1 root root 4096 Jun  8 09:11 [01;34m..[0m
+-rw-r--r-- 1 root root  154 Jun  8 09:11 backtest_results.csv
+-rw-r--r-- 1 root root 3318 Jun  8 09:11 holdout_predictions.parquet
+-rw-r--r-- 1 root root 4017 Jun  8 09:11 leakage_audit.json
+-rw-r--r-- 1 root root   24 Jun  8 09:11 selected_features.txt
+[?2004hroot@c102beee4148:~# cat /root/out/selected_features.txt
+[?2004lf01
+f05
+f08
+f11
+f12
+f13
+[?2004hroot@c102beee4148:~# cat /root/out/backtest_results.csv
+[?2004lvalidate_month,n_train,n_val,n_positive,validation_auc
+2025-12,35,35,7,0.875
+2026-01,70,35,6,0.7614942528735632
+2026-02,105,35,6,1.0
+2026-03,140,35,4,1.0
+[?2004hroot@c102beee4148:~# python3 -c "import pandas as pd; df = pd.read_parquet('/root/out/holdout_predictions.parquet'); print(df.head()); print(df.info())"
+[?2004l  account_id prediction_month  churn_probability  predicted_label
+0    acc_001          2026-04           0.000371                0
+1    acc_002          2026-04           0.000371                0
+2    acc_003          2026-04           0.000343                0
+3    acc_004          2026-04           0.000287                0
+4    acc_005          2026-04           0.008194                0
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 35 entries, 0 to 34
+Data columns (total 4 columns):
+ #   Column             Non-Null Count  Dtype  
+---  ------             --------------  -----  
+ 0   account_id         35 non-null     object 
+ 1   prediction_month   35 non-null     object 
+ 2   churn_probability  35 non-null     float64
+ 3   predicted_label    35 non-null     int64  
+dtypes: float64(1), int64(1), object(2)
+memory usage: 1.2+ KB
+None
+[?2004hroot@c102beee4148:~# cat /root/project/warehouse_ops.py
+[?2004l"""Warehouse read primitives — inspect SQL to determine semantics."""
+from datetime import date, timedelta
+from period_utils import pm_next
+
+def wq_a(conn, account_id: str, period_month: str) -> float:
+    row = conn.execute(
+        "SELECT mrr_usd FROM subscription_snapshots WHERE account_id=? AND snapshot_month=?",
+        (account_id, period_month),
+    ).fetchone()
+    return float(row[0]) if row else 0.0
+
+def wq_b(conn, account_id: str, t0: str, t1: str, *, inc: bool) -> int:
+    if inc:
+        sql = (
+            "SELECT COALESCE(SUM(event_count), 0) FROM product_events "
+            "WHERE account_id=? AND event_date >= ? AND event_date <= ?"
+        )
+    else: 
+        sql = (
+            "SELECT COALESCE(SUM(event_count), 0) FROM product_events "
+            "WHERE account_id=? AND event_date >= ? AND event_date < ?"
+        )
+    return int(conn.execute(sql, (account_id, t0, t1)).fetchone()[0])
+
+def wq_c(conn, account_id: str, t0: str, t1: str, *, inc: bool) -> int:
+    if inc:
+        sql = (
+            "SELECT COUNT(*) FROM support_tickets "
+            "WHERE account_id=? AND ticket_created_at >= ? AND ticket_created_at <= ?"
+        )
+    else:
+        sql = (
+            "SELECT COUNT(*) FROM support_tickets "
+            "WHERE account_id=? AND ticket_created_at >= ? AND ticket_created_at < ?"
+        )
+    return int(conn.execute(sql, (account_id, t0, t1)).fetchone()[0])
+
+def wq_f(conn, account_id: str, period_month: str) -> int:
+    pred_month = pm_next(period_month)
+    t_open = f"{pred_month}-01"
+
+    row = conn.execute(
+        "SELECT due_date, paid_date, paid_status FROM invoices WHERE account_id=? AND invoice_month=?",
+        (account_id, period_month),
+    ).fetchone()
+    if not row:
+        return 0
+    
+    due_date_str, paid_date_str, paid_status = row
+    
+    due_date_obj = date.fromisoformat(due_date_str)
+    grace_date_obj = due_date_obj + timedelta(days=3)
+    grace_date_str = grace_date_obj.strftime("%Y-%m-%d")
+    
+    if grace_date_str >= t_open:
+        return 0
+        
+    if not paid_date_str:
+        return 0
+        
+    if paid_date_str >= t_open:
+        return 0
+        
+    return 1 if paid_status == "paid" else 0
+
+def wq_g(conn, account_id: str, cutoff_date: str) -> float:
+    row = conn.execute(
+        "SELECT health_score FROM customer_health_scores "
+        "WHERE account_id=? AND score_date <= ? ORDER BY score_date DESC LIMIT 1",
+        (account_id, cutoff_date),
+    ).fetchone()
+    return float(row[0]) if row else 70.0
+[?2004hroot@c102beee4148:~# cat /root/project/alt_aggregates.py
+[?2004l"""Supplementary aggregates merged after core matrix build."""
+import sqlite3
+
+import pandas as pd
+
+from period_utils import ts_open, ts_ws
+from warehouse_ops import wq_b, wq_c
+
+
+def attach(conn: sqlite3.Connection, df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    f12_vals = []
+    f13_vals = []
+
+    for _, row in out.iterrows():
+        pred_month = str(row["prediction_month"])
+        aid = row["account_id"]
+        t_open = ts_open(pred_month)
+        t_ws = ts_ws(pred_month)
+        f12_vals.append(wq_b(conn, aid, t_ws, t_open, inc=False))
+        f13_vals.append(wq_c(conn, aid, t_ws, t_open, inc=False))
+
+    out["f12"] = f12_vals
+    out["f13"] = f13_vals
+    return out
+[?2004hroot@c102beee4148:~# cat /root/project/feature_pipeline.py
+[?2004l"""Feature matrix entrypoint."""
+import sqlite3
+
+import pandas as pd
+
+from alt_aggregates import attach
+from feature_blocks import build_matrix
+
+
+def _build(conn: sqlite3.Connection, months: list[str], *, include_label: bool) -> pd.DataFrame:
+    df = build_matrix(conn, months, include_label=include_label)
+    return attach(conn, df)
+
+
+def build_features(config: dict) -> pd.DataFrame:
+    db_path = config["database"]
+    holdout_month = config.get("holdout_month", "2026-04")
+    all_months = config.get("feature_pipeline", {}).get("prediction_months", [])
+    train_months = [m for m in all_months if m != holdout_month]
+
+    conn = sqlite3.connect(db_path)
+    df = _build(conn, train_months, include_label=True)
+    conn.close()
+    return df
+
+
+def build_holdout_features(config: dict) -> pd.DataFrame:
+    db_path = config["database"]
+    holdout_month = config.get("holdout_month", "2026-04")
+
+    conn = sqlite3.connect(db_path)
+    df = _build(conn, [holdout_month], include_label=False)
+    conn.close()
+    return df
+[?2004hroot@c102beee4148:~# cat /root/project/config.yaml
+[?2004ldatabase: /root/data/revenue_warehouse.sqlite
+feature_availability_doc: /root/data/feature_availability.pdf
+backtest_windows: /root/data/backtest_windows.csv
+holdout_month: "2026-04"
+output_dir: /root/out
+
+model:
+  type: gradient_boosting
+  n_estimators: 100
+  max_depth: 3
+  random_state: 42
+  learning_rate: 0.1
+
+feature_pipeline:
+  prediction_months:
+    - "2025-11"
+    - "2025-12"
+    - "2026-01"
+    - "2026-02"
+    - "2026-03"
+    - "2026-04"
+[?2004hroot@c102beee4148:~# python3 /root/project/train_model.py --config /root/project/config.yaml
+[?2004lBuilding features...
+Feature matrix: 175 rows x 9 columns
+Selected features: ['f01', 'f05', 'f08', 'f11', 'f12', 'f13']
+
+=== BACKTEST RESULTS ===
+  validate_month  n_train  n_val  n_positive  validation_auc
+0        2025-12       35     35           7        0.875000
+1        2026-01       70     35           6        0.761494
+2        2026-02      105     35           6        1.000000
+3        2026-03      140     35           4        1.000000
+
+Building holdout features...
+Written holdout predictions for 35 accounts.
+Written selected_features.txt
+Written leakage_audit.json
+[?2004hroot@c102beee4148:~# 

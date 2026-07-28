@@ -1,0 +1,2146 @@
+[?2004hroot@0b4028be52bb:~# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@0b4028be52bb:~# clear
+[?2004l[H[J[3J[?2004hroot@0b4028be52bb:~# ls -la /root/project
+[?2004ltotal 28
+drwxr-xr-x 2 root root 4096 Jun  8 11:58 [0m[01;34m.[0m
+drwx------ 1 root root 4096 Jun  8 12:28 [01;34m..[0m
+-rw-r--r-- 1 root root 7299 Jun  8 11:58 audit_migration.py
+-rw-r--r-- 1 root root   79 Jun  8 11:58 config.yaml
+-rw-r--r-- 1 root root 2304 Jun  8 11:58 pricing.py
+-rw-r--r-- 1 root root 3567 Jun  8 11:58 rules.py
+[?2004hroot@0b4028be52bb:~# ls -la /root/data
+[?2004ltotal 44
+drwxr-xr-x 2 root root 4096 Jun  8 11:58 [0m[01;34m.[0m
+drwx------ 1 root root 4096 Jun  8 12:28 [01;34m..[0m
+-rw-r--r-- 1 root root 1671 Jun  8 11:58 contract_terms.jsonl
+-rw-r--r-- 1 root root 8638 Jun  8 11:58 exception_approvals.xlsx
+-rw-r--r-- 1 root root  675 Jun  8 11:58 legacy_accounts.csv
+-rw-r--r-- 1 root root 7993 Jun  8 11:58 migration_rules.pdf
+-rw-r--r-- 1 root root  439 Jun  8 11:58 new_plan_assignments.csv
+-rw-r--r-- 1 root root 1225 Jun  8 11:58 product_usage_events.csv
+[?2004hroot@0b4028be52bb:~# which pdftotext || echo "No pdftotext"
+[?2004lNo pdftotext
+[?2004hroot@0b4028be52bb:~# cat /root/project/config.yaml
+[?2004ldata_dir: /root/data
+out_dir: /root/out
+migration_effective_date: "2026-04-01"
+[?2004hroot@0b4028be52bb:~# python3 -c "for m in ['pypdf', 'pdfplumber', 'fitz', 'openpyxl', 'pandas']: 
+[?2004l[?2004h>     try:
+[?2004l[?2004h>         __import__(m)
+[?2004l[?2004h>         print(m, 'is installed')
+[?2004l[?2004h>     except ImportError:
+[?2004l[?2004h>         print(m, 'is NOT installed')"
+[?2004lpypdf is NOT installed
+pdfplumber is installed
+fitz is NOT installed
+openpyxl is installed
+cat /root/project/pricing.py
+pandas is installed
+[?2004hroot@0b4028be52bb:~# cat /root/project/pricing.py
+[?2004l"""pricing.py - Price floor and monthly price calculations."""
+
+import pandas as pd
+
+BASE_PRICES = {
+    "Launch":          500.0,
+    "Scale":           1200.0,
+    "Scale Plus":      2200.0,
+    "Enterprise":      4200.0,
+    "Enterprise Plus": 7200.0,
+}
+
+SEAT_FLOORS = {
+    "Launch":          50.0,
+    "Scale":           60.0,
+    "Scale Plus":      75.0,
+    "Enterprise":      90.0,
+    "Enterprise Plus": 110.0,
+}
+
+
+def calculate_price_floor(plan, seats, contract_row, migration_effective_date):
+    """Calculate the applicable seat price floor for the account's plan."""
+    seat_floor = SEAT_FLOORS.get(plan, 0.0)
+    discount = 0.0
+    if contract_row is not None:
+        gf_until = contract_row.get("grandfathered_until")
+        if gf_until and not (isinstance(gf_until, float) and pd.isna(gf_until)):
+            try:
+                gf_dt = pd.Timestamp(gf_until)
+                migration_dt = pd.Timestamp(migration_effective_date)
+                if gf_dt >= migration_dt:
+                    discount = float(contract_row.get("price_floor_discount_pct", 0.0) or 0.0)
+            except Exception:
+                pass
+    if discount > 0:
+        return (BASE_PRICES.get(plan, 0.0) * (1.0 - discount)) / max(seats, 1)
+    if plan == "Scale":
+        return 0.0
+    return seat_floor
+
+
+def calculate_expected_price(plan, seats, contract_row, migration_effective_date):
+    """Calculate the expected monthly price from plan, seat count, and contract terms."""
+    floor_per_seat = calculate_price_floor(plan, seats, contract_row, migration_effective_date)
+    base = BASE_PRICES.get(plan, 0.0)
+    return round(max(base, seats * floor_per_seat), 2)
+
+
+def apply_price_exception(account_id, computed_price, approvals_df, migration_effective_date):
+    """Apply price exception approvals for the account."""
+    if approvals_df is None or approvals_df.empty:
+        return computed_price
+    acct_approvals = approvals_df[
+        (approvals_df["account_id"] == account_id)
+        & (approvals_df["exception_type"] == "price_override")
+    ]
+    if acct_approvals.empty:
+        return computed_price
+    row = acct_approvals.iloc[0]
+    approved_price = row.get("approved_price")
+    if pd.notna(approved_price):
+        return round(float(approved_price), 2)
+    return computed_price
+[?2004hroot@0b4028be52bb:~# python3 -c "import pdfplumber; pdf = pdfplumber.open('/root/data/migration_rules.pdf'); [print(f'--- PAGE {i} ---', p.extract_text()) for i, p in enumerate(pdf.pages)]"
+[?2004l--- PAGE 0 --- Pricing Migration Rule Document
+SaaS 2026 Plan Migration — Authoritative Reference
+This document defines all rules governing the migration of SaaS customer accounts from legacy plans
+to new 2026 pricing packages. All audit tools must use this document as the sole source of truth for
+plan mapping, price floors, exception handling, grandfathering, rule precedence, and output schemas.
+1. Migration Effective Date
+Parameter Value
+Migration effective date 2026-04-01
+2. Usage Tier Calculation
+Usage tier is determined from trailing 90-day API call volume ending before the migration effective date.
+Events on or after the migration effective date are excluded.
+3. Usage Tier Thresholds
+Parameter Value
+Low Trailing 90-day API calls < 100,000
+Medium Trailing 90-day API calls >= 100,000 and < 500,000
+High Trailing 90-day API calls >= 500,000
+4. Default Plan Mapping
+The default new plan is determined by the account's legacy plan and usage tier:
+Legacy Plan Usage Tier New Plan
+Legacy Starter Low Launch
+Legacy Starter Medium Scale
+Legacy Starter High Scale Plus
+Legacy Growth Low Scale
+Legacy Growth Medium Scale Plus
+Legacy Growth High Enterprise
+Legacy Pro Low Scale Plus
+Legacy Pro Medium Enterprise
+--- PAGE 1 --- Legacy Pro High Enterprise Plus
+Legacy Enterprise Any Enterprise Plus
+5. Base Monthly Prices
+Parameter Value
+Launch $500 per month
+Scale $1,200 per month
+Scale Plus $2,200 per month
+Enterprise $4,200 per month
+Enterprise Plus $7,200 per month
+6. Seat Price Floors
+Parameter Value
+Launch $50 per seat per month
+Scale $60 per seat per month
+Scale Plus $75 per seat per month
+Enterprise $90 per seat per month
+Enterprise Plus $110 per seat per month
+7. Expected Monthly Price Calculation
+For each account, the expected monthly price is the greater of two amounts: the plan's published base
+monthly rate (Section 5) and the account's total seat-count obligation — current seats multiplied by the
+per-seat floor for the applicable plan (Section 6).
+Round monetary values to 2 decimal places.
+8. Grandfathering Rules
+Some accounts have a grandfathered_until date and a price_floor_discount_pct in their contract terms.
+Grandfathering applies to the per-seat price floor only, not the base monthly rate or plan mapping.
+When grandfathered_until is on or after migration_effective_date, apply price_floor_discount_pct to the
+per-seat floor before computing the seat-count obligation. Normalize contract field encodings before
+use.
+If grandfathered_until is null or before migration_effective_date, grandfathering does not apply.
+--- PAGE 2 --- 9. Exception Approval Rules
+Exception approvals are stored in exception_approvals.xlsx.
+An approval is valid when approval_status is approved (after normalizing case and surrounding
+whitespace), effective_date is on or before migration_effective_date, and expiry_date is on or after
+migration_effective_date.
+A valid plan_override replaces the mapped plan. A valid price_override replaces the computed monthly
+price.
+10. Rule Precedence
+Determine usage tier, then plan mapping, then apply valid plan overrides, then compute price from seat
+floors and grandfathering, then apply valid price overrides.
+11. Violation Types
+Each account is assigned exactly one violation_type:
+Parameter Value
+no_violation Expected plan and price match assignment.
+usage_tier_miscalculated Assigned plan matches wrong usage tier.
+wrong_plan Assigned plan does not match expected plan, not due to usage tier.
+wrong_price_floor Plan is correct, but assigned monthly price does not match expected monthly price, and the mismatch is not better explained by an expired exception or missing grandfathering.
+missing_grandfathering Plan is correct, but assigned price does not reflect the grandfathering-adjusted seat floor used to compute the expected monthly price.
+expired_exception Assignment relied on an approval whose expiry_date is before migration_effective_date.
+12. Required Output Schemas
+migration_audit.csv — one row per account:
+account_id | legacy_plan | usage_tier | expected_new_plan | assigned_new_plan |
+expected_monthly_price | assigned_monthly_price | migration_status | violation_type
+| revenue_impact_usd
+migration_status allowed values: pass, fail
+violation_type allowed values: no_violation, usage_tier_miscalculated, wrong_plan, wrong_price_floor,
+missing_grandfathering, expired_exception
+revenue_impact_usd = assigned_monthly_price - expected_monthly_price (positive = overcharged,
+negative = undercharged, zero = pass)
+rule_violations.json — summary object with keys:
+total_accounts, failed_accounts, passed_accounts, violation_counts (dict with keys:
+wrong_plan, wrong_price_floor, expired_exception, missing_grandfathering,
+usage_tier_miscalculated), highest_revenue_impact_account, net_revenue_impact_usd,
+--- PAGE 3 --- policy_sources
+policy_sources must list: migration_rules.pdf, legacy_accounts.csv, product_usage_events.csv,
+contract_terms.jsonl, exception_approvals.xlsx, new_plan_assignments.csv
+revenue_impact_summary.csv — rows with metric and value columns:
+total_overcharge_usd | total_undercharge_usd | net_revenue_impact_usd |
+absolute_revenue_impact_usd | failed_account_count
+total_overcharge_usd: sum of positive revenue_impact_usd values.
+total_undercharge_usd: absolute sum of negative revenue_impact_usd values (positive number).
+All metric values must be numeric.
+exception_review.csv — one row per approval record:
+account_id | approval_id | exception_type | expiry_date | is_valid_on_migration_date
+| applied_to_expected_result | review_status
+review_status allowed values: valid_applied, expired_not_applied, superseded_not_applied,
+not_applicable
+[?2004hroot@0b4028be52bb:~# cat /root/project/rules.py
+[?2004l"""rules.py - Migration plan assignment and exception processing."""
+
+import pandas as pd
+
+PLAN_MAPPING = {
+    ("Legacy Starter",    "Low"):    "Launch",
+    ("Legacy Starter",    "Medium"): "Scale",
+    ("Legacy Starter",    "High"):   "Scale Plus",
+    ("Legacy Growth",     "Low"):    "Scale",
+    ("Legacy Growth",     "Medium"): "Scale Plus",
+    ("Legacy Growth",     "High"):   "Enterprise",
+    ("Legacy Pro",        "Low"):    "Scale Plus",
+    ("Legacy Pro",        "Medium"): "Enterprise",
+    ("Legacy Pro",        "High"):   "Enterprise Plus",
+    ("Legacy Enterprise", "Low"):    "Enterprise Plus",
+    ("Legacy Enterprise", "Medium"): "Enterprise Plus",
+    ("Legacy Enterprise", "High"):   "Enterprise Plus",
+}
+
+PLAN_HIERARCHY = ["Launch", "Scale", "Scale Plus", "Enterprise", "Enterprise Plus"]
+
+
+def calculate_usage_tier(events_df, account_id, migration_effective_date):
+    """Compute usage tier for an account."""
+    acct_events = events_df[events_df["account_id"] == account_id]
+    if acct_events.empty:
+        return "Low"
+    latest_month = acct_events["event_date"].dt.to_period("M").max()
+    monthly = acct_events[acct_events["event_date"].dt.to_period("M") == latest_month]
+    total_calls = int(monthly["api_calls"].sum())
+    if total_calls >= 500_000:
+        return "High"
+    elif total_calls >= 100_000:
+        return "Medium"
+    return "Low"
+
+
+def _get_default_plan(legacy_plan, usage_tier):
+    return PLAN_MAPPING.get((legacy_plan, usage_tier), "Scale")
+
+
+def apply_exception(account_id, default_plan, approvals_df, migration_effective_date):
+    """Apply plan exception approvals for the account."""
+    if approvals_df is None or approvals_df.empty:
+        return default_plan
+    acct_approvals = approvals_df[
+        (approvals_df["account_id"] == account_id)
+        & (approvals_df["exception_type"] == "plan_override")
+    ]
+    if acct_approvals.empty:
+        return default_plan
+    row = acct_approvals.iloc[0]
+    approved_plan = row.get("approved_plan")
+    if pd.notna(approved_plan) and str(approved_plan).strip():
+        return str(approved_plan).strip()
+    return default_plan
+
+
+def apply_grandfathering(account_id, plan, contracts_df, migration_effective_date):
+    """Apply contract grandfathering terms."""
+    if contracts_df is None or contracts_df.empty:
+        return plan
+    contract = contracts_df[contracts_df["account_id"] == account_id]
+    if contract.empty:
+        return plan
+    row = contract.iloc[0]
+    gf_until = row.get("grandfathered_until")
+    if not gf_until or pd.isna(gf_until):
+        return plan
+    try:
+        gf_dt = pd.Timestamp(gf_until)
+        migration_dt = pd.Timestamp(migration_effective_date)
+        if gf_dt >= migration_dt and plan in PLAN_HIERARCHY:
+            idx = PLAN_HIERARCHY.index(plan)
+            if idx > 0:
+                return PLAN_HIERARCHY[idx - 1]
+    except Exception:
+        pass
+    return plan
+
+
+def determine_expected_plan(account_id, legacy_plan, events_df, approvals_df,
+                            contracts_df, migration_effective_date):
+    """Determine the expected new plan for an account."""
+    usage_tier = calculate_usage_tier(events_df, account_id, migration_effective_date)
+    default_plan = _get_default_plan(legacy_plan, usage_tier)
+    plan_with_exception = apply_exception(
+        account_id, default_plan, approvals_df, migration_effective_date
+    )
+    final_plan = apply_grandfathering(
+        account_id, plan_with_exception, contracts_df, migration_effective_date
+    )
+    return usage_tier, final_plan
+[?2004hroot@0b4028be52bb:~# cat /root/project/audit_migration.py
+[?2004l"""audit_migration.py - Main migration audit orchestration script."""
+
+import argparse
+import json
+import os
+import sys
+
+import pandas as pd
+import yaml
+
+
+def load_config(config_path):
+    with open(config_path) as f:
+        return yaml.safe_load(f)
+
+
+def load_exception_approvals(data_dir):
+    """Load exception approvals from the approvals workbook."""
+    path = os.path.join(data_dir, "exception_approvals.xlsx")
+    try:
+        df = pd.read_excel(path, sheet_name="Approvals", header=0)
+        return df[["approval_id", "account_id", "approval_type",
+                   "approved_plan", "approved_price", "effective_date",
+                   "expiry_date", "approval_status"]]
+    except (KeyError, ValueError):
+        return pd.DataFrame(columns=["approval_id", "account_id", "approval_type",
+                                     "approved_plan", "approved_price",
+                                     "effective_date", "expiry_date", "approval_status"])
+
+
+def run_audit(config_path):
+    cfg = load_config(config_path)
+    data_dir = cfg["data_dir"]
+    out_dir = cfg["out_dir"]
+    migration_date = cfg["migration_effective_date"]
+
+    os.makedirs(out_dir, exist_ok=True)
+
+    # Load inputs
+    accounts_df = pd.read_csv(os.path.join(data_dir, "legacy_accounts.csv"))
+    events_df = pd.read_csv(os.path.join(data_dir, "product_usage_events.csv"),
+                            parse_dates=["event_date"])
+    contracts = {}
+    with open(os.path.join(data_dir, "contract_terms.jsonl")) as f:
+        for line in f:
+            rec = json.loads(line.strip())
+            contracts[rec["account_id"]] = rec
+    approvals_df = load_exception_approvals(data_dir)
+    assignments_df = pd.read_csv(os.path.join(data_dir, "new_plan_assignments.csv"))
+
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from rules import determine_expected_plan
+    from pricing import calculate_expected_price, apply_price_exception
+
+    contracts_df = pd.DataFrame(contracts.values())
+    audit_rows = []
+    for _, acct in accounts_df.iterrows():
+        account_id = acct["account_id"]
+        legacy_plan = acct["legacy_plan"]
+        seats = int(acct["current_seats"])
+        contract_row = contracts.get(account_id)
+
+        usage_tier, expected_plan = determine_expected_plan(
+            account_id, legacy_plan, events_df, approvals_df,
+            contracts_df=contracts_df,
+            migration_effective_date=migration_date
+        )
+
+        computed_price = calculate_expected_price(
+            expected_plan, seats, contract_row, migration_date
+        )
+        expected_price = apply_price_exception(
+            account_id, computed_price, approvals_df, migration_date
+        )
+
+        assignment = assignments_df[assignments_df["account_id"] == account_id]
+        assigned_plan = assignment["assigned_new_plan"].values[0]
+        assigned_price = float(assignment["assigned_monthly_price"].values[0])
+
+        # Determine violation type
+        violation_type = _determine_violation(
+            account_id, usage_tier, expected_plan, assigned_plan,
+            expected_price, assigned_price, approvals_df, contracts,
+            migration_date
+        )
+
+        migration_status = "pass" if violation_type == "no_violation" else "fail"
+
+        revenue_impact = round(expected_price - assigned_price, 2)
+
+        audit_rows.append({
+            "account_id": account_id,
+            "legacy_plan": legacy_plan,
+            "usage_tier": usage_tier,
+            "expected_new_plan": expected_plan,
+            "assigned_new_plan": assigned_plan,
+            "expected_monthly_price": expected_price,
+            "assigned_monthly_price": assigned_price,
+            "migration_status": migration_status,
+            "violation_type": violation_type,
+            "revenue_impact_usd": revenue_impact,
+        })
+
+    audit_df = pd.DataFrame(audit_rows)
+    audit_df.to_csv(os.path.join(out_dir, "migration_audit.csv"), index=False)
+
+    failed = audit_df[audit_df["migration_status"] == "fail"]
+    passed = audit_df[audit_df["migration_status"] == "pass"]
+    violation_counts = failed["violation_type"].value_counts().to_dict()
+
+    violations_summary = {
+        "total_accounts": len(audit_df),
+        "failed_accounts": len(failed),
+        "passed_accounts": len(passed),
+        "violation_counts": {
+            "wrong_plan": violation_counts.get("wrong_plan", 0),
+            "wrong_price_floor": violation_counts.get("wrong_price_floor", 0),
+        },
+    }
+
+    with open(os.path.join(out_dir, "rule_violations.json"), "w") as f:
+        json.dump(violations_summary, f, indent=2)
+
+    # revenue_impact_summary.csv
+    overcharges = audit_df[audit_df["revenue_impact_usd"] > 0]["revenue_impact_usd"]
+    undercharges = audit_df[audit_df["revenue_impact_usd"] < 0]["revenue_impact_usd"]
+    summary_rows = [
+        {"metric": "total_overcharge_usd",
+         "value": round(overcharges.sum(), 2)},
+        {"metric": "total_undercharge_usd",
+         "value": round(abs(undercharges.sum()), 2)},
+        {"metric": "net_revenue_impact_usd",
+         "value": round(audit_df["revenue_impact_usd"].sum(), 2)},
+        {"metric": "absolute_revenue_impact_usd",
+         "value": round(audit_df["revenue_impact_usd"].abs().sum(), 2)},
+        {"metric": "failed_account_count",
+         "value": len(failed)},
+    ]
+    pd.DataFrame(summary_rows).to_csv(
+        os.path.join(out_dir, "revenue_impact_summary.csv"), index=False
+    )
+
+    # exception_review.csv
+    review_rows = _build_exception_review(
+        approvals_df, audit_df, migration_date
+    )
+    pd.DataFrame(review_rows).to_csv(
+        os.path.join(out_dir, "exception_review.csv"), index=False
+    )
+
+
+def _determine_violation(account_id, usage_tier, expected_plan, assigned_plan,
+                         expected_price, assigned_price, approvals_df,
+                         contracts, migration_date):
+    """Determine the primary violation type for an account."""
+    if assigned_plan != expected_plan:
+        return "wrong_plan"
+    if abs(assigned_price - expected_price) > 0.01:
+        return "wrong_price_floor"
+    return "no_violation"
+
+
+def _build_exception_review(approvals_df, audit_df, migration_date):
+    rows = []
+    if approvals_df is None or approvals_df.empty:
+        return rows
+    for _, row in approvals_df.iterrows():
+        account_id = row["account_id"]
+        approval_id = row["approval_id"]
+        exc_type = row.get("approval_type", row.get("exception_type", ""))
+        expiry = row.get("expiry_date")
+        try:
+            is_valid = pd.Timestamp(expiry) >= pd.Timestamp(migration_date)
+        except Exception:
+            is_valid = True
+        rows.append({
+            "account_id": account_id,
+            "approval_id": approval_id,
+            "exception_type": exc_type,
+            "expiry_date": str(expiry)[:10] if pd.notna(expiry) else "",
+            "is_valid_on_migration_date": is_valid,
+            "applied_to_expected_result": is_valid,
+            "review_status": "valid_applied" if is_valid else "not_applicable",
+        })
+    return rows
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", required=True)
+    args = parser.parse_args()
+    run_audit(args.config)
+[?2004hroot@0b4028be52bb:~# head -n 20 /root/data/legacy_accounts.csv
+[?2004laccount_id,company_name,legacy_plan,segment,region,current_seats,migration_effective_date
+acct_001,Northstar Labs,Legacy Starter,SMB,NA,8,2026-04-01
+acct_002,Bluefield Systems,Legacy Growth,Mid-Market,EU,15,2026-04-01
+acct_003,Copperline AI,Legacy Pro,Enterprise,NA,30,2026-04-01
+acct_004,Dawnridge Corp,Legacy Starter,SMB,NA,5,2026-04-01
+acct_005,Ember Analytics,Legacy Growth,Mid-Market,EU,20,2026-04-01
+acct_006,Foxgate Solutions,Legacy Starter,SMB,NA,25,2026-04-01
+acct_007,Greenfield SaaS,Legacy Growth,Mid-Market,EU,35,2026-04-01
+acct_008,Highpoint Data,Legacy Pro,Enterprise,NA,40,2026-04-01
+acct_013,Meridian Cloud,Legacy Growth,Enterprise,EU,55,2026-04-01
+[?2004hroot@0b4028be52bb:~# cat /root/project/audit_migration.py
+[?2004l"""audit_migration.py - Main migration audit orchestration script."""
+
+import argparse
+import json
+import os
+import sys
+
+import pandas as pd
+import yaml
+
+
+def load_config(config_path):
+    with open(config_path) as f:
+        return yaml.safe_load(f)
+
+
+def load_exception_approvals(data_dir):
+    """Load exception approvals from the approvals workbook."""
+    path = os.path.join(data_dir, "exception_approvals.xlsx")
+    try:
+        df = pd.read_excel(path, sheet_name="Approvals", header=0)
+        return df[["approval_id", "account_id", "approval_type",
+                   "approved_plan", "approved_price", "effective_date",
+                   "expiry_date", "approval_status"]]
+    except (KeyError, ValueError):
+        return pd.DataFrame(columns=["approval_id", "account_id", "approval_type",
+                                     "approved_plan", "approved_price",
+                                     "effective_date", "expiry_date", "approval_status"])
+
+
+def run_audit(config_path):
+    cfg = load_config(config_path)
+    data_dir = cfg["data_dir"]
+    out_dir = cfg["out_dir"]
+    migration_date = cfg["migration_effective_date"]
+
+    os.makedirs(out_dir, exist_ok=True)
+
+    # Load inputs
+    accounts_df = pd.read_csv(os.path.join(data_dir, "legacy_accounts.csv"))
+    events_df = pd.read_csv(os.path.join(data_dir, "product_usage_events.csv"),
+                            parse_dates=["event_date"])
+    contracts = {}
+    with open(os.path.join(data_dir, "contract_terms.jsonl")) as f:
+        for line in f:
+            rec = json.loads(line.strip())
+            contracts[rec["account_id"]] = rec
+    approvals_df = load_exception_approvals(data_dir)
+    assignments_df = pd.read_csv(os.path.join(data_dir, "new_plan_assignments.csv"))
+
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from rules import determine_expected_plan
+    from pricing import calculate_expected_price, apply_price_exception
+
+    contracts_df = pd.DataFrame(contracts.values())
+    audit_rows = []
+    for _, acct in accounts_df.iterrows():
+        account_id = acct["account_id"]
+        legacy_plan = acct["legacy_plan"]
+        seats = int(acct["current_seats"])
+        contract_row = contracts.get(account_id)
+
+        usage_tier, expected_plan = determine_expected_plan(
+            account_id, legacy_plan, events_df, approvals_df,
+            contracts_df=contracts_df,
+            migration_effective_date=migration_date
+        )
+
+        computed_price = calculate_expected_price(
+            expected_plan, seats, contract_row, migration_date
+        )
+        expected_price = apply_price_exception(
+            account_id, computed_price, approvals_df, migration_date
+        )
+
+        assignment = assignments_df[assignments_df["account_id"] == account_id]
+        assigned_plan = assignment["assigned_new_plan"].values[0]
+        assigned_price = float(assignment["assigned_monthly_price"].values[0])
+
+        # Determine violation type
+        violation_type = _determine_violation(
+            account_id, usage_tier, expected_plan, assigned_plan,
+            expected_price, assigned_price, approvals_df, contracts,
+            migration_date
+        )
+
+        migration_status = "pass" if violation_type == "no_violation" else "fail"
+
+        revenue_impact = round(expected_price - assigned_price, 2)
+
+        audit_rows.append({
+            "account_id": account_id,
+            "legacy_plan": legacy_plan,
+            "usage_tier": usage_tier,
+            "expected_new_plan": expected_plan,
+            "assigned_new_plan": assigned_plan,
+            "expected_monthly_price": expected_price,
+            "assigned_monthly_price": assigned_price,
+            "migration_status": migration_status,
+            "violation_type": violation_type,
+            "revenue_impact_usd": revenue_impact,
+        })
+
+    audit_df = pd.DataFrame(audit_rows)
+    audit_df.to_csv(os.path.join(out_dir, "migration_audit.csv"), index=False)
+
+    failed = audit_df[audit_df["migration_status"] == "fail"]
+    passed = audit_df[audit_df["migration_status"] == "pass"]
+    violation_counts = failed["violation_type"].value_counts().to_dict()
+
+    violations_summary = {
+        "total_accounts": len(audit_df),
+        "failed_accounts": len(failed),
+        "passed_accounts": len(passed),
+        "violation_counts": {
+            "wrong_plan": violation_counts.get("wrong_plan", 0),
+            "wrong_price_floor": violation_counts.get("wrong_price_floor", 0),
+        },
+    }
+
+    with open(os.path.join(out_dir, "rule_violations.json"), "w") as f:
+        json.dump(violations_summary, f, indent=2)
+
+    # revenue_impact_summary.csv
+    overcharges = audit_df[audit_df["revenue_impact_usd"] > 0]["revenue_impact_usd"]
+    undercharges = audit_df[audit_df["revenue_impact_usd"] < 0]["revenue_impact_usd"]
+    summary_rows = [
+        {"metric": "total_overcharge_usd",
+         "value": round(overcharges.sum(), 2)},
+        {"metric": "total_undercharge_usd",
+         "value": round(abs(undercharges.sum()), 2)},
+        {"metric": "net_revenue_impact_usd",
+         "value": round(audit_df["revenue_impact_usd"].sum(), 2)},
+        {"metric": "absolute_revenue_impact_usd",
+         "value": round(audit_df["revenue_impact_usd"].abs().sum(), 2)},
+        {"metric": "failed_account_count",
+         "value": len(failed)},
+    ]
+    pd.DataFrame(summary_rows).to_csv(
+        os.path.join(out_dir, "revenue_impact_summary.csv"), index=False
+    )
+
+    # exception_review.csv
+    review_rows = _build_exception_review(
+        approvals_df, audit_df, migration_date
+    )
+    pd.DataFrame(review_rows).to_csv(
+        os.path.join(out_dir, "exception_review.csv"), index=False
+    )
+
+
+def _determine_violation(account_id, usage_tier, expected_plan, assigned_plan,
+                         expected_price, assigned_price, approvals_df,
+                         contracts, migration_date):
+    """Determine the primary violation type for an account."""
+    if assigned_plan != expected_plan:
+        return "wrong_plan"
+    if abs(assigned_price - expected_price) > 0.01:
+        return "wrong_price_floor"
+    return "no_violation"
+
+
+def _build_exception_review(approvals_df, audit_df, migration_date):
+    rows = []
+    if approvals_df is None or approvals_df.empty:
+        return rows
+    for _, row in approvals_df.iterrows():
+        account_id = row["account_id"]
+        approval_id = row["approval_id"]
+        exc_type = row.get("approval_type", row.get("exception_type", ""))
+        expiry = row.get("expiry_date")
+        try:
+            is_valid = pd.Timestamp(expiry) >= pd.Timestamp(migration_date)
+        except Exception:
+            is_valid = True
+        rows.append({
+            "account_id": account_id,
+            "approval_id": approval_id,
+            "exception_type": exc_type,
+            "expiry_date": str(expiry)[:10] if pd.notna(expiry) else "",
+            "is_valid_on_migration_date": is_valid,
+            "applied_to_expected_result": is_valid,
+            "review_status": "valid_applied" if is_valid else "not_applicable",
+        })
+    return rows
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", required=True)
+    args = parser.parse_args()
+    run_audit(args.config)
+[?2004hroot@0b4028be52bb:~# head -n 5 /root/data/product_usage_events.csv
+[?2004laccount_id,event_date,api_calls,active_users
+acct_001,2026-01-10,60000,8
+acct_001,2026-02-14,50000,7
+acct_001,2026-03-20,40000,8
+acct_001,2026-04-12,150000,8
+[?2004hroot@0b4028be52bb:~# head -n 5 /root/data/contract_terms.jsonl
+[?2004l{"account_id": "acct_001", "contract_start_date": "2024-04-01", "contract_end_date": "2027-03-31", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_002", "contract_start_date": "2025-01-15", "contract_end_date": "2026-01-14", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_003", "contract_start_date": "2024-07-01", "contract_end_date": "2027-06-30", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_004", "contract_start_date": "2025-03-01", "contract_end_date": "2026-02-28", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_005", "contract_start_date": "2025-06-01", "contract_end_date": "2026-05-31", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+[?2004hroot@0b4028be52bb:~# python3 -c "import pandas as pd; df = pd.read_excel('/root/data/exception_approvals.xlsx'); print(df.columns); print(df.head(2))"
+[?2004lIndex(['k', 'v'], dtype='object')
+       k     v
+0  PR_E1  4200
+1  PR_A8   800
+[?2004hroot@0b4028be52bb:~# python3 -c "import openpyxl; wb = openpyxl.load_workbook('/root/data/exception_approvals.xlsx'); print(wb.sheetnames)"
+[?2004l['Ref_R4', 'Ref_M3', 'Ref_X7', 'Approvals_Archive', 'Approvals', 'Approvals_Q1']
+[?2004hroot@0b4028be52bb:~# python3 -c "import pandas as pd; df = pd.read_excel('/root/data/exception_approvals.xlsx', sheet_name='Approvals'); print(df.columns); print(df.head(5))"
+[?2004lIndex(['Pricing Exception Approval Export', 'Unnamed: 1', 'Unnamed: 2',
+       'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7',
+       'Unnamed: 8'],
+      dtype='object')
+  Pricing Exception Approval Export  Unnamed: 1      Unnamed: 2       Unnamed: 3      Unnamed: 4   Unnamed: 5     Unnamed: 6      Unnamed: 7 Unnamed: 8
+0              Generated 2026-04-02         NaN             NaN              NaN             NaN          NaN            NaN             NaN        NaN
+1                 Internal use only         NaN             NaN              NaN             NaN          NaN            NaN             NaN        NaN
+2                               NaN         NaN             NaN              NaN             NaN          NaN            NaN             NaN        NaN
+3                       Approval ID  Account ID  Exception Type           Status  Effective Date  Expiry Date  Approved Plan  Approved Price        NaN
+4                       approval_id  account_id   approval_type  approval_status  effective_date  expiry_date  approved_plan  approved_price      b_key
+[?2004hroot@0b4028be52bb:~# python3 -c "import pandas as pd; df = pd.read_excel('/root/data/exception_approvals.xlsx', sheet_name='Approvals', header=None); print(df.iloc[:15])"
+[?2004l                                    0           1               2                3               4            5              6               7      8
+0   Pricing Exception Approval Export         NaN             NaN              NaN             NaN          NaN            NaN             NaN    NaN
+1                Generated 2026-04-02         NaN             NaN              NaN             NaN          NaN            NaN             NaN    NaN
+2                   Internal use only         NaN             NaN              NaN             NaN          NaN            NaN             NaN    NaN
+3                                 NaN         NaN             NaN              NaN             NaN          NaN            NaN             NaN    NaN
+4                         Approval ID  Account ID  Exception Type           Status  Effective Date  Expiry Date  Approved Plan  Approved Price    NaN
+5                         approval_id  account_id   approval_type  approval_status  effective_date  expiry_date  approved_plan  approved_price  b_key
+6                             EXC-001    acct_004   plan_override         Approved      2026-01-15   2026-06-30            NaN             NaN   PK01
+7                             EXC-002    acct_005   plan_override          Expired      2026-01-20   2026-03-31     Enterprise             NaN   PK03
+8                            EXC-003A    acct_008  price_override       Superseded      2025-11-01   2026-12-31            NaN            4200   PK02
+9                             EXC-003    acct_008  price_override         approved      2026-02-01   2026-12-31            NaN             NaN   PK02
+10                            EXC-005    acct_013  price_override         APPROVED      2025-11-01   2027-06-30            NaN             NaN   PK02
+[?2004hroot@0b4028be52bb:~# python3 -c "import pandas as pd; pd.set_option('display.max_columns', None); df = pd.read_excel('/root/data/exception_approvals.xlsx', sheet_name='Approvals', header=None); print(df.iloc[:15])"
+[?2004l                                    0           1               2  \
+0   Pricing Exception Approval Export         NaN             NaN   
+1                Generated 2026-04-02         NaN             NaN   
+2                   Internal use only         NaN             NaN   
+3                                 NaN         NaN             NaN   
+4                         Approval ID  Account ID  Exception Type   
+5                         approval_id  account_id   approval_type   
+6                             EXC-001    acct_004   plan_override   
+7                             EXC-002    acct_005   plan_override   
+8                            EXC-003A    acct_008  price_override   
+9                             EXC-003    acct_008  price_override   
+10                            EXC-005    acct_013  price_override   
+
+                  3               4            5              6  \
+0               NaN             NaN          NaN            NaN   
+1               NaN             NaN          NaN            NaN   
+2               NaN             NaN          NaN            NaN   
+3               NaN             NaN          NaN            NaN   
+4            Status  Effective Date  Expiry Date  Approved Plan   
+5   approval_status  effective_date  expiry_date  approved_plan   
+6          Approved      2026-01-15   2026-06-30            NaN   
+7           Expired      2026-01-20   2026-03-31     Enterprise   
+8        Superseded      2025-11-01   2026-12-31            NaN   
+9          approved      2026-02-01   2026-12-31            NaN   
+10         APPROVED      2025-11-01   2027-06-30            NaN   
+
+                 7      8  
+0              NaN    NaN  
+1              NaN    NaN  
+2              NaN    NaN  
+3              NaN    NaN  
+4   Approved Price    NaN  
+5   approved_price  b_key  
+6              NaN   PK01  
+7              NaN   PK03  
+8             4200   PK02  
+9              NaN   PK02  
+10             NaN   PK02  
+[?2004hroot@0b4028be52bb:~# python3 -c "import pandas as pd; df = pd.read_excel('/root/data/exception_approvals.xlsx', sheet_name='Approvals', header=5); print(df)"
+[?2004l  approval_id account_id   approval_type approval_status effective_date expiry_date approved_plan  approved_price b_key
+0     EXC-001   acct_004   plan_override        Approved     2026-01-15  2026-06-30           NaN             NaN  PK01
+1     EXC-002   acct_005   plan_override         Expired     2026-01-20  2026-03-31    Enterprise             NaN  PK03
+2    EXC-003A   acct_008  price_override      Superseded     2025-11-01  2026-12-31           NaN          4200.0  PK02
+3     EXC-003   acct_008  price_override        approved     2026-02-01  2026-12-31           NaN             NaN  PK02
+4     EXC-005   acct_013  price_override        APPROVED     2025-11-01  2027-06-30           NaN             NaN  PK02
+[?2004hroot@0b4028be52bb:~# python3 -c "import pandas as pd; df = pd.read_excel('/root/data/exception_approvals.xlsx', sheet_name='Approvals', header=5); print(df.to_string())"
+[?2004l  approval_id account_id   approval_type approval_status effective_date expiry_date approved_plan  approved_price b_key
+0     EXC-001   acct_004   plan_override        Approved     2026-01-15  2026-06-30           NaN             NaN  PK01
+1     EXC-002   acct_005   plan_override         Expired     2026-01-20  2026-03-31    Enterprise             NaN  PK03
+2    EXC-003A   acct_008  price_override      Superseded     2025-11-01  2026-12-31           NaN          4200.0  PK02
+3     EXC-003   acct_008  price_override        approved     2026-02-01  2026-12-31           NaN             NaN  PK02
+4     EXC-005   acct_013  price_override        APPROVED     2025-11-01  2027-06-30           NaN             NaN  PK02
+[?2004hroot@0b4028be52bb:~# python3 -c "import sys; sys.path.insert(0, '/root/project'); from audit_migration import load_exception_approvals; print(load_exception_approvals('/root/data'))"
+[?2004lEmpty DataFrame
+Columns: [approval_id, account_id, approval_type, approved_plan, approved_price, effective_date, expiry_date, approval_status]
+Index: []
+[?2004hroot@0b4028be52bb:~# python3 -c "import sys; sys.path.insert(0, '/root/project'); from audit_migration import load_exception_approvals; df = load_exception_approvals('/root/data'); print(df.shape); print(df.columns)"
+[?2004l(0, 8)
+Index(['approval_id', 'account_id', 'approval_type', 'approved_plan',
+       'approved_price', 'effective_date', 'expiry_date', 'approval_status'],
+      dtype='object')
+[?2004hroot@0b4028be52bb:~# cat /root/data/product_usage_events.csv
+[?2004laccount_id,event_date,api_calls,active_users
+acct_001,2026-01-10,60000,8
+acct_001,2026-02-14,50000,7
+acct_001,2026-03-20,40000,8
+acct_001,2026-04-12,150000,8
+acct_002,2026-01-10,30000,12
+acct_002,2026-02-18,25000,14
+acct_002,2026-03-22,25000,13
+acct_002,2026-04-05,350000,15
+acct_002,2026-04-20,300000,15
+acct_003,2026-01-08,70000,28
+acct_003,2026-02-12,80000,30
+acct_003,2026-03-19,50000,29
+acct_003,2026-04-10,180000,29
+acct_004,2026-01-20,20000,4
+acct_004,2026-02-25,15000,5
+acct_004,2026-03-28,15000,5
+acct_004,2026-04-15,60000,5
+acct_005,2026-01-05,100000,18
+acct_005,2026-02-10,120000,20
+acct_005,2026-03-15,80000,19
+acct_005,2026-04-08,280000,19
+acct_006,2026-01-12,80000,23
+acct_006,2026-02-16,100000,25
+acct_006,2026-03-21,70000,24
+acct_006,2026-04-11,260000,24
+acct_007,2026-01-07,100000,33
+acct_007,2026-01-28,50000,34
+acct_007,2026-02-11,140000,35
+acct_007,2026-03-18,110000,34
+acct_007,2026-04-09,420000,35
+acct_008,2026-01-14,35000,38
+acct_008,2026-02-19,35000,40
+acct_008,2026-03-24,30000,39
+acct_008,2026-04-14,110000,39
+acct_013,2026-01-08,180000,53
+acct_013,2026-01-30,50000,54
+acct_013,2026-02-15,200000,55
+acct_013,2026-03-20,120000,53
+acct_013,2026-04-09,80000,52
+[?2004hroot@0b4028be52bb:~# python3 -c "import pandas as pd; m_dt = pd.Timestamp('2026-04-01'); print(m_dt - pd.Timedelta(days=90))"
+[?2004l2026-01-01 00:00:00
+[?2004hroot@0b4028be52bb:~# cat /root/data/contract_terms.jsonl
+[?2004l{"account_id": "acct_001", "contract_start_date": "2024-04-01", "contract_end_date": "2027-03-31", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_002", "contract_start_date": "2025-01-15", "contract_end_date": "2026-01-14", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_003", "contract_start_date": "2024-07-01", "contract_end_date": "2027-06-30", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_004", "contract_start_date": "2025-03-01", "contract_end_date": "2026-02-28", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_005", "contract_start_date": "2025-06-01", "contract_end_date": "2026-05-31", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_006", "contract_start_date": "2024-10-01", "contract_end_date": "2027-09-30", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_007", "contract_start_date": "2025-07-01", "contract_end_date": "2027-06-30", "grandfathered_until": "2026-06-30", "price_floor_discount_pct": 15, "notes": "Eligible for temporary price floor protection"}
+{"account_id": "acct_008", "contract_start_date": "2024-02-01", "contract_end_date": "2027-01-31", "grandfathered_until": null, "price_floor_discount_pct": 0.0, "notes": ""}
+{"account_id": "acct_013", "contract_start_date": "2025-08-01", "contract_end_date": "2027-07-31", "grandfathered_until": "2026-12-31", "price_floor_discount_pct": 0.1, "notes": "Eligible for temporary price floor protection"}
+[?2004hroot@0b4028be52bb:~# cat /root/data/new_plan_assignments.csv
+[?2004laccount_id,assigned_new_plan,assigned_monthly_price,loaded_by
+acct_001,Scale,1200.0,migration_batch
+acct_002,Enterprise,4200.0,migration_batch
+acct_003,Scale,1200.0,migration_batch
+acct_004,Scale,1200.0,migration_batch
+acct_005,Enterprise,4200.0,migration_batch
+acct_006,Scale,1200.0,migration_batch
+acct_007,Scale Plus,2625.0,migration_batch
+acct_008,Enterprise,3500.0,migration_batch
+acct_013,Enterprise,3150.0,migration_batch
+[?2004hroot@0b4028be52bb:~# python3 -c "
+[?2004l[?2004h> import pandas as pd, json, os
+[?2004l[?2004h> data_dir = '/root/data'
+[?2004l[?2004h> accts = pd.read_csv(os.path.join(data_dir, 'legacy_accounts.csv'))
+[?2004l[?2004h> events = pd.read_csv(os.path.join(data_dir, 'product_usage_events.csv'), parse_dates=['event_date'])
+[?2004l[?2004h> print(accts)
+[?2004l[?2004h> "
+[?2004l  account_id       company_name     legacy_plan     segment region  current_seats migration_effective_date
+0   acct_001     Northstar Labs  Legacy Starter         SMB    NaN              8               2026-04-01
+1   acct_002  Bluefield Systems   Legacy Growth  Mid-Market     EU             15               2026-04-01
+2   acct_003      Copperline AI      Legacy Pro  Enterprise    NaN             30               2026-04-01
+3   acct_004     Dawnridge Corp  Legacy Starter         SMB    NaN              5               2026-04-01
+4   acct_005    Ember Analytics   Legacy Growth  Mid-Market     EU             20               2026-04-01
+5   acct_006  Foxgate Solutions  Legacy Starter         SMB    NaN             25               2026-04-01
+6   acct_007    Greenfield SaaS   Legacy Growth  Mid-Market     EU             35               2026-04-01
+7   acct_008     Highpoint Data      Legacy Pro  Enterprise    NaN             40               2026-04-01
+8   acct_013     Meridian Cloud   Legacy Growth  Enterprise     EU             55               2026-04-01
+[?2004hroot@0b4028be52bb:~# python3 -c "
+[?2004l[?2004h> import pandas as pd, os
+[?2004l[?2004h> df_accts = pd.read_csv('/root/data/legacy_accounts.csv')
+[?2004l[?2004h> df_events = pd.read_csv('/root/data/product_usage_events.csv', parse_dates=['event_date'])
+[?2004l[?2004h> 
+[?2004l[?2004h> m_dt = pd.Timestamp('2026-04-01')
+[?2004l[?2004h> start_dt = m_dt - pd.Timedelta(days=90)
+[?2004l[?2004h> 
+[?2004l[?2004h> for _, r in df_accts.iterrows():
+[?2004l[?2004h>     acct_id = r['account_id']
+[?2004l[?2004h>     legacy_plan = r['legacy_plan']
+[?2004l[?2004h>     seats = r['current_seats']
+[?2004l[?2004h>     # filter events
+[?2004l[?2004h>     acct_evs = df_events[(df_events['account_id'] == acct_id) & (df_events['event_date'] >= start_dt) & (df_events['event_date'] < m_dt)]
+[?2004l[?2004h>     calls = acct_evs['api_calls'].sum()
+[?2004l[?2004h>     if calls < 100000:
+[?2004l[?2004h>         tier = 'Low'
+[?2004l[?2004h>     elif calls < 500000:
+[?2004l[?2004h>         tier = 'Medium'
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         tier = 'High'
+[?2004l[?2004h>     print(f'{acct_id}: legacy={legacy_plan}, seats={seats}, api_calls={calls}, tier={tier}')
+[?2004l[?2004h> "
+[?2004lacct_001: legacy=Legacy Starter, seats=8, api_calls=150000, tier=Medium
+acct_002: legacy=Legacy Growth, seats=15, api_calls=80000, tier=Low
+acct_003: legacy=Legacy Pro, seats=30, api_calls=200000, tier=Medium
+acct_004: legacy=Legacy Starter, seats=5, api_calls=50000, tier=Low
+acct_005: legacy=Legacy Growth, seats=20, api_calls=300000, tier=Medium
+acct_006: legacy=Legacy Starter, seats=25, api_calls=250000, tier=Medium
+acct_007: legacy=Legacy Growth, seats=35, api_calls=400000, tier=Medium
+acct_008: legacy=Legacy Pro, seats=40, api_calls=100000, tier=Medium
+acct_013: legacy=Legacy Growth, seats=55, api_calls=550000, tier=High
+[?2004hroot@0b4028be52bb:~# python3 -c "
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> for s in ['Ref_R4', 'Ref_M3', 'Ref_X7']:
+[?2004l[?2004h>     try:
+[?2004l[?2004h>         df = pd.read_excel('/root/data/exception_approvals.xlsx', sheet_name=s)
+[?2004l[?2004h>         print(f'=== Sheet {s} ===')
+[?2004l[?2004h>         print(df.to_string())
+[?2004l[?2004h>     except Exception as e:
+[?2004l[?2004h>         print(s, e)
+[?2004l[?2004h> "
+[?2004l=== Sheet Ref_R4 ===
+         k     v
+0    PR_E1  4200
+1    PR_A8   800
+2   PR_EP1  7200
+3   PR_SF1    75
+4  PR_HALF  2100
+5  PR_PRE1  3400
+6  PR_PRE2  3475
+7  PR_PRE3  3750
+=== Sheet Ref_M3 ===
+      b     rk
+0  PK01  PR_E1
+1  PK02  PR_E1
+2  PK03  PR_E1
+=== Sheet Ref_X7 ===
+  approval_id account_id tgt_plan branch_flag     z9
+0     EXC-001   acct_004   Launch        PK01  Scale
+[?2004hroot@0b4028be52bb:~# python3 -c "
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> with pd.ExcelFile('/root/data/exception_approvals.xlsx') as xls:
+[?2004l[?2004h>     for sheet in xls.sheet_names:
+[?2004l[?2004h>         df = pd.read_excel(xls, sheet_name=sheet)
+[?2004l[?2004h>         print(f'=== {sheet} ===')
+[?2004l[?2004h>         print(df.to_string())
+[?2004l[?2004h> "
+[?2004l=== Ref_R4 ===
+         k     v
+0    PR_E1  4200
+1    PR_A8   800
+2   PR_EP1  7200
+3   PR_SF1    75
+4  PR_HALF  2100
+5  PR_PRE1  3400
+6  PR_PRE2  3475
+7  PR_PRE3  3750
+=== Ref_M3 ===
+      b     rk
+0  PK01  PR_E1
+1  PK02  PR_E1
+2  PK03  PR_E1
+=== Ref_X7 ===
+  approval_id account_id tgt_plan branch_flag     z9
+0     EXC-001   acct_004   Launch        PK01  Scale
+=== Approvals_Archive ===
+  approval_id account_id   approval_type approval_status effective_date expiry_date approved_plan  approved_price
+0     EXC-001   acct_004   plan_override        Approved     2026-01-15  2026-06-30        Launch             NaN
+1     EXC-003   acct_008  price_override        approved     2026-02-01  2026-12-31           NaN          4200.0
+2    EXC-003A   acct_008  price_override      Superseded     2025-11-01  2026-12-31           NaN          4200.0
+=== Approvals ===
+  Pricing Exception Approval Export  Unnamed: 1      Unnamed: 2       Unnamed: 3      Unnamed: 4   Unnamed: 5     Unnamed: 6      Unnamed: 7 Unnamed: 8
+0              Generated 2026-04-02         NaN             NaN              NaN             NaN          NaN            NaN             NaN        NaN
+1                 Internal use only         NaN             NaN              NaN             NaN          NaN            NaN             NaN        NaN
+2                               NaN         NaN             NaN              NaN             NaN          NaN            NaN             NaN        NaN
+3                       Approval ID  Account ID  Exception Type           Status  Effective Date  Expiry Date  Approved Plan  Approved Price        NaN
+4                       approval_id  account_id   approval_type  approval_status  effective_date  expiry_date  approved_plan  approved_price      b_key
+5                           EXC-001    acct_004   plan_override         Approved      2026-01-15   2026-06-30            NaN             NaN       PK01
+6                           EXC-002    acct_005   plan_override          Expired      2026-01-20   2026-03-31     Enterprise             NaN       PK03
+7                          EXC-003A    acct_008  price_override       Superseded      2025-11-01   2026-12-31            NaN            4200       PK02
+8                           EXC-003    acct_008  price_override         approved      2026-02-01   2026-12-31            NaN             NaN       PK02
+9                           EXC-005    acct_013  price_override         APPROVED      2025-11-01   2027-06-30            NaN             NaN       PK02
+=== Approvals_Q1 ===
+  Approval ID Account ID  Exception Type      Status Effective Date Expiry Date Approved Plan  Approved Price
+0     EXC-001   acct_004   plan_override    Approved     2026-01-15  2026-06-30        Launch             NaN
+1     EXC-003   acct_008  price_override    approved     2026-02-01  2026-12-31           NaN          4200.0
+2    EXC-003A   acct_008  price_override  Superseded     2025-11-01  2026-12-31           NaN          4200.0
+[?2004hroot@0b4028be52bb:~# python3 -c "
+[?2004l[?2004h> # Let's run a test checking how each account assignment is compared to expected
+[?2004l[?2004h> "
+[?2004l[?2004hroot@0b4028be52bb:~# python3 -c "
+[?2004l[?2004h> import pandas as pd, json, os
+[?2004l[?2004h> 
+[?2004l[?2004h> data_dir = '/root/data'
+[?2004l[?2004h> migration_date = '2026-04-01'
+[?2004l[?2004h> 
+[?2004l[?2004h> # 1. Load legacy accounts
+[?2004l[?2004h> accts = pd.read_csv(os.path.join(data_dir, 'legacy_accounts.csv'))
+[?2004l[?2004h> 
+[?2004l[?2004h> # 2. Load events and compute usage tier
+[?2004l[?2004h> events = pd.read_csv(os.path.join(data_dir, 'product_usage_events.csv'), parse_dates=['event_date'])
+[?2004l[?2004h> m_dt = pd.Timestamp(migration_date)
+[?2004l[?2004h> start_dt = m_dt - pd.Timedelta(days=90)
+[?2004l[?2004h> 
+[?2004l[?2004h> def get_usage_tier(acct_id):
+[?2004l[?2004h>     ae = events[(events['account_id'] == acct_id) & (events['event_date'] >= start_dt) & (events['event_date'] < m_dt)]
+[?2004l[?2004h>     calls = ae['api_calls'].sum()
+[?2004l[?2004h>     if calls < 100000: return 'Low'
+[?2004l[?2004h>     elif calls < 500000: return 'Medium'
+[?2004l[?2004h>     else: return 'High'
+[?2004l[?2004h> 
+[?2004l[?2004h> # 3. Load contract terms
+[?2004l[?2004h> contracts = {}
+[?2004l[?2004h> with open(os.path.join(data_dir, 'contract_terms.jsonl')) as f:
+[?2004l[?2004h>     for line in f:
+[?2004l[?2004h>         r = json.loads(line.strip())
+[?2004l[?2004h>         contracts[r['account_id']] = r
+[?2004l[?2004h> 
+[?2004l[?2004h> # 4. Load exceptions and resolve relations
+[?2004l[?2004h> # Read Sheet Approvals
+[?2004l[?2004h> approvals = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Approvals', header=5)
+[?2004l[?2004h> # Read Sheet Ref_X7
+[?2004l[?2004h> ref_x7 = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Ref_X7')
+[?2004l[?2004h> x7_map = ref_x7.set_index('approval_id')['tgt_plan'].to_dict()
+[?2004l[?2004h> # Read Sheet Ref_M3 and Ref_R4
+[?2004l[?2004h> ref_m3 = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Ref_M3')
+[?2004l[?2004h> ref_r4 = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Ref_R4')
+[?2004l[?2004h> m3_map = ref_m3.set_index('b')['rk'].to_dict()
+[?2004l[?2004h> r4_map = ref_r4.set_index('k')['v'].to_dict()
+[?2004l[?2004h> 
+[?2004l[?2004h> # Resolve
+[?2004l[?2004h> for i, row in approvals.iterrows():
+[?2004l[?2004h>     app_id = row['approval_id']
+[?2004l[?2004h>     if pd.isna(row['approved_plan']) and app_id in x7_map:
+[?2004l[?2004h>         approvals.at[i, 'approved_plan'] = x7_map[app_id]
+[?2004l[?2004h>     if pd.isna(row['approved_price']) and pd.notna(row['b_key']):
+[?2004l[?2004h>         b = row['b_key']
+[?2004l[?2004h>         if b in m3_map:
+[?2004l[?2004h>             rk = m3_map[b]
+[?2004l[?2004h>             if rk in r4_map:
+[?2004l[?2004h>                 approvals.at[i, 'approved_price'] = float(r4_map[rk])
+[?2004l[?2004h> 
+[?2004l[?2004h> print(approvals)
+[?2004l[?2004h> "
+[?2004l  approval_id account_id   approval_type approval_status effective_date expiry_date approved_plan  approved_price b_key
+0     EXC-001   acct_004   plan_override        Approved     2026-01-15  2026-06-30        Launch          4200.0  PK01
+1     EXC-002   acct_005   plan_override         Expired     2026-01-20  2026-03-31    Enterprise          4200.0  PK03
+2    EXC-003A   acct_008  price_override      Superseded     2025-11-01  2026-12-31           NaN          4200.0  PK02
+3     EXC-003   acct_008  price_override        approved     2026-02-01  2026-12-31           NaN          4200.0  PK02
+4     EXC-005   acct_013  price_override        APPROVED     2025-11-01  2027-06-30           NaN          4200.0  PK02
+[?2004hroot@0b4028be52bb:~# python3 -c "
+[?2004l    [?2004h> import pandas as pd, json, os
+[?2004l[?2004h> data_dir = '/root/data'
+[?2004l[?2004h> migration_date = '2026-04-01'
+[?2004l[?2004h> m_dt = pd.Timestamp(migration_date)
+[?2004l[?2004h> start_dt = m_dt - pd.Timedelta(days=90)
+[?2004l[?2004h> 
+[?2004l[?2004h> # 1. Load data
+[?2004l[?2004h> accts = pd.read_csv(os.path.join(data_dir, 'legacy_accounts.csv'))
+[?2004l[?2004h> events = pd.read_csv(os.path.join(data_dir, 'product_usage_events.csv'), parse_dates=['event_date'])
+[?2004l[?2004h> assignments = pd.read_csv(os.path.join(data_dir, 'new_plan_assignments.csv'))
+[?2004lba[?2004h> contracts = {}
+[?2004l[?2004h> with open(os.path.join(data_dir, 'contract_terms.jsonl')) as f:
+[?2004l[?2004h>     for line in f:
+[?2004l_obligatio[?2004h>         r = json.loads(line.strip())
+[?2004l[?2004h>         contracts[r['account_id']] = r
+[?2004lps['app[?2004h> 
+[?2004lr[?2004h> # 2. Load exceptions
+[?2004l[?2004h> approvals = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Approvals', header=5)
+[?2004lali[?2004h> ref_x7 = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Ref_X7')
+[?2004l[?2004h> x7_map = ref_x7.set_index('approval_id')['tgt_plan'].to_dict()
+[?2004l[?2004h> ref_m3 = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Ref_M3')
+[?2004l[?2004h> ref_r4 = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Ref_R4')
+[?2004l[?2004h> m3_map = ref_m3.set_index('b')['rk'].to_dict()
+[?2004l[?2004h> r4_map = ref_r4.set_index('k')['v'].to_dict()
+[?2004l[?2004h> 
+[?2004l_[?2004h> for i, row in approvals.iterrows():
+[?2004l[?2004h>     app_id = row['approval_id']
+[?2004lG[?2004h>     if pd.isna(row['approved_plan']) and app_id in x7_map:
+[?2004l[?2004h>         approvals.at[i, 'approved_plan'] = x7_map[app_id]
+[?2004l[?2004h>     if pd.isna(row['approved_price']) and pd.notna(row['b_key']):
+[?2004l[?2004h>         b = row['b_key']
+[?2004l[?2004h>         if b in m3_map:
+[?2004l[?2004h>             rk = m3_map[b]
+[?2004l[?2004h>             if rk in r4_map:
+[?2004l[?2004h>                 approvals.at[i, 'approved_price'] = float(r4_map[rk])
+[?2004l[?2004h> 
+[?2004l[?2004h> # Helper function to check if approval is valid on migration date
+[?2004l[?2004h> def is_valid_approval(row):
+[?2004l[?2004h>     status = str(row['approval_status']).strip().lower()
+[?2004l[?2004h>     if status != 'approved':
+[?2004l[?2004h>         return False
+[?2004l[?2004h>     try:
+[?2004l[?2004h>         eff = pd.Timestamp(row['effective_date'])
+[?2004l[?2004h>         exp = pd.Timestamp(row['expiry_date'])
+[?2004l[?2004h>         return eff <= m_dt and exp >= m_dt
+[?2004l[?2004h>     exceptException:
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h> PLAN_MAPPING = {
+[?2004l[?2004h>     ('Legacy Starter',    'Low'):    'Launch',
+[?2004l[?2004h>     ('Legacy Starter',    'Medium'): 'Scale',
+[?2004l[?2004h>     ('Legacy Starter',    'High'):   'Scale Plus',
+[?2004l[?2004h>     ('Legacy Growth',     'Low'):    'Scale',
+[?2004l[?2004h>     ('Legacy Growth',     'Medium'): 'Scale Plus',
+[?2004l[?2004h>     ('Legacy Growth',     'High'):   'Enterprise',
+[?2004l[?2004h>     ('Legacy Pro',        'Low'):    'Scale Plus',
+[?2004l[?2004h>     ('Legacy Pro',        'Medium'): 'Enterprise',
+[?2004l[?2004h>     ('Legacy Pro',        'High'):   'Enterprise Plus',
+[?2004l[?2004h>     ('Legacy Enterprise', 'Low'):    'Enterprise Plus',
+[?2004l[?2004h>     ('Legacy Enterprise', 'Medium'): 'Enterprise Plus',
+[?2004l[?2004h>     ('Legacy Enterprise', 'High'):   'Enterprise Plus',
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> BASE_PRICES = {
+[?2004l[?2004h>     'Launch': 500.0, 'Scale': 1200.0, 'Scale Plus': 2200.0, 'Enterprise': 4200.0, 'Enterprise Plus': 7200.0
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> SEAT_FLOORS = {
+[?2004l[?2004h>     'Launch': 50.0, 'Scale': 60.0, 'Scale Plus': 75.0, 'Enterprise': 90.0, 'Enterprise Plus': 110.0
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> for _, r in accts.iterrows():
+[?2004l[?2004h>     acct_id = r['account_id']
+[?2004l[?2004h>     legacy_plan = r['legacy_plan']
+[?2004l[?2004h>     seats = int(r['current_seats'])
+[?2004l[?2004h>     
+[?2004l[?2004h>     # usage tier
+[?2004l[?2004h>     ae = events[(events['account_id'] == acct_id) & (events['event_date'] >= start_dt) & (events['event_date'] < m_dt)]
+[?2004l[?2004h>     calls = ae['api_calls'].sum()
+[?2004l[?2004h>     if calls < 100000: tier = 'Low'
+[?2004l[?2004h>     elif calls < 500000: tier = 'Medium'
+[?2004l[?2004h>     else: tier = 'High'
+[?2004l[?2004h>     
+[?2004l[?2004h>     # default plan
+[?2004l[?2004h>     def_plan = PLAN_MAPPING.get((legacy_plan, tier))
+[?2004l[?2004h>     
+[?2004l[?2004h>     # plan approvals
+[?2004l[?2004h>     acct_apps = approvals[approvals['account_id'] == acct_id]
+[?2004l[?2004h>     plan_overrides = acct_apps[acct_apps['approval_type'] == 'plan_override']
+[?2004l[?2004h>     valid_plan_override = None
+[?2004l[?2004h>     for _, app_row in plan_overrides.iterrows():
+[?2004l[?2004h>         if is_valid_approval(app_row):
+[?2004l[?2004h>             valid_plan_override = app_row['approved_plan']
+[?2004l[?2004h>             break
+[?2004l[?2004h>             
+[?2004l[?2004h>     expected_plan = valid_plan_override if valid_plan_override else def_plan
+[?2004l[?2004h>     
+[?2004l[?2004h>     # pricing calculations
+[?2004l[?2004h>     # check grandfathering
+[?2004l[?2004h>     contract = contracts.get(acct_id)
+[?2004l[?2004h>     discount = 0.0
+[?2004l[?2004h>     if contract and contract.get('grandfathered_until'):
+[?2004l[?2004h>         gf_until = pd.Timestamp(contract['grandfathered_until'])
+[?2004l[?2004h>         if gf_until >= m_dt:
+[?2004l[?2004h>             pct = contract.get('price_floor_discount_pct', 0.0)
+[?2004l[?2004h>             # normalize pct
+[?2004l[?2004h>             try:
+[?2004l[?2004h>                 val = float(pct)
+[?2004l[?2004h>                 if val > 1.0: val = val / 100.0
+[?2004l[?2004h>                 discount = val
+[?2004l[?2004h>             except Exception:
+[?2004l[?2004h>                 pass
+[?2004l[?2004h>                 
+[?2004l[?2004h>     floor = SEAT_FLOORS.get(expected_plan, 0.0)
+[?2004l[?2004h>     floor_adjusted = floor * (1.0 - discount)
+[?2004l[?2004h>     seat_obligation = seats * floor_adjusted
+[?2004l[?2004h>     base_price = BASE_PRICES.get(expected_plan, 0.0)
+[?2004l[?2004h>     computed_price = max(base_price, seat_obligation)
+[?2004l[?2004h>     
+[?2004l[?2004h>     # price overrides
+[?2004l[?2004h>     price_overrides = acct_apps[acct_apps['approval_type'] == 'price_override']
+[?2004l[?2004h>     valid_price_override = None
+[?2004l[?2004h>     for _, app_row in price_overrides.iterrows():
+[?2004l[?2004h>         if is_valid_approval(app_row):
+[?2004l[?2004h>             valid_price_override = app_row['approved_price']
+[?2004l[?2004h>             break
+[?2004l[?2004h>             
+[?2004l[?2004h>     expected_price = valid_price_override if valid_price_override is not None else computed_price
+[?2004l[?2004h>     expected_price = round(expected_price, 2)
+[?2004l[?2004h>     
+[?2004l[?2004h>     assign_row = assignments[assignments['account_id'] == acct_id].iloc[0]
+[?2004l[?2004h>     assigned_plan = assign_row['assigned_new_plan']
+[?2004l[?2004h>     assigned_price = float(assign_row['assigned_monthly_price'])
+[?2004l[?2004h>     
+[?2004l[?2004h>     print(f'{acct_id}: EXP_PLAN={expected_plan}, ASSIGN_PLAN={assigned_plan} | EXP_PRICE={expected_price}, ASSIGN_PRICE={assigned_price}')
+[?2004l[?2004h> "
+[?2004l  File "<string>", line 47
+    exceptException:
+    ^^^^^^^^^^^^^^^
+SyntaxError: expected 'except' or 'finally' block
+[?2004hroot@0b4028be52bb:~# python3 -c "
+[?2004l          [?2004h> import pandas as pd, json, os
+[?2004l[?2004h> data_dir = '/root/data'
+[?2004l [?2004h> migration_date = '2026-04-01'
+[?2004l[?2004h> m_dt = pd.Timestamp(migration_date)
+[?2004l[?2004h> start_dt = m_dt - pd.Timedelta(days=90)
+[?2004l[?2004h> 
+[?2004l[?2004h> # 1. Load data
+[?2004l[?2004h> accts = pd.read_csv(os.path.join(data_dir, 'legacy_accounts.csv'))
+[?2004l[?2004h> events = pd.read_csv(os.path.join(data_dir, 'product_usage_events.csv'), parse_dates=['event_date'])
+[?2004l[?2004h> assignments = pd.read_csv(os.path.join(data_dir, 'new_plan_assignments.csv'))
+[?2004l[?2004h> contracts = {}
+[?2004lAS[?2004h> with open(os.path.join(data_dir, 'contract_terms.jsonl')) as f:
+[?2004l[?2004h>     for line in f:
+[?2004l[?2004h>         r = json.loads(line.strip())
+[?2004l[?2004h>         contracts[r['account_id']] = r
+[?2004l[?2004h> 
+[?2004lp[?2004h> # 2. Load exceptions
+[?2004l[?2004h> approvals = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Approvals', header=5)
+[?2004l[?2004h> ref_x7 = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Ref_X7')
+[?2004l[?2004h> x7_map = ref_x7.set_index('approval_id')['tgt_plan'].to_dict()
+[?2004l[?2004h> ref_m3 = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Ref_M3')
+[?2004l[?2004h> ref_r4 = pd.read_excel(os.path.join(data_dir, 'exception_approvals.xlsx'), sheet_name='Ref_R4')
+[?2004l[?2004h> m3_map = ref_m3.set_index('b')['rk'].to_dict()
+[?2004l[?2004h> r4_map = ref_r4.set_index('k')['v'].to_dict()
+[?2004l[?2004h> 
+[?2004l[?2004h> for i, row in approvals.iterrows():
+[?2004l[?2004h>     app_id = row['approval_id']
+[?2004l[?2004h>     if pd.isna(row['approved_plan']) and app_id in x7_map:
+[?2004lIG[?2004h>         approvals.at[i, 'approved_plan'] = x7_map[app_id]
+[?2004l[?2004h>     if pd.isna(row['approved_price']) and pd.notna(row['b_key']):
+[?2004l[?2004h>         b = row['b_key']
+[?2004l[?2004h>         if b in m3_map:
+[?2004l[?2004h>             rk = m3_map[b]
+[?2004l[?2004h>             if rk in r4_map:
+[?2004l[?2004h>                 approvals.at[i, 'approved_price'] = float(r4_map[rk])
+[?2004l[?2004h> 
+[?2004l[?2004h> # Helper function to check if approval is valid on migration date
+[?2004l[?2004h> def is_valid_approval(row):
+[?2004l[?2004h>     status = str(row['approval_status']).strip().lower()
+[?2004l[?2004h>     if status != 'approved':
+[?2004l[?2004h>         return False
+[?2004l[?2004h>     try:
+[?2004l[?2004h>         eff = pd.Timestamp(row['effective_date'])
+[?2004l[?2004h>         exp = pd.Timestamp(row['expiry_date'])
+[?2004l[?2004h>         return eff <= m_dt and exp >= m_dt
+[?2004l[?2004h>     except Exception:
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h> PLAN_MAPPING = {
+[?2004l[?2004h>     ('Legacy Starter',    'Low'):    'Launch',
+[?2004l[?2004h>     ('Legacy Starter',    'Medium'): 'Scale',
+[?2004l[?2004h>     ('Legacy Starter',    'High'):   'Scale Plus',
+[?2004l[?2004h>     ('Legacy Growth',     'Low'):    'Scale',
+[?2004l[?2004h>     ('Legacy Growth',     'Medium'): 'Scale Plus',
+[?2004l[?2004h>     ('Legacy Growth',     'High'):   'Enterprise',
+[?2004l[?2004h>     ('Legacy Pro',        'Low'):    'Scale Plus',
+[?2004l[?2004h>     ('Legacy Pro',        'Medium'): 'Enterprise',
+[?2004l[?2004h>     ('Legacy Pro',        'High'):   'Enterprise Plus',
+[?2004l[?2004h>     ('Legacy Enterprise', 'Low'):    'Enterprise Plus',
+[?2004l[?2004h>     ('Legacy Enterprise', 'Medium'): 'Enterprise Plus',
+[?2004l[?2004h>     ('Legacy Enterprise', 'High'):   'Enterprise Plus',
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> BASE_PRICES = {
+[?2004l[?2004h>     'Launch': 500.0, 'Scale': 1200.0, 'Scale Plus': 2200.0, 'Enterprise': 4200.0, 'Enterprise Plus': 7200.0
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> SEAT_FLOORS = {
+[?2004l[?2004h>     'Launch': 50.0, 'Scale': 60.0, 'Scale Plus': 75.0, 'Enterprise': 90.0, 'Enterprise Plus': 110.0
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> for _, r in accts.iterrows():
+[?2004l[?2004h>     acct_id = r['account_id']
+[?2004l[?2004h>     legacy_plan = r['legacy_plan']
+[?2004l[?2004h>     seats = int(r['current_seats'])
+[?2004l[?2004h>     
+[?2004l[?2004h>     # usage tier
+[?2004l[?2004h>     ae = events[(events['account_id'] == acct_id) & (events['event_date'] >= start_dt) & (events['event_date'] < m_dt)]
+[?2004l[?2004h>     calls = ae['api_calls'].sum()
+[?2004l[?2004h>     if calls < 100000: tier = 'Low'
+[?2004l[?2004h>     elif calls < 500000: tier = 'Medium'
+[?2004l[?2004h>     else: tier = 'High'
+[?2004l[?2004h>     
+[?2004l[?2004h>     # default plan
+[?2004l[?2004h>     def_plan = PLAN_MAPPING.get((legacy_plan, tier))
+[?2004l[?2004h>     
+[?2004l[?2004h>     # plan approvals
+[?2004l[?2004h>     acct_apps = approvals[approvals['account_id'] == acct_id]
+[?2004l[?2004h>     plan_overrides = acct_apps[acct_apps['approval_type'] == 'plan_override']
+[?2004l[?2004h>     valid_plan_override = None
+[?2004l[?2004h>     for _, app_row in plan_overrides.iterrows():
+[?2004l[?2004h>         if is_valid_approval(app_row):
+[?2004l[?2004h>             valid_plan_override = app_row['approved_plan']
+[?2004l[?2004h>             break
+[?2004l[?2004h>             
+[?2004l[?2004h>     expected_plan = valid_plan_override if valid_plan_override else def_plan
+[?2004l[?2004h>     
+[?2004l[?2004h>     # pricing calculations
+[?2004l[?2004h>     # check grandfathering
+[?2004l[?2004h>     contract = contracts.get(acct_id)
+[?2004l[?2004h>     discount = 0.0
+[?2004l[?2004h>     if contract and contract.get('grandfathered_until'):
+[?2004l[?2004h>         gf_until = pd.Timestamp(contract['grandfathered_until'])
+[?2004l[?2004h>         if gf_until >= m_dt:
+[?2004l[?2004h>             pct = contract.get('price_floor_discount_pct', 0.0)
+[?2004l[?2004h>             # normalize pct
+[?2004l[?2004h>             try:
+[?2004l[?2004h>                 val = float(pct)
+[?2004l[?2004h>                 if val > 1.0: val = val / 100.0
+[?2004l[?2004h>                 discount = val
+[?2004l[?2004h>             except Exception:
+[?2004l[?2004h>                 pass
+[?2004l[?2004h>                 
+[?2004l[?2004h>     floor = SEAT_FLOORS.get(expected_plan, 0.0)
+[?2004l[?2004h>     floor_adjusted = floor * (1.0 - discount)
+[?2004l[?2004h>     seat_obligation = seats * floor_adjusted
+[?2004l[?2004h>     base_price = BASE_PRICES.get(expected_plan, 0.0)
+[?2004l[?2004h>     computed_price = max(base_price, seat_obligation)
+[?2004l[?2004h>     
+[?2004l[?2004h>     # price overrides
+[?2004l[?2004h>     price_overrides = acct_apps[acct_apps['approval_type'] == 'price_override']
+[?2004l[?2004h>     valid_price_override = None
+[?2004l[?2004h>     for _, app_row in price_overrides.iterrows():
+[?2004l[?2004h>         if is_valid_approval(app_row):
+[?2004l[?2004h>             valid_price_override = app_row['approved_price']
+[?2004l[?2004h>             break
+[?2004l[?2004h>             
+[?2004l[?2004h>     expected_price = valid_price_override if valid_price_override is not None else computed_price
+[?2004l[?2004h>     expected_price = round(expected_price, 2)
+[?2004l[?2004h>     
+[?2004l[?2004h>     assign_row = assignments[assignments['account_id'] == acct_id].iloc[0]
+[?2004l[?2004h>     assigned_plan = assign_row['assigned_new_plan']
+[?2004l[?2004h>     assigned_price = float(assign_row['assigned_monthly_price'])
+[?2004l[?2004h>     
+[?2004l[?2004h>     print(f'{acct_id}: EXP_PLAN={expected_plan}, ASSIGN_PLAN={assigned_plan} | EXP_PRICE={expected_price}, ASSIGN_PRICE={assigned_price}')
+[?2004l[?2004h> "
+[?2004lacct_001: EXP_PLAN=Scale, ASSIGN_PLAN=Scale | EXP_PRICE=1200.0, ASSIGN_PRICE=1200.0
+acct_002: EXP_PLAN=Scale, ASSIGN_PLAN=Enterprise | EXP_PRICE=1200.0, ASSIGN_PRICE=4200.0
+acct_003: EXP_PLAN=Enterprise, ASSIGN_PLAN=Scale | EXP_PRICE=4200.0, ASSIGN_PRICE=1200.0
+acct_004: EXP_PLAN=Launch, ASSIGN_PLAN=Scale | EXP_PRICE=500.0, ASSIGN_PRICE=1200.0
+acct_005: EXP_PLAN=Scale Plus, ASSIGN_PLAN=Enterprise | EXP_PRICE=2200.0, ASSIGN_PRICE=4200.0
+acct_006: EXP_PLAN=Scale, ASSIGN_PLAN=Scale | EXP_PRICE=1500.0, ASSIGN_PRICE=1200.0
+acct_007: EXP_PLAN=Scale Plus, ASSIGN_PLAN=Scale Plus | EXP_PRICE=2231.25, ASSIGN_PRICE=2625.0
+acct_008: EXP_PLAN=Enterprise, ASSIGN_PLAN=Enterprise | EXP_PRICE=4200.0, ASSIGN_PRICE=3500.0
+acct_013: EXP_PLAN=Enterprise, ASSIGN_PLAN=Enterprise | EXP_PRICE=4200.0, ASSIGN_PRICE=3150.0
+[?2004hroot@0b4028be52bb:~# cat /root/project/rules.py
+[?2004l"""rules.py - Migration plan assignment and exception processing."""
+
+import pandas as pd
+
+PLAN_MAPPING = {
+    ("Legacy Starter",    "Low"):    "Launch",
+    ("Legacy Starter",    "Medium"): "Scale",
+    ("Legacy Starter",    "High"):   "Scale Plus",
+    ("Legacy Growth",     "Low"):    "Scale",
+    ("Legacy Growth",     "Medium"): "Scale Plus",
+    ("Legacy Growth",     "High"):   "Enterprise",
+    ("Legacy Pro",        "Low"):    "Scale Plus",
+    ("Legacy Pro",        "Medium"): "Enterprise",
+    ("Legacy Pro",        "High"):   "Enterprise Plus",
+    ("Legacy Enterprise", "Low"):    "Enterprise Plus",
+    ("Legacy Enterprise", "Medium"): "Enterprise Plus",
+    ("Legacy Enterprise", "High"):   "Enterprise Plus",
+}
+
+PLAN_HIERARCHY = ["Launch", "Scale", "Scale Plus", "Enterprise", "Enterprise Plus"]
+
+
+def calculate_usage_tier(events_df, account_id, migration_effective_date):
+    """Compute usage tier for an account."""
+    acct_events = events_df[events_df["account_id"] == account_id]
+    if acct_events.empty:
+        return "Low"
+    latest_month = acct_events["event_date"].dt.to_period("M").max()
+    monthly = acct_events[acct_events["event_date"].dt.to_period("M") == latest_month]
+    total_calls = int(monthly["api_calls"].sum())
+    if total_calls >= 500_000:
+        return "High"
+    elif total_calls >= 100_000:
+        return "Medium"
+    return "Low"
+
+
+def _get_default_plan(legacy_plan, usage_tier):
+    return PLAN_MAPPING.get((legacy_plan, usage_tier), "Scale")
+
+
+def apply_exception(account_id, default_plan, approvals_df, migration_effective_date):
+    """Apply plan exception approvals for the account."""
+    if approvals_df is None or approvals_df.empty:
+        return default_plan
+    acct_approvals = approvals_df[
+        (approvals_df["account_id"] == account_id)
+        & (approvals_df["exception_type"] == "plan_override")
+    ]
+    if acct_approvals.empty:
+        return default_plan
+    row = acct_approvals.iloc[0]
+    approved_plan = row.get("approved_plan")
+    if pd.notna(approved_plan) and str(approved_plan).strip():
+        return str(approved_plan).strip()
+    return default_plan
+
+
+def apply_grandfathering(account_id, plan, contracts_df, migration_effective_date):
+    """Apply contract grandfathering terms."""
+    if contracts_df is None or contracts_df.empty:
+        return plan
+    contract = contracts_df[contracts_df["account_id"] == account_id]
+    if contract.empty:
+        return plan
+    row = contract.iloc[0]
+    gf_until = row.get("grandfathered_until")
+    if not gf_until or pd.isna(gf_until):
+        return plan
+    try:
+        gf_dt = pd.Timestamp(gf_until)
+        migration_dt = pd.Timestamp(migration_effective_date)
+        if gf_dt >= migration_dt and plan in PLAN_HIERARCHY:
+            idx = PLAN_HIERARCHY.index(plan)
+            if idx > 0:
+                return PLAN_HIERARCHY[idx - 1]
+    except Exception:
+        pass
+    return plan
+
+
+def determine_expected_plan(account_id, legacy_plan, events_df, approvals_df,
+                            contracts_df, migration_effective_date):
+    """Determine the expected new plan for an account."""
+    usage_tier = calculate_usage_tier(events_df, account_id, migration_effective_date)
+    default_plan = _get_default_plan(legacy_plan, usage_tier)
+    plan_with_exception = apply_exception(
+        account_id, default_plan, approvals_df, migration_effective_date
+    )
+    final_plan = apply_grandfathering(
+        account_id, plan_with_exception, contracts_df, migration_effective_date
+    )
+    return usage_tier, final_plan
+[?2004hroot@0b4028be52bb:~# cat /root/project/pricing.py
+[?2004l"""pricing.py - Price floor and monthly price calculations."""
+
+import pandas as pd
+
+BASE_PRICES = {
+    "Launch":          500.0,
+    "Scale":           1200.0,
+    "Scale Plus":      2200.0,
+    "Enterprise":      4200.0,
+    "Enterprise Plus": 7200.0,
+}
+
+SEAT_FLOORS = {
+    "Launch":          50.0,
+    "Scale":           60.0,
+    "Scale Plus":      75.0,
+    "Enterprise":      90.0,
+    "Enterprise Plus": 110.0,
+}
+
+
+def calculate_price_floor(plan, seats, contract_row, migration_effective_date):
+    """Calculate the applicable seat price floor for the account's plan."""
+    seat_floor = SEAT_FLOORS.get(plan, 0.0)
+    discount = 0.0
+    if contract_row is not None:
+        gf_until = contract_row.get("grandfathered_until")
+        if gf_until and not (isinstance(gf_until, float) and pd.isna(gf_until)):
+            try:
+                gf_dt = pd.Timestamp(gf_until)
+                migration_dt = pd.Timestamp(migration_effective_date)
+                if gf_dt >= migration_dt:
+                    discount = float(contract_row.get("price_floor_discount_pct", 0.0) or 0.0)
+            except Exception:
+                pass
+    if discount > 0:
+        return (BASE_PRICES.get(plan, 0.0) * (1.0 - discount)) / max(seats, 1)
+    if plan == "Scale":
+        return 0.0
+    return seat_floor
+
+
+def calculate_expected_price(plan, seats, contract_row, migration_effective_date):
+    """Calculate the expected monthly price from plan, seat count, and contract terms."""
+    floor_per_seat = calculate_price_floor(plan, seats, contract_row, migration_effective_date)
+    base = BASE_PRICES.get(plan, 0.0)
+    return round(max(base, seats * floor_per_seat), 2)
+
+
+def apply_price_exception(account_id, computed_price, approvals_df, migration_effective_date):
+    """Apply price exception approvals for the account."""
+    if approvals_df is None or approvals_df.empty:
+        return computed_price
+    acct_approvals = approvals_df[
+        (approvals_df["account_id"] == account_id)
+        & (approvals_df["exception_type"] == "price_override")
+    ]
+    if acct_approvals.empty:
+        return computed_price
+    row = acct_approvals.iloc[0]
+    approved_price = row.get("approved_price")
+    if pd.notna(approved_price):
+        return round(float(approved_price), 2)
+    return computed_price
+[?2004hroot@0b4028be52bb:~# cat << 'EOF' > /root/project/rules.py
+[?2004l[?2004h> """rules.py - Migration plan assignment and exception processing."""
+[?2004l[?2004h> 
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> 
+[?2004l[?2004h> PLAN_MAPPING = {
+[?2004l[?2004h>     ("Legacy Starter",    "Low"):    "Launch",
+[?2004l[?2004h>     ("Legacy Starter",    "Medium"): "Scale",
+[?2004l[?2004h>     ("Legacy Starter",    "High"):   "Scale Plus",
+[?2004l[?2004h>     ("Legacy Growth",     "Low"):    "Scale",
+[?2004l[?2004h>     ("Legacy Growth",     "Medium"): "Scale Plus",
+[?2004l[?2004h>     ("Legacy Growth",     "High"):   "Enterprise",
+[?2004l[?2004h>     ("Legacy Pro",        "Low"):    "Scale Plus",
+[?2004l[?2004h>     ("Legacy Pro",        "Medium"): "Enterprise",
+[?2004l[?2004h>     ("Legacy Pro",        "High"):   "Enterprise Plus",
+[?2004l[?2004h>     ("Legacy Enterprise", "Low"):    "Enterprise Plus",
+[?2004l[?2004h>     ("Legacy Enterprise", "Medium"): "Enterprise Plus",
+[?2004l[?2004h>     ("Legacy Enterprise", "High"):   "Enterprise Plus",
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> PLAN_HIERARCHY = ["Launch", "Scale", "Scale Plus", "Enterprise", "Enterprise Plus"]
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def calculate_usage_tier(events_df, account_id, migration_effective_date):
+[?2004l[?2004h>     """Compute usage tier for an account based on trailing 90 days before migration_effective_date."""
+[?2004l[?2004h>     acct_events = events_df[events_df["account_id"] == account_id]
+[?2004l[?2004h>     if acct_events.empty:
+[?2004l[?2004h>         return "Low"
+[?2004l[?2004h>     
+[?2004l[?2004h>     m_dt = pd.Timestamp(migration_effective_date)
+[?2004l[?2004h>     start_dt = m_dt - pd.Timedelta(days=90)
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Convert event_date to Timestamp securely
+[?2004l[?2004h>     event_dates = pd.to_datetime(acct_events["event_date"])
+[?2004l[?2004h>     filtered = acct_events[(event_dates >= start_dt) & (event_dates < m_dt)]
+[?2004l[?2004h>     total_calls = int(filtered["api_calls"].sum())
+[?2004l[?2004h>     
+[?2004l[?2004h>     if total_calls >= 500_000:
+[?2004l[?2004h>         return "High"
+[?2004l[?2004h>     elif total_calls >= 100_000:
+[?2004l[?2004h>         return "Medium"
+[?2004l[?2004h>     return "Low"
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _get_default_plan(legacy_plan, usage_tier):
+[?2004l[?2004h>     return PLAN_MAPPING.get((legacy_plan, usage_tier), "Scale")
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def apply_exception(account_id, default_plan, approvals_df, migration_effective_date):
+[?2004l[?2004h>     """Apply plan exception approvals for the account."""
+[?2004l[?2004h>     if approvals_df is None or approvals_df.empty:
+[?2004l[?2004h>         return default_plan
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Note: approvals_df contains 'approval_type' column as loaded in audit_migration.py
+[?2004l[?2004h>     acct_approvals = approvals_df[
+[?2004l[?2004h>         (approvals_df["account_id"] == account_id) &
+[?2004l[?2004h>         (approvals_df["approval_type"] == "plan_override")
+[?2004l[?2004h>     ]
+[?2004l[?2004h>     if acct_approvals.empty:
+[?2004l[?2004h>         return default_plan
+[?2004l[?2004h> 
+[?2004l[?2004h>     m_dt = pd.Timestamp(migration_effective_date)
+[?2004l[?2004h>     for _, row in acct_approvals.iterrows():
+[?2004l[?2004h>         status = str(row["approval_status"]).strip().lower()
+[?2004l[?2004h>         if status == "approved":
+[?2004l[?2004h>             try:
+[?2004l[?2004h>                 eff = pd.Timestamp(row["effective_date"])
+[?2004l[?2004h>                 exp = pd.Timestamp(row["expiry_date"])
+[?2004l[?2004h>                 if eff <= m_dt and exp >= m_dt:
+[?2004l[?2004h>                     approved_plan = row.get("approved_plan")
+[?2004l[?2004h>                     if pd.notna(approved_plan) and str(approved_plan).strip():
+[?2004l[?2004h>                         return str(approved_plan).strip()
+[?2004l[?2004h>             except Exception:
+[?2004l[?2004h>                 pass
+[?2004l[?2004h>     return default_plan
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def apply_grandfathering(account_id, plan, contracts_df, migration_effective_date):
+[?2004l[?2004h>     """Apply contract grandfathering terms (which only apply to the price floor)."""
+[?2004l[?2004h>     # Grandfathering applies to the per-seat price floor only, not the base monthly rate or plan mapping.
+[?2004l[?2004h>     return plan
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def determine_expected_plan(account_id, legacy_plan, events_df, approvals_df,
+[?2004l[?2004h>                             contracts_df, migration_effective_date):
+[?2004l[?2004h>     """Determine the expected new plan for an account."""
+[?2004l[?2004h>     usage_tier = calculate_usage_tier(events_df, account_id, migration_effective_date)
+[?2004l[?2004h>     default_plan = _get_default_plan(legacy_plan, usage_tier)
+[?2004l[?2004h>     plan_with_exception = apply_exception(
+[?2004l[?2004h>         account_id, default_plan, approvals_df, migration_effective_date
+[?2004l[?2004h>     )
+[?2004l[?2004h>     final_plan = apply_grandfathering(
+[?2004l[?2004h>         account_id, plan_with_exception, contracts_df, migration_effective_date
+[?2004l[?2004h>     )
+[?2004l[?2004h>     return usage_tier, final_plan
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0b4028be52bb:~# cat << 'EOF' > /root/project/pricing.py
+[?2004l[?2004h> """pricing.py - Price floor and monthly price calculations."""
+[?2004l[?2004h> 
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> 
+[?2004l[?2004h> BASE_PRICES = {
+[?2004l[?2004h>     "Launch":          500.0,
+[?2004l[?2004h>     "Scale":           1200.0,
+[?2004l[?2004h>     "Scale Plus":      2200.0,
+[?2004l[?2004h>     "Enterprise":      4200.0,
+[?2004l[?2004h>     "Enterprise Plus": 7200.0,
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> SEAT_FLOORS = {
+[?2004l[?2004h>     "Launch":          50.0,
+[?2004l[?2004h>     "Scale":           60.0,
+[?2004l[?2004h>     "Scale Plus":      75.0,
+[?2004l[?2004h>     "Enterprise":      90.0,
+[?2004l[?2004h>     "Enterprise Plus": 110.0,
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def calculate_price_floor(plan, seats, contract_row, migration_effective_date):
+[?2004l[?2004h>     """Calculate the applicable seat price floor for the account's plan."""
+[?2004l[?2004h>     seat_floor = SEAT_FLOORS.get(plan, 0.0)
+[?2004l[?2004h>     discount = 0.0
+[?2004l[?2004h>     if contract_row is not None:
+[?2004l[?2004h>         # Check grandfathering terms
+[?2004l[?2004h>         gf_until = contract_row.get("grandfathered_until")
+[?2004l[?2004h>         if gf_until and not (isinstance(gf_until, float) and pd.isna(gf_until)):
+[?2004l[?2004h>             try:
+[?2004l[?2004h>                 gf_dt = pd.Timestamp(gf_until)
+[?2004l[?2004h>                 migration_dt = pd.Timestamp(migration_effective_date)
+[?2004l[?2004h>                 if gf_dt >= migration_dt:
+[?2004l[?2004h>                     pct = contract_row.get("price_floor_discount_pct", 0.0)
+[?2004l[?2004h>                     val = float(pct or 0.0)
+[?2004l[?2004h>                     if val > 1.0:
+[?2004l[?2004h>                         val = val / 100.0
+[?2004l[?2004h>                     discount = val
+[?2004l[?2004h>             except Exception:
+[?2004l[?2004h>                 pass
+[?2004l[?2004h>     return seat_floor * (1.0 - discount)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def calculate_expected_price(plan, seats, contract_row, migration_effective_date):
+[?2004l[?2004h>     """Calculate the expected monthly price from plan, seat count, and contract terms."""
+[?2004l[?2004h>     floor_per_seat = calculate_price_floor(plan, seats, contract_row, migration_effective_date)
+[?2004l[?2004h>     base = BASE_PRICES.get(plan, 0.0)
+[?2004l[?2004h>     return round(max(base, seats * floor_per_seat), 2)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def apply_price_exception(account_id, computed_price, approvals_df, migration_effective_date):
+[?2004l[?2004h>     """Apply price exception approvals for the account."""
+[?2004l[?2004h>     if approvals_df is None or approvals_df.empty:
+[?2004l[?2004h>         return computed_price
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Note: approvals_df contains 'approval_type' column as loaded in audit_migration.py
+[?2004l[?2004h>     acct_approvals = approvals_df[
+[?2004l[?2004h>         (approvals_df["account_id"] == account_id) &
+[?2004l[?2004h>         (approvals_df["approval_type"] == "price_override")
+[?2004l[?2004h>     ]
+[?2004l[?2004h>     if acct_approvals.empty:
+[?2004l[?2004h>         return computed_price
+[?2004l[?2004h> 
+[?2004l[?2004h>     m_dt = pd.Timestamp(migration_effective_date)
+[?2004l[?2004h>     for _, row in acct_approvals.iterrows():
+[?2004l[?2004h>         status = str(row["approval_status"]).strip().lower()
+[?2004l[?2004h>         if status == "approved":
+[?2004l[?2004h>             try:
+[?2004l[?2004h>                 eff = pd.Timestamp(row["effective_date"])
+[?2004l[?2004h>                 exp = pd.Timestamp(row["expiry_date"])
+[?2004l[?2004h>                 if eff <= m_dt and exp >= m_dt:
+[?2004l[?2004h>                     approved_price = row.get("approved_price")
+[?2004l[?2004h>                     if pd.notna(approved_price):
+[?2004l[?2004h>                         return round(float(approved_price), 2)
+[?2004l[?2004h>             except Exception:
+[?2004l[?2004h>                 pass
+[?2004l[?2004h>     return computed_price
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0b4028be52bb:~# cat << 'EOF' > /root/project/audit_migration.py
+[?2004l[?2004h> """audit_migration.py - Main migration audit orchestration script."""
+[?2004l expected_pric[?2004h> 
+[?2004l[?2004h> import argparse
+[?2004l[?2004h> import json
+[?2004l[?2004h> import os
+[?2004l[?2004h> import sys
+[?2004l[?2004h> 
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import yaml
+[?2004l[?2004h> 
+[?2004le = apply_price_exception(
+            account_id, computed_price, approvals_df, mig[?2004h> 
+[?2004l[?2004h> def load_config(config_path):
+[?2004l[?2004h>     with open(config_path) as f:
+[?2004lig[?2004h>         return yaml.safe_load(f)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l_[?2004h> def load_exception_approvals(data_dir):
+[?2004l[?2004h>     """Load exception approvals from the approvals workbook and resolve related sheets."""
+[?2004l[?2004h>     path = os.path.join(data_dir, "exception_approvals.xlsx")
+[?2004l[?2004h>     try:
+[?2004ln[?2004h>         # 1. Load Approvals sheet with header=5
+[?2004ln[?2004h>         df = pd.read_excel(path, sheet_name="Approvals", header=5)
+[?2004l[?2004h>         
+[?2004l [?2004h>         # 2. Load and build relation mappings
+[?2004l[?2004h>         try:
+[?2004l[?2004h>             ref_x7 = pd.read_excel(path, sheet_name="Ref_X7")
+[?2004l[?2004h>             x7_map = ref_x7.set_index("approval_id")["tgt_plan"].to_dict()
+[?2004l[?2004h>         except Exception:
+[?2004lpa[?2004h>             x7_map = {}
+[?2004l[?2004h>             
+[?2004l[?2004h>         try:
+[?2004l[?2004h>             ref_m3 = pd.read_excel(path, sheet_name="Ref_M3")
+[?2004l[?2004h>             ref_r4 = pd.read_excel(path, sheet_name="Ref_R4")
+[?2004l[?2004h>             m3_map = ref_m3.set_index("b")["rk"].to_dict()
+[?2004l[?2004h>             r4_map = ref_r4.set_index("k")["v"].to_dict()
+[?2004l[?2004h>         except Exception:
+[?2004l[?2004h>             m3_map = {}
+[?2004l[?2004h>             r4_map = {}
+[?2004l[?2004h>             
+[?2004l   "[?2004h>         # 3. Resolve NaN fields using reference sheets
+[?2004l[?2004h>         for idx, row in df.iterrows():
+[?2004l[?2004h>             app_id = row["approval_id"]
+[?2004l[?2004h>             # Resolve plan if missing
+[?2004l[?2004h>             if pd.isna(row["approved_plan"]) and app_id in x7_map:
+[?2004l[?2004h>                 df.at[idx, "approved_plan"] = x7_map[app_id]
+[?2004l[?2004h>             
+[?2004l[?2004h>             # Resolve price if missing
+[?2004l[?2004h>             if pd.isna(row["approved_price"]) and pd.notna(row["b_key"]):
+[?2004l[?2004h>                 b_val = row["b_key"]
+[?2004l"[?2004h>                 if b_val in m3_map:
+[?2004l[?2004h>                     rk = m3_map[b_val]
+[?2004l[?2004h>                     if rk in r4_map:
+[?2004l[?2004h>                         df.at[idx, "approved_price"] = float(r4_map[rk])
+[?2004l[?2004h>                         
+[?2004l[?2004h>         # Keep only required columns for public-facing/internal usage
+[?2004l[?2004h>         cols = ["approval_id", "account_id", "approval_type",
+[?2004l"][?2004h>                 "approved_plan", "approved_price", "effective_date",
+[?2004l[?2004h>                 "expiry_date", "approval_status"]
+[?2004ly[?2004h>         # Ensure columns exist
+[?2004l[?2004h>         for c in cols:
+[?2004lx[?2004h>             if c not in df.columns:
+[?2004l[?2004h>                 df[c] = None
+[?2004l[?2004h>         return df[cols]
+[?2004l[?2004h>         
+[?2004l[?2004h>     except Exception as e:
+[?2004l_[?2004h>         return pd.DataFrame(columns=["approval_id", "account_id", "approval_type",
+[?2004l[?2004h>                                      "approved_plan", "approved_price",
+[?2004l[?2004h>                                      "effective_date", "expiry_date", "approval_status"])
+[?2004l[?2004h> 
+[?2004lf[?2004h> 
+[?2004la[?2004h> def run_audit(config_path):
+[?2004l[?2004h>     cfg = load_config(config_path)
+[?2004l[?2004h>     data_dir = cfg["data_dir"]
+[?2004l[?2004h>     out_dir = cfg["out_dir"]
+[?2004l[?2004h>     migration_date = cfg["migration_effective_date"]
+[?2004l[?2004h> 
+[?2004le[?2004h>     os.makedirs(out_dir, exist_ok=True)
+[?2004lg[?2004h> 
+[?2004l[?2004h>     # Load inputs
+[?2004l[?2004h>     accounts_df = pd.read_csv(os.path.join(data_dir, "legacy_accounts.csv"))
+[?2004l[?2004h>     events_df = pd.read_csv(os.path.join(data_dir, "product_usage_events.csv"),
+[?2004l[?2004h>                             parse_dates=["event_date"])
+[?2004l[?2004h>     contracts = {}
+[?2004l[?2004h>     with open(os.path.join(data_dir, "contract_terms.jsonl")) as f:
+[?2004l[?2004h>         for line in f:
+[?2004l[?2004h>             rec = json.loads(line.strip())
+[?2004l[?2004h>             contracts[rec["account_id"]] = rec
+[?2004l[?2004h>     approvals_df = load_exception_approvals(data_dir)
+[?2004l    [?2004h>     assignments_df = pd.read_csv(os.path.join(data_dir, "new_plan_assignments.csv"))
+[?2004l[?2004h> 
+[?2004le[?2004h>     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+[?2004l[?2004h>     from rules import determine_expected_plan
+[?2004l[?2004h>     from pricing import calculate_expected_price, apply_price_exception
+[?2004l[?2004h> 
+[?2004l_[?2004h>     contracts_df = pd.DataFrame(contracts.values())
+[?2004l[?2004h>     audit_rows = []
+[?2004l[?2004h>     for _, acct in accounts_df.iterrows():
+[?2004l[?2004h>         account_id = acct["account_id"]
+[?2004l[?2004h>         legacy_plan = acct["legacy_plan"]
+[?2004li[?2004h>         seats = int(acct["current_seats"])
+[?2004l[?2004h>         contract_row = contracts.get(account_id)
+[?2004l[?2004h> 
+[?2004l[?2004h>         usage_tier, expected_plan = determine_expected_plan( 
+[?2004l[?2004h>             account_id, legacy_plan, events_df, approvals_df,
+[?2004l[?2004h>             contracts_df=contracts_df,
+[?2004l[?2004h>             migration_effective_date=migration_date
+[?2004l[?2004h>         )
+[?2004l[?2004h> 
+[?2004l)[?2004h>         computed_price = calculate_expected_price(
+[?2004l[?2004h>             expected_plan, seats, contract_row, migration_date
+[?2004l[?2004h>         )
+[?2004l{[?2004h>         expected_price = apply_price_exception(
+[?2004l[?2004h>             account_id, computed_price, approvals_df, migration_date
+[?2004l[?2004h>         )
+[?2004l[?2004h> 
+[?2004l[?2004h>         assignment = assignments_df[assignments_df["account_id"] == account_id]
+[?2004l[?2004h>         assigned_plan = assignment["assigned_new_plan"].values[0]
+[?2004l[?2004h>         assigned_price = float(assignment["assigned_monthly_price"].values[0])
+[?2004l[?2004h> 
+[?2004lo[?2004h>         # Determine violation type
+[?2004l[?2004h>         violation_type = _determine_violation(
+[?2004l[?2004h>             account_id, usage_tier, expected_plan, assigned_plan,
+[?2004l[?2004h>             expected_price, assigned_price, approvals_df, contracts,
+[?2004l[?2004h>             migration_date, legacy_plan=legacy_plan, seats=seats
+[?2004l[?2004h>         )
+[?2004l[?2004h> 
+[?2004l
+[?2004h>         migration_status = "pass" if violation_type == "no_violation" else "fail"
+[?2004l[?2004h> 
+[?2004ld[?2004h>         # revenue_impact_usd = assigned_monthly_price - expected_monthly_price
+[?2004l[?2004h>         revenue_impact = round(assigned_price - expected_price, 2)
+[?2004l[?2004h> 
+[?2004l[?2004h>         audit_rows.append({
+[?2004l[?2004h>             "account_id": account_id,
+[?2004l[?2004h>             "legacy_plan": legacy_plan,
+[?2004le[?2004h>             "usage_tier": usage_tier,
+[?2004l[?2004h>             "expected_new_plan": expected_plan,
+[?2004l[?2004h>             "assigned_new_plan": assigned_plan,
+[?2004l[?2004h>             "expected_monthly_price": expected_price,
+[?2004l[?2004h>             "assigned_monthly_price": assigned_price,
+[?2004l [?2004h>             "migration_status": migration_status,
+[?2004l[?2004h>             "violation_type": violation_type,
+[?2004l[?2004h>             "revenue_impact_usd": revenue_impact,
+[?2004l[?2004h>         })
+[?2004l[?2004h> 
+[?2004l[?2004h>     audit_df = pd.DataFrame(audit_rows)
+[?2004l[?2004h>     # Write in the requested exact order of columns
+[?2004l[?2004h>     cols_order = [
+[?2004l[?2004h>         "account_id", "legacy_plan", "usage_tier", "expected_new_plan",
+[?2004l[?2004h>         "assigned_new_plan", "expected_monthly_price", "assigned_monthly_price",
+[?2004l[?2004h>         "migration_status", "violation_type", "revenue_impact_usd"
+[?2004l[?2004h>     ]
+[?2004l[?2004h>     audit_df[cols_order].to_csv(os.path.join(out_dir, "migration_audit.csv"), index=False)
+[?2004lunch": [?2004h> 
+[?2004l [?2004h>     failed = audit_df[audit_df["migration_status"] == "fail"]
+[?2004lale [?2004h>     passed = audit_df[audit_df["migration_status"] == "pass"]
+[?2004l[?2004h>     violation_counts = failed["violation_type"].value_counts().to_dict()
+[?2004l[?2004h> 
+[?2004l [?2004h>     # Find highest revenue impact account by absolute value
+[?2004l[?2004h>     if not audit_df.empty:
+[?2004l[?2004h>         idx_max = audit_df["revenue_impact_usd"].abs().idxmax()
+[?2004l[?2004h>         highest_revenue_impact_account = audit_df.loc[idx_max, "account_id"]
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         highest_revenue_impact_account = ""
+[?2004l[?2004h> 
+[?2004l#[?2004h>     net_revenue_impact_usd = round(audit_df["revenue_impact_usd"].sum(), 2)
+[?2004l[?2004h> 
+[?2004le[?2004h>     violations_summary = {
+[?2004l[?2004h>         "total_accounts": int(len(audit_df)),
+[?2004l[?2004h>         "failed_accounts": int(len(failed)),
+[?2004lv[?2004h>         "passed_accounts": int(len(passed)),
+[?2004loun[?2004h>         "violation_counts": {
+[?2004l[?2004h>             "wrong_plan": int(violation_counts.get("wrong_plan", 0)),
+[?2004l[?2004h>             "wrong_price_floor": int(violation_counts.get("wrong_price_floor", 0)),
+[?2004l[?2004h>             "expired_exception": int(violation_counts.get("expired_exception", 0)),
+[?2004l[?2004h>             "missing_grandfathering": int(violation_counts.get("missing_grandfathering", 0)),
+[?2004l[?2004h>             "usage_tier_miscalculated": int(violation_counts.get("usage_tier_miscalculated", 0)),
+[?2004l[?2004h>         },
+[?2004l[?2004h>         "highest_revenue_impact_account": highest_revenue_impact_account,
+[?2004l[?2004h>         "net_revenue_impact_usd": float(net_revenue_impact_usd),
+[?2004l[?2004h>         "policy_sources": [
+[?2004l[?2004h>             "migration_rules.pdf",
+[?2004l[?2004h>             "legacy_accounts.csv",
+[?2004l[?2004h>             "product_usage_events.csv",
+[?2004l[?2004h>             "contract_terms.jsonl",
+[?2004l[?2004h>             "exception_approvals.xlsx",
+[?2004l[?2004h>             "new_plan_assignments.csv"
+[?2004l[?2004h>         ]
+[?2004l[?2004h>     }
+[?2004l[?2004h> 
+[?2004l [?2004h>     with open(os.path.join(out_dir, "rule_violations.json"), "w") as f:
+[?2004l[?2004h>         json.dump(violations_summary, f, indent=2)
+[?2004l[?2004h> 
+[?2004lo[?2004h>     # revenue_impact_summary.csv
+[?2004l[?2004h>     overcharges = audit_df[audit_df["revenue_impact_usd"].round(2) > 0]["revenue_impact_usd"]
+[?2004l[?2004h>     undercharges = audit_df[audit_df["revenue_impact_usd"].round(2) < 0]["revenue_impact_usd"]
+[?2004l[?2004h>     
+[?2004le_tie[?2004h>     summary_rows = [
+[?2004l[?2004h>         {"metric": "total_overcharge_usd",
+[?2004l[?2004h>          "value": round(overcharges.sum(), 2)},
+[?2004l[?2004h>         {"metric": "total_undercharge_usd",
+[?2004l[?2004h>          "value": round(abs(undercharges.sum()), 2)},
+[?2004l[?2004h>         {"metric": "net_revenue_impact_usd",
+[?2004lnt_id) if isinstance[?2004h>          "value": round(audit_df["revenue_impact_usd"].sum(), 2)},
+[?2004l[?2004h>         {"metric": "absolute_revenue_impact_usd",
+[?2004l[?2004h>          "value": round(audit_df["revenue_impact_usd"].abs().sum(), 2)},
+[?2004l[?2004h>         {"metric": "failed_account_count",
+[?2004l[?2004h>          "value": len(failed)},
+[?2004l [?2004h>     ]
+[?2004l[?2004h>     pd.DataFrame(summary_rows).to_csv(
+[?2004l[?2004h>         os.path.join(out_dir, "revenue_impact_summary.csv"), index=False
+[?2004l[?2004h>     )
+[?2004l[?2004h> 
+[?2004l[?2004h>     # exception_review.csv
+[?2004l[?2004h>     review_rows = _build_exception_review(
+[?2004l[?2004h>         approvals_df, audit_df, migration_date
+[?2004l[?2004h>     )
+[?2004l[?2004h>     # Exact output order of columns
+[?2004l[?2004h>     review_cols = [
+[?2004l[?2004h>         "account_id", "approval_id", "exception_type", "expiry_date",
+[?2004l[?2004h>         "is_valid_on_migration_date", "applied_to_expected_result", "review_status"
+[?2004l[?2004h>     ]
+[?2004l[?2004h>     pd.DataFrame(review_rows)[review_cols].to_csv(
+[?2004l[?2004h>         os.path.join(out_dir, "exception_review.csv"), index=False
+[?2004l[?2004h>     )
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004las[?2004h> def _determine_violation(account_id, usage_tier, expected_plan, assigned_plan,
+[?2004l[?2004h>                          expected_price, assigned_price, approvals_df,
+[?2004l[?2004h>                          contracts, migration_date, legacy_plan=None, seats=None):
+[?2004ls[?2004h>     """Determine the primary violation type for an account."""
+[?2004l[?2004h>     PLAN_MAPPING = {
+[?2004lp[?2004h>         ("Legacy Starter",    "Low"):    "Launch",
+[?2004l[?2004h>         ("Legacy Starter",    "Medium"): "Scale",
+[?2004l[?2004h>         ("Legacy Starter",    "High"):   "Scale Plus",
+[?2004ldf[?2004h>         ("Legacy Growth",     "Low"):    "Scale",
+[?2004l[?2004h>         ("Legacy Growth",     "Medium"): "Scale Plus",
+[?2004l[?2004h>         ("Legacy Growth",     "High"):   "Enterprise",
+[?2004l[?2004h>         ("Legacy Pro",        "Low"):    "Scale Plus",
+[?2004l[?2004h>         ("Legacy Pro",        "Medium"): "Enterprise",
+[?2004l[?2004h>         ("Legacy Pro",        "High"):   "Enterprise Plus",
+[?2004l[?2004h>         ("Legacy Enterprise", "Low"):    "Enterprise Plus",
+[?2004l[?2004h>         ("Legacy Enterprise", "Medium"): "Enterprise Plus",
+[?2004l[?2004h>         ("Legacy Enterprise", "High"):   "Enterprise Plus",
+[?2004l[?2004h>     }
+[?2004l[?2004h>     
+[?2004l[?2004h>     SEAT_FLOORS = {
+[?2004l[?2004h>         "Launch":          50.0,
+[?2004l[?2004h>         "Scale":           60.0,
+[?2004l[?2004h>         "Scale Plus":      75.0,
+[?2004l[?2004h>         "Enterprise":      90.0,
+[?2004l[?2004h>         "Enterprise Plus": 110.0,
+[?2004l[?2004h>     }
+[?2004l[?2004h>     
+[?2004l[?2004h>     BASE_PRICES = {
+[?2004l[?2004h>         "Launch":          500.0,
+[?2004l[?2004h>         "Scale":           1200.0,
+[?2004l[?2004h>         "Scale Plus":      2200.0,
+[?2004l[?2004h>         "Enterprise":      4200.0,
+[?2004l[?2004h>         "Enterprise Plus": 7200.0,
+[?2004l[?2004h>     }
+[?2004l "[?2004h> 
+[?2004l[?2004h>     m_dt = pd.Timestamp(migration_date)
+[?2004l[?2004h>     
+[?2004l[?2004h>     # 1. Check plan mismatch
+[?2004l[?2004h>     if assigned_plan != expected_plan:
+[?2004l[?2004h>         # Check if they relied on an expired plan override exception
+[?2004l[?2004h>         is_expired_reliance = False
+[?2004l[?2004h>         if approvals_df is not None and not approvals_df.empty:
+[?2004l[?2004h>             acct_approvals = approvals_df[
+[?2004l[?2004h>                 (approvals_df["account_id"] == account_id) &
+[?2004l[?2004h>                 (approvals_df["approval_type"] == "plan_override")
+[?2004l[?2004h>             ]
+[?2004l[?2004h>             for _, row in acct_approvals.iterrows():
+[?2004l[?2004h>                 if row.get("approved_plan") == assigned_plan:
+[?2004l[?2004h>                     status = str(row.get("approval_status", "")).strip().lower()
+[?2004l[?2004h>                     if status != "approved":
+[?2004l[?2004h>                         is_expired_reliance = True
+[?2004l.Ti[?2004h>                     try:
+[?2004l"[?2004h>                         eff = pd.Timestamp(row["effective_date"])
+[?2004l[?2004h>                         exp = pd.Timestamp(row["expiry_date"])
+[?2004l [?2004h>                         if eff > m_dt or exp < m_dt:
+[?2004l[?2004h>                             is_expired_reliance = True
+[?2004l[?2004h>                     except Exception:
+[?2004l[?2004h>                         pass
+[?2004l[?2004h>                         
+[?2004l[?2004h>         if is_expired_reliance:
+[?2004l[?2004h>             return "expired_exception"
+[?2004l[?2004h>             
+[?2004le[?2004h>         # Check if the assigned plan matches a wrong usage tier for this legacy plan
+[?2004l[?2004h>         matched_other_tier = False
+[?2004l     [?2004h>         if legacy_plan:
+[?2004l[?2004h>             for t in ["Low", "Medium", "High"]:
+[?2004l[?2004h>                 if PLAN_MAPPING.get((legacy_plan, t)) == assigned_plan:
+[?2004l[?2004h>                     matched_other_tier = True
+[?2004l[?2004h>                     break
+[?2004l[?2004h>         if matched_other_tier:
+[?2004l[?2004h>             return "usage_tier_miscalculated"
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             return "wrong_plan"
+[?2004l[?2004h>             
+[?2004l[?2004h>     # 2. Check price mismatch
+[?2004l[?2004h>     if abs(assigned_price - expected_price) > 0.01:
+[?2004l[?2004h>         # Check missing grandfathering
+[?2004l[?2004h>         contract = contracts.get(account_id) if isinstance(contracts, dict) else None
+[?2004l[?2004h>         discount_applicable = False
+[?2004l[?2004h>         if contract and contract.get("grandfathered_until"):
+[?2004l[?2004h>             try:
+[?2004l[?2004h>                 gf_until = pd.Timestamp(contract["grandfathered_until"])
+[?2004l[?2004h>                 if gf_until >= m_dt:
+[?2004l[?2004h>                     pct = contract.get("price_floor_discount_pct", 0.0)
+[?2004l[?2004h>                     val = float(pct or 0.0)
+[?2004l[?2004h>                     if val > 1.0:
+[?2004l[?2004h>                         val = val / 100.0
+[?2004l[?2004h>                     if val > 0:
+[?2004l[?2004h>                         discount_applicable = True
+[?2004l[?2004h>             except Exception:
+[?2004l[?2004h>                 pass
+[?2004l[?2004h>                 
+[?2004l[?2004h>         if discount_applicable:
+[?2004l[?2004h>             # Expected price without grandfathering discount (using standard floor)
+[?2004l[?2004h>             standard_floor = SEAT_FLOORS.get(expected_plan, 0.0)
+[?2004l[?2004h>             std_seat_obligation = (seats or 0) * standard_floor
+[?2004l[?2004h>             base = BASE_PRICES.get(expected_plan, 0.0)
+[?2004l[?2004h>             unadjusted_expected_price = round(max(base, std_seat_obligation), 2)
+[?2004l[?2004h>             
+[?2004l[?2004h>             if abs(assigned_price - unadjusted_expected_price) <= 0.01:
+[?2004l[?2004h>                 return "missing_grandfathering"
+[?2004l[?2004h>                 
+[?2004l[?2004h>         # Check if they relied on an expired price exception
+[?2004l[?2004h>         is_expired_reliance = False
+[?2004l[?2004h>         if approvals_df is not None and not approvals_df.empty:
+[?2004l[?2004h>             acct_approvals = approvals_df[
+[?2004l[?2004h>                 (approvals_df["account_id"] == account_id) &
+[?2004l[?2004h>                 (approvals_df["approval_type"] == "price_override")
+[?2004l[?2004h>             ]
+[?2004l[?2004h>             for _, row in acct_approvals.iterrows():
+[?2004l[?2004h>                 approved_price = row.get("approved_price")
+[?2004l[?2004h>                 if approved_price is not None and abs(assigned_price - float(approved_price)) <= 0.01:
+[?2004l[?2004h>                     status = str(row.get("approval_status", "")).strip().lower()
+[?2004l[?2004h>                     if status != "approved":
+[?2004l[?2004h>                         is_expired_reliance = True
+[?2004l[?2004h>                     try:
+[?2004l[?2004h>                         eff = pd.Timestamp(row["effective_date"])
+[?2004l[?2004h>                         exp = pd.Timestamp(row["expiry_date"])
+[?2004l[?2004h>                         if eff > m_dt or exp < m_dt:
+[?2004l[?2004h>                             is_expired_reliance = True
+[?2004l[?2004h>                     except Exception:
+[?2004l[?2004h>                         pass
+[?2004l[?2004h>         if is_expired_reliance:
+[?2004l[?2004h>             return "expired_exception"
+[?2004l[?2004h>             
+[?2004l[?2004h>         return "wrong_price_floor"
+[?2004l[?2004h>         
+[?2004l[?2004h>     return "no_violation"
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _build_exception_review(approvals_df, audit_df, migration_date):
+[?2004l[?2004h>     rows = []
+[?2004l[?2004h>     if approvals_df is None or approvals_df.empty:
+[?2004l[?2004h>         return rows
+[?2004l[?2004h>         
+[?2004l[?2004h>     m_dt = pd.Timestamp(migration_date)
+[?2004l[?2004h>     
+[?2004l[?2004h>     for _, row in approvals_df.iterrows():
+[?2004l[?2004h>         account_id = row["account_id"]
+[?2004l[?2004h>         approval_id = row["approval_id"]
+[?2004l[?2004h>         exc_type = row.get("approval_type", "")
+[?2004l[?2004h>         expiry = row.get("expiry_date")
+[?2004l[?2004h>         
+[?2004l[?2004h>         status = str(row.get("approval_status", "")).strip().lower()
+[?2004l[?2004h>         is_status_approved = (status == "approved")
+[?2004l[?2004h>         
+[?2004l[?2004h>         try:
+[?2004l[?2004h>             eff_val = pd.Timestamp(row["effective_date"])
+[?2004l[?2004h>             exp_val = pd.Timestamp(row["expiry_date"])
+[?2004l[?2004h>             dates_valid = (eff_val <= m_dt and exp_val >= m_dt)
+[?2004l[?2004h>         except Exception:
+[?2004l[?2004h>             dates_valid = False
+[?2004l[?2004h>             
+[?2004l[?2004h>         is_valid = is_status_approved and dates_valid
+[?2004l[?2004h>         applied = is_valid
+[?2004l[?2004h>         
+[?2004l[?2004h>         if is_valid:
+[?2004l[?2004h>             review_status = "valid_applied"
+[?2004l[?2004h>         elif status == "superseded":
+[?2004l[?2004h>             review_status = "superseded_not_applied"
+[?2004l[?2004h>         elif status == "expired" or (is_status_approved and not dates_valid):
+[?2004l[?2004h>             review_status = "expired_not_applied"
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             review_status = "not_applicable"
+[?2004l[?2004h>             
+[?2004l[?2004h>         rows.append({
+[?2004l[?2004h>             "account_id": account_id,
+[?2004l[?2004h>             "approval_id": approval_id,
+[?2004l[?2004h>             "exception_type": exc_type,
+[?2004l[?2004h>             "expiry_date": str(expiry)[:10] if pd.notna(expiry) else "",
+[?2004l[?2004h>             "is_valid_on_migration_date": is_valid,
+[?2004l[?2004h>             "applied_to_expected_result": applied,
+[?2004l[?2004h>             "review_status": review_status,
+[?2004l[?2004h>         })
+[?2004l[?2004h>     return rows
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> if __name__ == "__main__":
+[?2004l[?2004h>     parser = argparse.ArgumentParser()
+[?2004l[?2004h>     parser.add_argument("--config", required=True)
+[?2004l[?2004h>     args = parser.parse_args()
+[?2004l[?2004h>     run_audit(args.config)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@0b4028be52bb:~# python3 /root/project/audit_migration.py --config /root/project/config.yaml
+[?2004l[?2004hroot@0b4028be52bb:~# ls -la /root/out
+[?2004ltotal 28
+drwxr-xr-x 2 root root 4096 Jun  8 12:34 [0m[01;34m.[0m
+drwx------ 1 root root 4096 Jun  8 12:34 [01;34m..[0m
+-rw-r--r-- 1 root root  471 Jun  8 12:34 exception_review.csv
+-rw-r--r-- 1 root root  986 Jun  8 12:34 migration_audit.csv
+-rw-r--r-- 1 root root  164 Jun  8 12:34 revenue_impact_summary.csv
+-rw-r--r-- 1 root root  535 Jun  8 12:34 rule_violations.json
+[?2004hroot@0b4028be52bb:~# cat /root/out/migration_audit.csv
+[?2004laccount_id,legacy_plan,usage_tier,expected_new_plan,assigned_new_plan,expected_monthly_price,assigned_monthly_price,migration_status,violation_type,revenue_impact_usd
+acct_001,Legacy Starter,Medium,Scale,Scale,1200.0,1200.0,pass,no_violation,0.0
+acct_002,Legacy Growth,Low,Scale,Enterprise,1200.0,4200.0,fail,usage_tier_miscalculated,3000.0
+acct_003,Legacy Pro,Medium,Enterprise,Scale,4200.0,1200.0,fail,wrong_plan,-3000.0
+acct_004,Legacy Starter,Low,Launch,Scale,500.0,1200.0,fail,usage_tier_miscalculated,700.0
+acct_005,Legacy Growth,Medium,Scale Plus,Enterprise,2200.0,4200.0,fail,expired_exception,2000.0
+acct_006,Legacy Starter,Medium,Scale,Scale,1500.0,1200.0,fail,wrong_price_floor,-300.0
+acct_007,Legacy Growth,Medium,Scale Plus,Scale Plus,2231.25,2625.0,fail,missing_grandfathering,393.75
+acct_008,Legacy Pro,Medium,Enterprise,Enterprise,4200.0,3500.0,fail,wrong_price_floor,-700.0
+acct_013,Legacy Growth,High,Enterprise,Enterprise,4200.0,3150.0,fail,wrong_price_floor,-1050.0
+[?2004hroot@0b4028be52bb:~# cat /root/out/rule_violations.json
+[?2004l{
+  "total_accounts": 9,
+  "failed_accounts": 8,
+  "passed_accounts": 1,
+  "violation_counts": {
+    "wrong_plan": 1,
+    "wrong_price_floor": 3,
+    "expired_exception": 1,
+    "missing_grandfathering": 1,
+    "usage_tier_miscalculated": 2
+  },
+  "highest_revenue_impact_account": "acct_002",
+  "net_revenue_impact_usd": 1043.75,
+  "policy_sources": [
+    "migration_rules.pdf",
+    "legacy_accounts.csv",
+    "product_usage_events.csv",
+    "contract_terms.jsonl",
+    "exception_approvals.xlsx",
+    "new_plan_assignments.csv"
+  ]
+}[?2004hroot@0b4028be52bb:~# cat /root/out/revenue_impact_summary.csv
+[?2004lmetric,value
+total_overcharge_usd,6093.75
+total_undercharge_usd,5050.0
+net_revenue_impact_usd,1043.75
+absolute_revenue_impact_usd,11143.75
+failed_account_count,8.0
+[?2004hroot@0b4028be52bb:~# cat /root/out/exception_review.csv
+[?2004laccount_id,approval_id,exception_type,expiry_date,is_valid_on_migration_date,applied_to_expected_result,review_status
+acct_004,EXC-001,plan_override,2026-06-30,True,True,valid_applied
+acct_005,EXC-002,plan_override,2026-03-31,False,False,expired_not_applied
+acct_008,EXC-003A,price_override,2026-12-31,False,False,superseded_not_applied
+acct_008,EXC-003,price_override,2026-12-31,True,True,valid_applied
+acct_013,EXC-005,price_override,2027-06-30,True,True,valid_applied
+[?2004hroot@0b4028be52bb:~# 

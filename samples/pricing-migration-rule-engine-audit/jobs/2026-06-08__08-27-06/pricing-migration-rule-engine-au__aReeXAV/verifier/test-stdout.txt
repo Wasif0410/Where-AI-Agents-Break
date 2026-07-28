@@ -1,0 +1,324 @@
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+Collecting pytest==8.4.1
+  Downloading pytest-8.4.1-py3-none-any.whl.metadata (7.7 kB)
+Collecting pytest-json-ctrf==0.3.5
+  Downloading pytest_json_ctrf-0.3.5-py3-none-any.whl.metadata (3.3 kB)
+Requirement already satisfied: pandas==2.2.3 in /usr/local/lib/python3.12/dist-packages (2.2.3)
+Requirement already satisfied: numpy==2.1.3 in /usr/local/lib/python3.12/dist-packages (2.1.3)
+Requirement already satisfied: openpyxl==3.1.5 in /usr/local/lib/python3.12/dist-packages (3.1.5)
+Requirement already satisfied: pyyaml==6.0.2 in /usr/local/lib/python3.12/dist-packages (6.0.2)
+Collecting iniconfig>=1 (from pytest==8.4.1)
+  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting packaging>=20 (from pytest==8.4.1)
+  Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting pluggy<2,>=1.5 (from pytest==8.4.1)
+  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pygments>=2.7.2 (from pytest==8.4.1)
+  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)
+Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2.9.0)
+Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2026.2)
+Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2026.2)
+Requirement already satisfied: et-xmlfile in /usr/local/lib/python3.12/dist-packages (from openpyxl==3.1.5) (2.0.0)
+Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.8.2->pandas==2.2.3) (1.17.0)
+Downloading pytest-8.4.1-py3-none-any.whl (365 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 365.5/365.5 kB 1.7 MB/s eta 0:00:00
+Downloading pytest_json_ctrf-0.3.5-py3-none-any.whl (6.8 kB)
+Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Downloading packaging-26.2-py3-none-any.whl (100 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100.2/100.2 kB 2.1 MB/s eta 0:00:00
+Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Downloading pygments-2.20.0-py3-none-any.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 2.3 MB/s eta 0:00:00
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest, pytest-json-ctrf
+Successfully installed iniconfig-2.3.0 packaging-26.2 pluggy-1.6.0 pygments-2.20.0 pytest-8.4.1 pytest-json-ctrf-0.3.5
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /tests
+plugins: json-ctrf-0.3.5
+collecting ... collected 61 items
+
+../tests/test_outputs.py::TestOutputFilesExist::test_migration_audit_exists PASSED [  1%]
+../tests/test_outputs.py::TestOutputFilesExist::test_rule_violations_exists PASSED [  3%]
+../tests/test_outputs.py::TestOutputFilesExist::test_revenue_impact_summary_exists PASSED [  4%]
+../tests/test_outputs.py::TestOutputFilesExist::test_exception_review_exists PASSED [  6%]
+../tests/test_outputs.py::TestOutputSchemas::test_audit_columns PASSED   [  8%]
+../tests/test_outputs.py::TestOutputSchemas::test_audit_only_required_columns PASSED [  9%]
+../tests/test_outputs.py::TestOutputSchemas::test_violations_json_keys PASSED [ 11%]
+../tests/test_outputs.py::TestOutputSchemas::test_violations_json_count_keys PASSED [ 13%]
+../tests/test_outputs.py::TestOutputSchemas::test_summary_metrics PASSED [ 14%]
+../tests/test_outputs.py::TestOutputSchemas::test_review_columns PASSED  [ 16%]
+../tests/test_outputs.py::TestOutputSchemas::test_audit_numeric_price_columns PASSED [ 18%]
+../tests/test_outputs.py::TestOutputSchemas::test_audit_row_count PASSED [ 19%]
+../tests/test_outputs.py::TestOutputSchemas::test_policy_sources PASSED  [ 21%]
+../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_002-usage_tier_miscalculated] PASSED [ 22%]
+../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_003-wrong_plan] PASSED [ 24%]
+../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_005-expired_exception] PASSED [ 26%]
+../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_006-wrong_price_floor] PASSED [ 27%]
+../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_007-missing_grandfathering] PASSED [ 29%]
+../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_013-wrong_price_floor] PASSED [ 31%]
+../tests/test_outputs.py::TestPassAccounts::test_pass_account[acct_001] PASSED [ 32%]
+../tests/test_outputs.py::TestPassAccounts::test_pass_account[acct_004] FAILED [ 34%]
+../tests/test_outputs.py::TestPassAccounts::test_pass_account[acct_008] FAILED [ 36%]
+../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_002_usage_tier_and_plan PASSED [ 37%]
+../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_003_expected_plan_enterprise PASSED [ 39%]
+../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_004_plan_from_workbook_override FAILED [ 40%]
+../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_006_scale_seat_floor_price PASSED [ 42%]
+../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_007_grandfathered_price PASSED [ 44%]
+../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_008_workbook_formula_price FAILED [ 45%]
+../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_013_override_price_precedence FAILED [ 47%]
+../tests/test_outputs.py::TestRevenueImpact::test_acct_002_overcharge PASSED [ 49%]
+../tests/test_outputs.py::TestRevenueImpact::test_acct_003_undercharge PASSED [ 50%]
+../tests/test_outputs.py::TestRevenueImpact::test_revenue_impact_sign_convention PASSED [ 52%]
+../tests/test_outputs.py::TestSummaryCounts::test_total_accounts PASSED  [ 54%]
+../tests/test_outputs.py::TestSummaryCounts::test_failed_accounts FAILED [ 55%]
+../tests/test_outputs.py::TestSummaryCounts::test_passed_accounts FAILED [ 57%]
+../tests/test_outputs.py::TestSummaryCounts::test_violation_counts FAILED [ 59%]
+../tests/test_outputs.py::TestSummaryCounts::test_net_revenue_impact FAILED [ 60%]
+../tests/test_outputs.py::TestSummaryCounts::test_revenue_summary_totals FAILED [ 62%]
+../tests/test_outputs.py::TestHighestRevenueImpact::test_highest_revenue_impact_account PASSED [ 63%]
+../tests/test_outputs.py::TestExceptionReview::test_exc_001_valid_applied PASSED [ 65%]
+../tests/test_outputs.py::TestExceptionReview::test_exc_002_expired_not_applied PASSED [ 67%]
+../tests/test_outputs.py::TestExceptionReview::test_exc_003_valid_applied PASSED [ 68%]
+../tests/test_outputs.py::TestExceptionReview::test_exc_005_valid_applied PASSED [ 70%]
+../tests/test_outputs.py::TestExceptionReview::test_exc_003a_superseded_not_applied PASSED [ 72%]
+../tests/test_outputs.py::TestExceptionReview::test_exception_review_row_count PASSED [ 73%]
+../tests/test_outputs.py::TestAntiNaive::test_acct_002_not_using_current_month_usage PASSED [ 75%]
+../tests/test_outputs.py::TestAntiNaive::test_acct_005_expired_exception_not_valid PASSED [ 77%]
+../tests/test_outputs.py::TestAntiNaive::test_acct_007_grandfathering_does_not_change_plan PASSED [ 78%]
+../tests/test_outputs.py::TestAntiNaive::test_acct_004_excel_header_and_stale_sheet FAILED [ 80%]
+../tests/test_outputs.py::TestAntiNaive::test_acct_008_price_not_superseded_row FAILED [ 81%]
+../tests/test_outputs.py::TestAntiNaive::test_acct_007_whole_number_discount_normalized PASSED [ 83%]
+../tests/test_outputs.py::TestAntiNaive::test_acct_008_price_not_pre_max_lookup PASSED [ 85%]
+../tests/test_outputs.py::TestAntiNaive::test_acct_013_price_not_grandfathered_floor PASSED [ 86%]
+../tests/test_outputs.py::TestAntiNaive::test_acct_006_scale_seat_floor_applied PASSED [ 88%]
+../tests/test_outputs.py::TestAntiNaive::test_net_revenue_requires_workbook_formulas FAILED [ 90%]
+../tests/test_outputs.py::TestFunctionLevel::test_rules_public_api_exists PASSED [ 91%]
+../tests/test_outputs.py::TestFunctionLevel::test_pricing_public_api_exists PASSED [ 93%]
+../tests/test_outputs.py::TestFunctionLevel::test_calculate_usage_tier_uses_trailing_window PASSED [ 95%]
+../tests/test_outputs.py::TestFunctionLevel::test_apply_grandfathering_does_not_change_plan PASSED [ 96%]
+../tests/test_outputs.py::TestFunctionLevel::test_calculate_price_floor_discount_on_seat_rate PASSED [ 98%]
+../tests/test_outputs.py::TestFunctionLevel::test_calculate_expected_price_scale_seat_floor PASSED [100%]
+
+=================================== FAILURES ===================================
+_________________ TestPassAccounts.test_pass_account[acct_004] _________________
+
+self = <test_outputs.TestPassAccounts object at 0x74b851b9a300>
+account_id = 'acct_004'
+
+    @pytest.mark.parametrize("account_id", ["acct_001", "acct_004", "acct_008"])
+    def test_pass_account(self, account_id):
+        row = get_row(load_audit(), account_id)
+>       assert row["migration_status"] == "pass"
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+/tests/test_outputs.py:180: AssertionError
+_________________ TestPassAccounts.test_pass_account[acct_008] _________________
+
+self = <test_outputs.TestPassAccounts object at 0x74b851b9a3f0>
+account_id = 'acct_008'
+
+    @pytest.mark.parametrize("account_id", ["acct_001", "acct_004", "acct_008"])
+    def test_pass_account(self, account_id):
+        row = get_row(load_audit(), account_id)
+>       assert row["migration_status"] == "pass"
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+/tests/test_outputs.py:180: AssertionError
+_____ TestCriticalExpectedValues.test_acct_004_plan_from_workbook_override _____
+
+self = <test_outputs.TestCriticalExpectedValues object at 0x74b851b9a930>
+
+    def test_acct_004_plan_from_workbook_override(self):
+        row = get_row(load_audit(), "acct_004")
+>       assert row["expected_new_plan"] == "Scale"
+E       AssertionError: assert 'Launch' == 'Scale'
+E         
+E         - Scale
+E         + Launch
+
+/tests/test_outputs.py:196: AssertionError
+_______ TestCriticalExpectedValues.test_acct_008_workbook_formula_price ________
+
+self = <test_outputs.TestCriticalExpectedValues object at 0x74b851b9ad20>
+
+    def test_acct_008_workbook_formula_price(self):
+        row = get_row(load_audit(), "acct_008")
+>       assert abs(float(row["expected_monthly_price"]) - 3500.00) <= MONEY_TOL
+E       assert 700.0 <= 0.01
+E        +  where 700.0 = abs((4200.0 - 3500.0))
+E        +    where 4200.0 = float(np.float64(4200.0))
+
+/tests/test_outputs.py:209: AssertionError
+______ TestCriticalExpectedValues.test_acct_013_override_price_precedence ______
+
+self = <test_outputs.TestCriticalExpectedValues object at 0x74b851b9a780>
+
+    def test_acct_013_override_price_precedence(self):
+        row = get_row(load_audit(), "acct_013")
+>       assert abs(float(row["expected_monthly_price"]) - 3500.00) <= MONEY_TOL
+E       assert 700.0 <= 0.01
+E        +  where 700.0 = abs((4200.0 - 3500.0))
+E        +    where 4200.0 = float(np.float64(4200.0))
+
+/tests/test_outputs.py:213: AssertionError
+____________________ TestSummaryCounts.test_failed_accounts ____________________
+
+self = <test_outputs.TestSummaryCounts object at 0x74b851b9b3b0>
+
+    def test_failed_accounts(self):
+>       assert load_violations()["failed_accounts"] == FAILED_ACCOUNTS
+E       assert 8 == 6
+
+/tests/test_outputs.py:235: AssertionError
+____________________ TestSummaryCounts.test_passed_accounts ____________________
+
+self = <test_outputs.TestSummaryCounts object at 0x74b851b9b590>
+
+    def test_passed_accounts(self):
+>       assert load_violations()["passed_accounts"] == PASSED_ACCOUNTS
+E       assert 1 == 3
+
+/tests/test_outputs.py:238: AssertionError
+___________________ TestSummaryCounts.test_violation_counts ____________________
+
+self = <test_outputs.TestSummaryCounts object at 0x74b851b9b770>
+
+    def test_violation_counts(self):
+        vc = load_violations()["violation_counts"]
+        assert vc["wrong_plan"] == 1
+>       assert vc["wrong_price_floor"] == 2
+E       assert 3 == 2
+
+/tests/test_outputs.py:243: AssertionError
+__________________ TestSummaryCounts.test_net_revenue_impact ___________________
+
+self = <test_outputs.TestSummaryCounts object at 0x74b851b9b950>
+
+    def test_net_revenue_impact(self):
+        net = float(load_violations()["net_revenue_impact_usd"])
+>       assert abs(net - NET_REVENUE_IMPACT) <= MONEY_TOL
+E       assert 700.0 <= 0.01
+E        +  where 700.0 = abs((1043.75 - 1743.75))
+
+/tests/test_outputs.py:250: AssertionError
+________________ TestSummaryCounts.test_revenue_summary_totals _________________
+
+self = <test_outputs.TestSummaryCounts object at 0x74b851b9bb30>
+
+    def test_revenue_summary_totals(self):
+        summary = load_summary()
+>       assert abs(float(summary["total_overcharge_usd"]) - TOTAL_OVERCHARGE) <= MONEY_TOL
+E       assert 700.0 <= 0.01
+E        +  where 700.0 = abs((6093.75 - 5393.75))
+E        +    where 6093.75 = float(6093.75)
+
+/tests/test_outputs.py:254: AssertionError
+___________ TestAntiNaive.test_acct_004_excel_header_and_stale_sheet ___________
+
+self = <test_outputs.TestAntiNaive object at 0x74b851b9bc80>
+
+    def test_acct_004_excel_header_and_stale_sheet(self):
+        row = get_row(load_audit(), "acct_004")
+>       assert row["expected_new_plan"] == "Scale"
+E       AssertionError: assert 'Launch' == 'Scale'
+E         
+E         - Scale
+E         + Launch
+
+/tests/test_outputs.py:321: AssertionError
+_____________ TestAntiNaive.test_acct_008_price_not_superseded_row _____________
+
+self = <test_outputs.TestAntiNaive object at 0x74b851b9b6b0>
+
+    def test_acct_008_price_not_superseded_row(self):
+        row = get_row(load_audit(), "acct_008")
+>       assert abs(float(row["expected_monthly_price"]) - 4200.00) > MONEY_TOL
+E       assert 0.0 > 0.01
+E        +  where 0.0 = abs((4200.0 - 4200.0))
+E        +    where 4200.0 = float(np.float64(4200.0))
+
+/tests/test_outputs.py:326: AssertionError
+__________ TestAntiNaive.test_net_revenue_requires_workbook_formulas ___________
+
+self = <test_outputs.TestAntiNaive object at 0x74b851bc90d0>
+
+    def test_net_revenue_requires_workbook_formulas(self):
+        net = float(load_violations()["net_revenue_impact_usd"])
+>       assert abs(net - NET_REVENUE_IMPACT) <= MONEY_TOL
+E       assert 700.0 <= 0.01
+E        +  where 700.0 = abs((1043.75 - 1743.75))
+
+/tests/test_outputs.py:348: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_outputs.py::TestOutputFilesExist::test_migration_audit_exists
+PASSED ../tests/test_outputs.py::TestOutputFilesExist::test_rule_violations_exists
+PASSED ../tests/test_outputs.py::TestOutputFilesExist::test_revenue_impact_summary_exists
+PASSED ../tests/test_outputs.py::TestOutputFilesExist::test_exception_review_exists
+PASSED ../tests/test_outputs.py::TestOutputSchemas::test_audit_columns
+PASSED ../tests/test_outputs.py::TestOutputSchemas::test_audit_only_required_columns
+PASSED ../tests/test_outputs.py::TestOutputSchemas::test_violations_json_keys
+PASSED ../tests/test_outputs.py::TestOutputSchemas::test_violations_json_count_keys
+PASSED ../tests/test_outputs.py::TestOutputSchemas::test_summary_metrics
+PASSED ../tests/test_outputs.py::TestOutputSchemas::test_review_columns
+PASSED ../tests/test_outputs.py::TestOutputSchemas::test_audit_numeric_price_columns
+PASSED ../tests/test_outputs.py::TestOutputSchemas::test_audit_row_count
+PASSED ../tests/test_outputs.py::TestOutputSchemas::test_policy_sources
+PASSED ../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_002-usage_tier_miscalculated]
+PASSED ../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_003-wrong_plan]
+PASSED ../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_005-expired_exception]
+PASSED ../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_006-wrong_price_floor]
+PASSED ../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_007-missing_grandfathering]
+PASSED ../tests/test_outputs.py::TestViolationAccounts::test_fail_account_violation_type[acct_013-wrong_price_floor]
+PASSED ../tests/test_outputs.py::TestPassAccounts::test_pass_account[acct_001]
+PASSED ../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_002_usage_tier_and_plan
+PASSED ../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_003_expected_plan_enterprise
+PASSED ../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_006_scale_seat_floor_price
+PASSED ../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_007_grandfathered_price
+PASSED ../tests/test_outputs.py::TestRevenueImpact::test_acct_002_overcharge
+PASSED ../tests/test_outputs.py::TestRevenueImpact::test_acct_003_undercharge
+PASSED ../tests/test_outputs.py::TestRevenueImpact::test_revenue_impact_sign_convention
+PASSED ../tests/test_outputs.py::TestSummaryCounts::test_total_accounts
+PASSED ../tests/test_outputs.py::TestHighestRevenueImpact::test_highest_revenue_impact_account
+PASSED ../tests/test_outputs.py::TestExceptionReview::test_exc_001_valid_applied
+PASSED ../tests/test_outputs.py::TestExceptionReview::test_exc_002_expired_not_applied
+PASSED ../tests/test_outputs.py::TestExceptionReview::test_exc_003_valid_applied
+PASSED ../tests/test_outputs.py::TestExceptionReview::test_exc_005_valid_applied
+PASSED ../tests/test_outputs.py::TestExceptionReview::test_exc_003a_superseded_not_applied
+PASSED ../tests/test_outputs.py::TestExceptionReview::test_exception_review_row_count
+PASSED ../tests/test_outputs.py::TestAntiNaive::test_acct_002_not_using_current_month_usage
+PASSED ../tests/test_outputs.py::TestAntiNaive::test_acct_005_expired_exception_not_valid
+PASSED ../tests/test_outputs.py::TestAntiNaive::test_acct_007_grandfathering_does_not_change_plan
+PASSED ../tests/test_outputs.py::TestAntiNaive::test_acct_007_whole_number_discount_normalized
+PASSED ../tests/test_outputs.py::TestAntiNaive::test_acct_008_price_not_pre_max_lookup
+PASSED ../tests/test_outputs.py::TestAntiNaive::test_acct_013_price_not_grandfathered_floor
+PASSED ../tests/test_outputs.py::TestAntiNaive::test_acct_006_scale_seat_floor_applied
+PASSED ../tests/test_outputs.py::TestFunctionLevel::test_rules_public_api_exists
+PASSED ../tests/test_outputs.py::TestFunctionLevel::test_pricing_public_api_exists
+PASSED ../tests/test_outputs.py::TestFunctionLevel::test_calculate_usage_tier_uses_trailing_window
+PASSED ../tests/test_outputs.py::TestFunctionLevel::test_apply_grandfathering_does_not_change_plan
+PASSED ../tests/test_outputs.py::TestFunctionLevel::test_calculate_price_floor_discount_on_seat_rate
+PASSED ../tests/test_outputs.py::TestFunctionLevel::test_calculate_expected_price_scale_seat_floor
+FAILED ../tests/test_outputs.py::TestPassAccounts::test_pass_account[acct_004]
+FAILED ../tests/test_outputs.py::TestPassAccounts::test_pass_account[acct_008]
+FAILED ../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_004_plan_from_workbook_override
+FAILED ../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_008_workbook_formula_price
+FAILED ../tests/test_outputs.py::TestCriticalExpectedValues::test_acct_013_override_price_precedence
+FAILED ../tests/test_outputs.py::TestSummaryCounts::test_failed_accounts - as...
+FAILED ../tests/test_outputs.py::TestSummaryCounts::test_passed_accounts - as...
+FAILED ../tests/test_outputs.py::TestSummaryCounts::test_violation_counts - a...
+FAILED ../tests/test_outputs.py::TestSummaryCounts::test_net_revenue_impact
+FAILED ../tests/test_outputs.py::TestSummaryCounts::test_revenue_summary_totals
+FAILED ../tests/test_outputs.py::TestAntiNaive::test_acct_004_excel_header_and_stale_sheet
+FAILED ../tests/test_outputs.py::TestAntiNaive::test_acct_008_price_not_superseded_row
+FAILED ../tests/test_outputs.py::TestAntiNaive::test_net_revenue_requires_workbook_formulas
+======================== 13 failed, 48 passed in 1.25s =========================

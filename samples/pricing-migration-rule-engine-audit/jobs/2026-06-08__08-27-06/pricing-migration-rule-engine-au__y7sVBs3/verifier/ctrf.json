@@ -1,0 +1,548 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 54,
+            "passed": 42,
+            "failed": 12,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1780922109.3412795,
+            "stop": 1780922110.6448243
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::TestOutputFilesExist::test_migration_audit_exists",
+                "status": "passed",
+                "duration": 0.6143995479942532,
+                "start": 1780922109.7645152,
+                "stop": 1780922110.3795795,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputFilesExist::test_rule_violations_exists",
+                "status": "passed",
+                "duration": 0.00044763500773115084,
+                "start": 1780922110.3801079,
+                "stop": 1780922110.3811133,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputFilesExist::test_revenue_impact_summary_exists",
+                "status": "passed",
+                "duration": 0.00045414900523610413,
+                "start": 1780922110.3815634,
+                "stop": 1780922110.382564,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputFilesExist::test_exception_review_exists",
+                "status": "passed",
+                "duration": 0.0005616889975499362,
+                "start": 1780922110.3832262,
+                "stop": 1780922110.3844583,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputSchemas::test_audit_columns",
+                "status": "passed",
+                "duration": 0.0026402060029795393,
+                "start": 1780922110.385114,
+                "stop": 1780922110.388316,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputSchemas::test_audit_only_required_columns",
+                "status": "passed",
+                "duration": 0.0015539509913651273,
+                "start": 1780922110.3889124,
+                "stop": 1780922110.3911028,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputSchemas::test_violations_json_keys",
+                "status": "passed",
+                "duration": 0.00046304200077429414,
+                "start": 1780922110.39163,
+                "stop": 1780922110.3925943,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputSchemas::test_violations_json_count_keys",
+                "status": "passed",
+                "duration": 0.00047958700451999903,
+                "start": 1780922110.3931284,
+                "stop": 1780922110.3941321,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputSchemas::test_summary_metrics",
+                "status": "passed",
+                "duration": 0.0012919259970658459,
+                "start": 1780922110.394646,
+                "stop": 1780922110.3965313,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputSchemas::test_review_columns",
+                "status": "passed",
+                "duration": 0.0016007909944164567,
+                "start": 1780922110.397071,
+                "stop": 1780922110.399233,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputSchemas::test_audit_numeric_price_columns",
+                "status": "passed",
+                "duration": 0.0013979140057926998,
+                "start": 1780922110.3998158,
+                "stop": 1780922110.4017174,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputSchemas::test_audit_row_count",
+                "status": "passed",
+                "duration": 0.001228539003932383,
+                "start": 1780922110.4022222,
+                "stop": 1780922110.403975,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputSchemas::test_policy_sources",
+                "status": "passed",
+                "duration": 0.0005317019968060777,
+                "start": 1780922110.404486,
+                "stop": 1780922110.4055278,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestViolationAccounts::test_fail_account_violation_type",
+                "status": "passed",
+                "duration": 0.0019317870028316975,
+                "start": 1780922110.406032,
+                "stop": 1780922110.4084804,
+                "retries": 5,
+                "file_path": "test_outputs.py",
+                "tags": [
+                    "parametrize::account_id,violation::[('acct_002', 'usage_tier_miscalculated'), ('acct_003', 'wrong_plan'), ('acct_005', 'expired_exception'), ('acct_006', 'wrong_price_floor'), ('acct_007', 'missing_grandfathering'), ('acct_013', 'wrong_price_floor')]"
+                ]
+            },
+            {
+                "name": "test_outputs.py::TestPassAccounts::test_pass_account",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0022529600028065033,
+                "start": 1780922110.4218993,
+                "stop": 1780922110.424699,
+                "retries": 2,
+                "file_path": "test_outputs.py",
+                "tags": [
+                    "parametrize::account_id::['acct_001', 'acct_004', 'acct_008']"
+                ],
+                "trace": "self = <test_outputs.TestPassAccounts object at 0x7ed281dbaae0>\naccount_id = 'acct_008'\n\n    @pytest.mark.parametrize(\"account_id\", [\"acct_001\", \"acct_004\", \"acct_008\"])\n    def test_pass_account(self, account_id):\n        row = get_row(load_audit(), account_id)\n>       assert row[\"migration_status\"] == \"pass\"\nE       AssertionError: assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\n/tests/test_outputs.py:180: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestCriticalExpectedValues::test_acct_002_usage_tier_and_plan",
+                "status": "passed",
+                "duration": 0.002046875008090865,
+                "start": 1780922110.4753437,
+                "stop": 1780922110.4780667,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestCriticalExpectedValues::test_acct_003_expected_plan_enterprise",
+                "status": "passed",
+                "duration": 0.0018713989920797758,
+                "start": 1780922110.478558,
+                "stop": 1780922110.480934,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestCriticalExpectedValues::test_acct_004_plan_from_workbook_override",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0020247470019967295,
+                "start": 1780922110.4814837,
+                "stop": 1780922110.4910064,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestCriticalExpectedValues object at 0x7ed281dbaff0>\n\n    def test_acct_004_plan_from_workbook_override(self):\n        row = get_row(load_audit(), \"acct_004\")\n>       assert row[\"expected_new_plan\"] == \"Scale\"\nE       AssertionError: assert 'Launch' == 'Scale'\nE         \nE         - Scale\nE         + Launch\n\n/tests/test_outputs.py:196: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestCriticalExpectedValues::test_acct_006_scale_seat_floor_price",
+                "status": "passed",
+                "duration": 0.0022333120068651624,
+                "start": 1780922110.4918034,
+                "stop": 1780922110.4947276,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestCriticalExpectedValues::test_acct_007_grandfathered_price",
+                "status": "passed",
+                "duration": 0.0019039720136788674,
+                "start": 1780922110.4952626,
+                "stop": 1780922110.4979727,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestCriticalExpectedValues::test_acct_008_workbook_formula_price",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0021373529962147586,
+                "start": 1780922110.4984863,
+                "stop": 1780922110.507557,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestCriticalExpectedValues object at 0x7ed281dbb3e0>\n\n    def test_acct_008_workbook_formula_price(self):\n        row = get_row(load_audit(), \"acct_008\")\n>       assert abs(float(row[\"expected_monthly_price\"]) - 3500.00) <= MONEY_TOL\nE       assert 700.0 <= 0.01\nE        +  where 700.0 = abs((4200.0 - 3500.0))\nE        +    where 4200.0 = float(np.float64(4200.0))\n\n/tests/test_outputs.py:209: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestCriticalExpectedValues::test_acct_013_override_price_precedence",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.002151002008758951,
+                "start": 1780922110.5081143,
+                "stop": 1780922110.5164447,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestCriticalExpectedValues object at 0x7ed281dbae40>\n\n    def test_acct_013_override_price_precedence(self):\n        row = get_row(load_audit(), \"acct_013\")\n>       assert abs(float(row[\"expected_monthly_price\"]) - 3500.00) <= MONEY_TOL\nE       assert 700.0 <= 0.01\nE        +  where 700.0 = abs((4200.0 - 3500.0))\nE        +    where 4200.0 = float(np.float64(4200.0))\n\n/tests/test_outputs.py:213: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestRevenueImpact::test_acct_002_overcharge",
+                "status": "passed",
+                "duration": 0.0019568110001273453,
+                "start": 1780922110.5169733,
+                "stop": 1780922110.519588,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestRevenueImpact::test_acct_003_undercharge",
+                "status": "passed",
+                "duration": 0.0017989140033023432,
+                "start": 1780922110.5200903,
+                "stop": 1780922110.5224257,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestRevenueImpact::test_revenue_impact_sign_convention",
+                "status": "passed",
+                "duration": 0.0017092620037146844,
+                "start": 1780922110.5229576,
+                "stop": 1780922110.5252533,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestSummaryCounts::test_total_accounts",
+                "status": "passed",
+                "duration": 0.00046231801388785243,
+                "start": 1780922110.525789,
+                "stop": 1780922110.526774,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestSummaryCounts::test_failed_accounts",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0006110120011726394,
+                "start": 1780922110.5272782,
+                "stop": 1780922110.5340483,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestSummaryCounts object at 0x7ed281dbba40>\n\n    def test_failed_accounts(self):\n>       assert load_violations()[\"failed_accounts\"] == FAILED_ACCOUNTS\nE       assert 8 == 6\n\n/tests/test_outputs.py:235: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestSummaryCounts::test_passed_accounts",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0006042910026735626,
+                "start": 1780922110.5345669,
+                "stop": 1780922110.541784,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestSummaryCounts object at 0x7ed281dbbc20>\n\n    def test_passed_accounts(self):\n>       assert load_violations()[\"passed_accounts\"] == PASSED_ACCOUNTS\nE       assert 1 == 3\n\n/tests/test_outputs.py:238: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestSummaryCounts::test_violation_counts",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0006199039999046363,
+                "start": 1780922110.5423522,
+                "stop": 1780922110.549517,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestSummaryCounts object at 0x7ed281dbbe00>\n\n    def test_violation_counts(self):\n        vc = load_violations()[\"violation_counts\"]\n        assert vc[\"wrong_plan\"] == 1\n>       assert vc[\"wrong_price_floor\"] == 2\nE       assert 3 == 2\n\n/tests/test_outputs.py:243: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestSummaryCounts::test_net_revenue_impact",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0005948819889454171,
+                "start": 1780922110.5500567,
+                "stop": 1780922110.5577877,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestSummaryCounts object at 0x7ed281df4050>\n\n    def test_net_revenue_impact(self):\n        net = float(load_violations()[\"net_revenue_impact_usd\"])\n>       assert abs(net - NET_REVENUE_IMPACT) <= MONEY_TOL\nE       assert 700.0 <= 0.01\nE        +  where 700.0 = abs((1043.75 - 1743.75))\n\n/tests/test_outputs.py:250: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestSummaryCounts::test_revenue_summary_totals",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0014947000017855316,
+                "start": 1780922110.5583339,
+                "stop": 1780922110.566894,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestSummaryCounts object at 0x7ed281df4200>\n\n    def test_revenue_summary_totals(self):\n        summary = load_summary()\n>       assert abs(float(summary[\"total_overcharge_usd\"]) - TOTAL_OVERCHARGE) <= MONEY_TOL\nE       assert 700.0 <= 0.01\nE        +  where 700.0 = abs((6093.75 - 5393.75))\nE        +    where 6093.75 = float(6093.75)\n\n/tests/test_outputs.py:254: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestHighestRevenueImpact::test_highest_revenue_impact_account",
+                "status": "passed",
+                "duration": 0.0005444209964480251,
+                "start": 1780922110.5674996,
+                "stop": 1780922110.5685472,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExceptionReview::test_exc_001_valid_applied",
+                "status": "passed",
+                "duration": 0.0019102790029137395,
+                "start": 1780922110.5690298,
+                "stop": 1780922110.5714428,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExceptionReview::test_exc_002_expired_not_applied",
+                "status": "passed",
+                "duration": 0.0017606530018383637,
+                "start": 1780922110.5719347,
+                "stop": 1780922110.5741887,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExceptionReview::test_exc_003_valid_applied",
+                "status": "passed",
+                "duration": 0.0016974730024230666,
+                "start": 1780922110.5746944,
+                "stop": 1780922110.576861,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExceptionReview::test_exc_005_valid_applied",
+                "status": "passed",
+                "duration": 0.0016824800040922128,
+                "start": 1780922110.5773354,
+                "stop": 1780922110.5795033,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExceptionReview::test_exc_003a_superseded_not_applied",
+                "status": "passed",
+                "duration": 0.002114500995958224,
+                "start": 1780922110.5799422,
+                "stop": 1780922110.582665,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestExceptionReview::test_exception_review_row_count",
+                "status": "passed",
+                "duration": 0.0017472129984525964,
+                "start": 1780922110.5832531,
+                "stop": 1780922110.5856638,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_acct_002_not_using_current_month_usage",
+                "status": "passed",
+                "duration": 0.0020297099981689826,
+                "start": 1780922110.5862775,
+                "stop": 1780922110.5889254,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_acct_005_expired_exception_not_valid",
+                "status": "passed",
+                "duration": 0.001951021004060749,
+                "start": 1780922110.5894103,
+                "stop": 1780922110.5919385,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_acct_007_grandfathering_does_not_change_plan",
+                "status": "passed",
+                "duration": 0.0018755349956336431,
+                "start": 1780922110.592441,
+                "stop": 1780922110.5948358,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_acct_004_excel_header_and_stale_sheet",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0022235930009628646,
+                "start": 1780922110.5953119,
+                "stop": 1780922110.60439,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestAntiNaive object at 0x7ed281dbbef0>\n\n    def test_acct_004_excel_header_and_stale_sheet(self):\n        row = get_row(load_audit(), \"acct_004\")\n>       assert row[\"expected_new_plan\"] == \"Scale\"\nE       AssertionError: assert 'Launch' == 'Scale'\nE         \nE         - Scale\nE         + Launch\n\n/tests/test_outputs.py:321: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_acct_008_price_not_superseded_row",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.002028468996286392,
+                "start": 1780922110.604922,
+                "stop": 1780922110.6132162,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestAntiNaive object at 0x7ed281dbb740>\n\n    def test_acct_008_price_not_superseded_row(self):\n        row = get_row(load_audit(), \"acct_008\")\n>       assert abs(float(row[\"expected_monthly_price\"]) - 4200.00) > MONEY_TOL\nE       assert 0.0 > 0.01\nE        +  where 0.0 = abs((4200.0 - 4200.0))\nE        +    where 4200.0 = float(np.float64(4200.0))\n\n/tests/test_outputs.py:326: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_acct_007_whole_number_discount_normalized",
+                "status": "passed",
+                "duration": 0.0018181469931732863,
+                "start": 1780922110.6137788,
+                "stop": 1780922110.6161206,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_acct_008_price_not_pre_max_lookup",
+                "status": "passed",
+                "duration": 0.0016647980010020547,
+                "start": 1780922110.6166148,
+                "stop": 1780922110.6187756,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_acct_013_price_not_grandfathered_floor",
+                "status": "passed",
+                "duration": 0.0017875389967230149,
+                "start": 1780922110.6192436,
+                "stop": 1780922110.6215348,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_acct_006_scale_seat_floor_applied",
+                "status": "passed",
+                "duration": 0.0018412049976177514,
+                "start": 1780922110.6219888,
+                "stop": 1780922110.624361,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiNaive::test_net_revenue_requires_workbook_formulas",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0005667539953719825,
+                "start": 1780922110.6248093,
+                "stop": 1780922110.631666,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestAntiNaive object at 0x7ed281df56d0>\n\n    def test_net_revenue_requires_workbook_formulas(self):\n        net = float(load_violations()[\"net_revenue_impact_usd\"])\n>       assert abs(net - NET_REVENUE_IMPACT) <= MONEY_TOL\nE       assert 700.0 <= 0.01\nE        +  where 700.0 = abs((1043.75 - 1743.75))\n\n/tests/test_outputs.py:348: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestFunctionLevel::test_rules_public_api_exists",
+                "status": "passed",
+                "duration": 0.0008357100014109164,
+                "start": 1780922110.6322277,
+                "stop": 1780922110.6336336,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFunctionLevel::test_pricing_public_api_exists",
+                "status": "passed",
+                "duration": 0.0006463749959948473,
+                "start": 1780922110.6341078,
+                "stop": 1780922110.6352327,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFunctionLevel::test_calculate_usage_tier_uses_trailing_window",
+                "status": "passed",
+                "duration": 0.0034657780051929876,
+                "start": 1780922110.6357183,
+                "stop": 1780922110.6397376,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFunctionLevel::test_apply_grandfathering_does_not_change_plan",
+                "status": "passed",
+                "duration": 0.0006180429991218261,
+                "start": 1780922110.6402278,
+                "stop": 1780922110.6413069,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFunctionLevel::test_calculate_price_floor_discount_on_seat_rate",
+                "status": "passed",
+                "duration": 0.0010907019968726672,
+                "start": 1780922110.6417549,
+                "stop": 1780922110.6433475,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestFunctionLevel::test_calculate_expected_price_scale_seat_floor",
+                "status": "passed",
+                "duration": 0.00042002700502052903,
+                "start": 1780922110.6437988,
+                "stop": 1780922110.6446638,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            }
+        ]
+    }
+}

@@ -1,0 +1,1202 @@
+[?2004hroot@dfed4e2ff84a:~# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@dfed4e2ff84a:~# clear
+[?2004l[H[J[3J[?2004hroot@dfed4e2ff84a:~# ls -la /root/data
+[?2004ltotal 40
+drwxr-xr-x 3 root root 4096 Jun  8 10:02 [0m[01;34m.[0m
+drwx------ 1 root root 4096 Jun  8 10:03 [01;34m..[0m
+-rw-r--r-- 1 root root  200 Jun  8 10:02 customers.csv
+-rw-r--r-- 1 root root  138 Jun  8 10:02 fx_rates.csv
+drwxr-xr-x 2 root root 4096 Jun  8 10:02 [01;34minvoices[0m
+-rw-r--r-- 1 root root 4963 Jun  8 10:02 legacy_call_adjustments.xlsx
+-rw-r--r-- 1 root root 2879 Jun  8 10:02 pricing_addendum.pdf
+-rw-r--r-- 1 root root  461 Jun  8 10:02 support_tickets.csv
+-rw-r--r-- 1 root root  247 Jun  8 10:02 usage_logs.csv
+[?2004hroot@dfed4e2ff84a:~# ls -la /root/data/invoices
+[?2004ltotal 20
+drwxr-xr-x 2 root root 4096 Jun  8 10:02 [0m[01;34m.[0m
+drwxr-xr-x 3 root root 4096 Jun  8 10:02 [01;34m..[0m
+-rw-r--r-- 1 root root 2171 Jun  8 10:02 invoice_acct_001.pdf
+-rw-r--r-- 1 root root 2175 Jun  8 10:02 invoice_acct_002.pdf
+-rw-r--r-- 1 root root 1994 Jun  8 10:02 invoice_acct_003.pdf
+[?2004hroot@dfed4e2ff84a:~# python3 -c "import openpyxl, pandas, pdfplumber, pypdf; print('All imported successfully')"
+[?2004lTraceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'pypdf'
+[?2004hroot@dfed4e2ff84a:~# python3 -c "import openpyxl; print('openpyxl ok')"
+[?2004lopenpyxl ok
+[?2004hroot@dfed4e2ff84a:~# python3 -c "import pandas; print('pandas ok')"
+[?2004lpython3 -c "import pdfplumber; print('pdfplumber ok')"
+pandas ok
+[?2004hroot@dfed4e2ff84a:~# python3 -c "import pdfplumber; print('pdfplumber ok')"
+[?2004lwhich pdftotext
+pdfplumber ok
+[?2004hroot@dfed4e2ff84a:~# which pdftotext
+[?2004l[?2004hroot@dfed4e2ff84a:~# cat << 'EOF' > dump_pdfs.py
+[?2004l[?2004h> import pdfplumber
+[?2004l[?2004h> import os
+[?2004l[?2004h> 
+[?2004l[?2004h> def dump_pdf(path):
+[?2004l[?2004h>     print(f"=== {path} ===")
+[?2004l[?2004h>     with pdfplumber.open(path) as pdf:
+[?2004l[?2004h>         for i, page in enumerate(pdf.pages):
+[?2004l[?2004h>             print(f"--- Page {i+1} ---")
+[?2004l[?2004h>             print(page.extract_text())
+[?2004l[?2004h>     print("\n")
+[?2004l[?2004h> 
+[?2004l[?2004h> dump_pdf("/root/data/pricing_addendum.pdf")
+[?2004l[?2004h> for f in sorted(os.listdir("/root/data/invoices")):
+[?2004l[?2004h>     if f.endswith(".pdf"):
+[?2004l[?2004h>         dump_pdf(os.path.join("/root/data/invoices", f))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@dfed4e2ff84a:~# python3 dump_pdfs.py > /tmp/pdf_dumps.txt && cat /tmp/pdf_dumps.txt
+[?2004l=== /root/data/pricing_addendum.pdf ===
+--- Page 1 ---
+Abundant Cloud Platform — Pricing Addendum
+Effective: January 1, 2026
+Usage Pricing Tiers
+Each account includes 100,000 API calls per calendar month at no additional charge.
+Tier 1 Overage: calls 100,001 through 200,000 are billed at USD 0.002 per call.
+Tier 2 Overage: calls above 200,000 are billed at USD 0.0015 per call.
+Billable overage is rounded UP to the nearest 1,000 calls before rate application.
+Enterprise Legacy Discount
+Accounts designated as Enterprise Legacy in the customer registry receive an 8%
+discount applied to total overage charges. The discount is applied after tier rate
+calculation and before any tax. Discount applies to all overage tiers.
+Tax Policy
+Sales tax and VAT are excluded from usage overage charges in billing reconciliation
+audits. Where tax appears on an invoice overage line, it must be separated and
+classified as line_type='tax' in the extracted invoice lines.
+Regional Currency Policy
+EMEA accounts are invoiced in EUR. Billing reconciliation is performed in USD
+using the monthly usd_rate from fx_rates.csv for the service month.
+Legacy Billing Adjustments
+Account-months listed in legacy_call_adjustments.xlsx carry authoritative call-count
+values from the prior billing system. Interpret those cells using standard Excel
+formula semantics.
+Dispute Severity Framework
+High — sales tax or VAT included in usage overage charges.
+Medium — Enterprise Legacy discount not applied to invoice overage, tier
+arithmetic errors, or rounding errors.
+Low — immaterial per-call rate variance below the audit materiality threshold.
+Base Plan
+Base plan subscription charges are USD 500.00 per account per month.
+Base plan lines are not subject to dispute review in this audit.
+
+
+=== /root/data/invoices/invoice_acct_001.pdf ===
+--- Page 1 ---
+Northwind Analytics — Q1 2026 Invoice
+Account ID: acct_001 | Billing Period: January – March 2026
+Currency: USD
+source_file | account_id | month | line_description | quantity | unit_price | amount_usd | line_type
+invoice_acct_001.pdf | acct_001 | 2026-01 | Monthly Subscription | 1 | 500.0000 | 500.00 | base_plan
+invoice_acct_001.pdf | acct_001 | 2026-01 | API Overage Calls | 0 | 0.0020 | 0.00 | overage
+invoice_acct_001.pdf | acct_001 | 2026-02 | Monthly Subscription | 1 | 500.0000 | 500.00 | base_plan
+invoice_acct_001.pdf | acct_001 | 2026-02 | API Overage (46,000 calls) | 46000 | 0.0020 | 92.00 | overage
+invoice_acct_001.pdf | acct_001 | 2026-03 | Monthly Subscription | 1 | 500.0000 | 500.00 | base_plan
+invoice_acct_001.pdf | acct_001 | 2026-03 | API Overage Calls | 0 | 0.0020 | 0.00 | overage
+Invoice Total: USD 1,592.00
+
+
+=== /root/data/invoices/invoice_acct_002.pdf ===
+--- Page 1 ---
+Alpine Cloud Systems — Q1 2026 Statement of Charges
+Account ID: acct_002
+Billing Period: January 2026 – March 2026 | Currency: EUR
+January 2026
+Base Plan Subscription ................................ EUR 500.00
+API Overage 75,000 calls .............................. EUR 150.00
+January Subtotal: EUR 650.00
+February 2026
+Base Plan Subscription ................................ EUR 500.00
+No API overage charges this month.
+March 2026
+Base Plan Subscription ................................ EUR 500.00
+API Overage 250,000 calls ............................. EUR 425.00
+March Subtotal: EUR 925.00
+Grand Total: EUR 2,075.00
+Payment terms: Net 30 from invoice date.
+
+
+=== /root/data/invoices/invoice_acct_003.pdf ===
+--- Page 1 ---
+PixelWorks Studio — Quarterly Invoice Q1 2026
+Account ID: acct_003 | Period: Jan–Mar 2026 | Currency: USD
+Monthly Charges:
+Jan 2026: Base $500.00 | No API overage charges.
+Feb 2026: Base $500.00 | API Overage: 32,000 calls at $0.002/call = $64.00 (incl. tax $10.24) | Line total $74.24
+Mar 2026: Base $500.00 | API Overage: 120,000 calls at $0.002/call = $240.00
+Grand Total: USD 2,314.24
+Note: Tax charges on usage lines subject to customer dispute (see ticket TKT-002).
+
+
+[?2004hroot@dfed4e2ff84a:~# cat /root/data/customers.csv
+[?2004laccount_id,company_name,segment,region,is_enterprise_legacy
+acct_001,Northwind Analytics,Mid-Market,NA,false
+acct_002,Alpine Cloud Systems,Enterprise,EMEA,true
+acct_003,PixelWorks Studio,SMB,NA,false
+[?2004hroot@dfed4e2ff84a:~# cat /root/data/usage_logs.csv
+[?2004laccount_id,service_month,api_calls
+acct_001,2026-01,85000
+acct_001,2026-02,145000
+acct_001,2026-03,92000
+acct_002,2026-01,175000
+acct_002,2026-02,88000
+acct_002,2026-03,350000
+acct_003,2026-01,76000
+acct_003,2026-02,132000
+acct_003,2026-03,220000
+[?2004hroot@dfed4e2ff84a:~# cat /root/data/fx_rates.csv
+[?2004lmonth,currency,usd_rate
+2026-01,USD,1.0000
+2026-01,EUR,1.0850
+2026-02,USD,1.0000
+2026-02,EUR,1.0920
+2026-03,USD,1.0000
+2026-03,EUR,1.0790
+[?2004hroot@dfed4e2ff84a:~# cat /root/data/support_tickets.csv
+[?2004lticket_id,account_id,created_date,subject,notes
+TKT-001,acct_002,2026-04-03,Overage Discount Not Applied,"Enterprise Legacy account per contract addendum section 4. Verify 8% discount applied to all Q1 2026 overage charges."
+TKT-002,acct_003,2026-04-07,Tax Charged on API Overage,"February invoice includes USD 10.24 sales tax on overage line. Per contract clause 7.2 and pricing addendum tax policy sales tax is excluded from usage billing. Credit requested."
+[?2004hroot@dfed4e2ff84a:~# python3 -c "import pandas as pd; df = pd.read_excel('/root/data/legacy_call_adjustments.xlsx', sheet_name=None); [print(k, '\n', v) for k, v in df.items()]"
+[?2004lAdjustments 
+   account_id service_month  billable_calls  tier2_calls
+0   acct_001       2026-02             NaN          NaN
+1   acct_002       2026-03             NaN          NaN
+[?2004hroot@dfed4e2ff84a:~# cat << 'EOF' > inspect_xlsx.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/legacy_call_adjustments.xlsx', data_only=False)
+[?2004l[?2004h> sheet = wb.active
+[?2004l[?2004h> print("--- Cell Formulas ---")
+[?2004l[?2004h> for r in range(1, sheet.max_row+1):
+[?2004l[?2004h>     row_vals = [sheet.cell(row=r, column=c).value for c in range(1, sheet.max_column+1)]
+[?2004l[?2004h>     print(row_vals)
+[?2004l[?2004h> 
+[?2004l[?2004h> wb_val = openpyxl.load_workbook('/root/data/legacy_call_adjustments.xlsx', data_only=True)
+[?2004l[?2004h> sheet_val = wb_val.active
+[?2004l[?2004h> print("--- Cell Values ---")
+[?2004l[?2004h> for r in range(1, sheet_val.max_row+1):
+[?2004l[?2004h>     row_vals = [sheet_val.cell(row=r, column=c).value for c in range(1, sheet_val.max_column+1)]
+[?2004l[?2004h>     print(row_vals)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@dfed4e2ff84a:~# python3 inspect_xlsx.py
+[?2004l--- Cell Formulas ---
+['account_id', 'service_month', 'billable_calls', 'tier2_calls']
+['acct_001', '2026-02', '=SUM(40000,5000,1000)', None]
+['acct_002', '2026-03', None, '=MAX(100000,150000)']
+--- Cell Values ---
+['account_id', 'service_month', 'billable_calls', 'tier2_calls']
+['acct_001', '2026-02', None, None]
+['acct_002', '2026-03', None, None]
+[?2004hroot@dfed4e2ff84a:~# cat << 'EOF' > run_audit.py
+[?2004l[?2004h> import os
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> 
+[?2004l[?2004h> cust = pd.read_csv('/root/data/customers.csv')
+[?2004l[?2004h> usage = pd.read_csv('/root/data/usage_logs.csv')
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> tickets = pd.read_csv('/root/data/support_tickets.csv')
+[?2004l[?2004h> 
+[?2004l[?2004h> print("Customers:\n", cust)
+[?2004l[?2004h> print("Usage:\n", usage)
+[?2004l[?2004h> print("FX:\n", fx)
+[?2004l[?2004h> print("Tickets:\n", tickets)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@dfed4e2ff84a:~# python3 run_audit.py
+[?2004lCustomers:
+   account_id          company_name     segment region  is_enterprise_legacy
+0   acct_001   Northwind Analytics  Mid-Market    NaN                 False
+1   acct_002  Alpine Cloud Systems  Enterprise   EMEA                  True
+2   acct_003     PixelWorks Studio         SMB    NaN                 False
+Usage:
+   account_id service_month  api_calls
+0   acct_001       2026-01      85000
+1   acct_001       2026-02     145000
+2   acct_001       2026-03      92000
+3   acct_002       2026-01     175000
+4   acct_002       2026-02      88000
+5   acct_002       2026-03     350000
+6   acct_003       2026-01      76000
+7   acct_003       2026-02     132000
+8   acct_003       2026-03     220000
+FX:
+      month currency  usd_rate
+0  2026-01      USD     1.000
+1  2026-01      EUR     1.085
+2  2026-02      USD     1.000
+3  2026-02      EUR     1.092
+4  2026-03      USD     1.000
+5  2026-03      EUR     1.079
+Tickets:
+   ticket_id account_id created_date                       subject                                              notes
+0   TKT-001   acct_002   2026-04-03  Overage Discount Not Applied  Enterprise Legacy account per contract addendu...
+1   TKT-002   acct_003   2026-04-07    Tax Charged on API Overage  February invoice includes USD 10.24 sales tax ...
+[?2004hroot@dfed4e2ff84a:~# cat << 'EOF' > build_workbook.py
+[?2004l[?2004h> import os
+[?2004l_003
+    {[?2004h> import pandas as pd
+[?2004lil[?2004h> import openpyxl
+[?2004lcc[?2004h> from openpyxl.styles import Font, Alignment, PatternFill
+[?2004l[?2004h> 
+[?2004l0[?2004h> # Ensure output dir exists
+[?2004l[?2004h> os.makedirs("/root/out", exist_ok=True)
+[?2004l[?2004h> 
+[?2004l,[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # DATA INGESTION & PROCESSING
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> # Customers
+[?2004l[?2004h> cust = pd.read_csv('/root/data/customers.csv')
+[?2004l[?2004h> # Usage
+[?2004l[?2004h> usage = pd.read_csv('/root/data/usage_logs.csv')
+[?2004l[?2004h> # FX Rates
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> # Tickets
+[?2004lource_file[?2004h> tickets = pd.read_csv('/root/data/support_tickets.csv')
+[?2004l[?2004h> 
+[?2004lv[?2004h> # Legacy Call Adjustments: Formulas evaluated manually as specified
+[?2004l[?2004h> # Row 2 (acct_001, 2026-02): billable_calls = 46000
+[?2004l":[?2004h> # Row 3 (acct_002, 2026-03): tier2_calls = 150000
+[?2004l   [?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # SHEET 1: Extracted Invoice Lines
+[?2004l[?2004h> # source_file, account_id, invoice_month, line_description, quantity, unit_price, line_amount, line_type
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004la[?2004h> sheet1_data = [
+[?2004l[?2004h>     # acct_001
+[?2004l[?2004h>     {
+[?2004le_file[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "Monthly Subscription", "quantity": 1, "unit_price": 500.0, "line_amount": 500.0, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004lurce_fi[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "API Overage Calls", "quantity": 0, "unit_price": 0.0020, "line_amount": 0.0, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004li[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "Monthly Subscription", "quantity": 1, "unit_price": 500.0, "line_amount": 500.0, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "API Overage (46,000 calls)", "quantity": 46000, "unit_price": 0.0020, "line_amount": 92.0, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "Monthly Subscription", "quantity": 1, "unit_price": 500.0, "line_amount": 500.0, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "API Overage Calls", "quantity": 0, "unit_price": 0.0020, "line_amount": 0.0, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     # acct_002
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "Base Plan Subscription", "quantity": 1, "unit_price": 500.0, "line_amount": 500.0, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "API Overage 75,000 calls", "quantity": 75000, "unit_price": 0.0020, "line_amount": 150.0, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "Base Plan Subscription", "quantity": 1, "unit_price": 500.0, "line_amount": 500.0, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "No API overage charges this month.", "quantity": 0, "unit_price": 0.0, "line_amount": 0.0, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "Base Plan Subscription", "quantity": 1, "unit_price": 500.0, "line_amount": 500.0, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "API Overage 250,000 calls", "quantity": 250000, "unit_price": 0.0017, "line_amount": 425.0, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     # acct_003
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "Jan 2026: Base", "quantity": 1, "unit_price": 500.0, "line_amount": 500.0, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "No API overage charges.", "quantity": 0, "unit_price": 0.0, "line_amount": 0.0, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "Feb 2026: Base", "quantity": 1, "unit_price": 500.0, "line_amount": 500.0, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "API Overage: 32,000 calls at $0.002/call = $64.00 (incl. tax $10.24)", "quantity": 32000, "unit_price": 0.0020, "line_amount": 64.0, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "Sales Tax on API Overage", "quantity": 0, "unit_price": 0.0, "line_amount": 10.24, "line_type": "tax"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "Mar 2026: Base", "quantity": 1, "unit_price": 500.0, "line_amount": 500.0, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "API Overage: 120,000 calls at $0.002/call = $240.00", "quantity": 120000, "unit_price": 0.0020, "line_amount": 240.0, "line_type": "overage"
+[?2004l[?2004h>     }
+[?2004l[?2004h> ]
+[?2004l[?2004h> sheet1_df = pd.DataFrame(sheet1_data)
+[?2004l[?2004h> # Sort by account_id then invoice_month then line_type
+[?2004l[?2004h> sheet1_df = sheet1_df.sort_values(by=['account_id', 'invoice_month', 'line_type']).reset_index(drop=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> print("Sheet 1 Extracted:")
+[?2004l[?2004h> print(sheet1_df)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@dfed4e2ff84a:~# python3 build_workbook.py
+[?2004lSheet 1 Extracted:
+             source_file account_id invoice_month                                   line_description  quantity  unit_price  line_amount  line_type
+0   invoice_acct_001.pdf   acct_001       2026-01                               Monthly Subscription         1    500.0000       500.00  base_plan
+1   invoice_acct_001.pdf   acct_001       2026-01                                  API Overage Calls         0      0.0020         0.00    overage
+2   invoice_acct_001.pdf   acct_001       2026-02                               Monthly Subscription         1    500.0000       500.00  base_plan
+3   invoice_acct_001.pdf   acct_001       2026-02                         API Overage (46,000 calls)     46000      0.0020        92.00    overage
+4   invoice_acct_001.pdf   acct_001       2026-03                               Monthly Subscription         1    500.0000       500.00  base_plan
+5   invoice_acct_001.pdf   acct_001       2026-03                                  API Overage Calls         0      0.0020         0.00    overage
+6   invoice_acct_002.pdf   acct_002       2026-01                             Base Plan Subscription         1    500.0000       500.00  base_plan
+7   invoice_acct_002.pdf   acct_002       2026-01                           API Overage 75,000 calls     75000      0.0020       150.00    overage
+8   invoice_acct_002.pdf   acct_002       2026-02                             Base Plan Subscription         1    500.0000       500.00  base_plan
+9   invoice_acct_002.pdf   acct_002       2026-02                 No API overage charges this month.         0      0.0000         0.00    overage
+10  invoice_acct_002.pdf   acct_002       2026-03                             Base Plan Subscription         1    500.0000       500.00  base_plan
+11  invoice_acct_002.pdf   acct_002       2026-03                          API Overage 250,000 calls    250000      0.0017       425.00    overage
+12  invoice_acct_003.pdf   acct_003       2026-01                                     Jan 2026: Base         1    500.0000       500.00  base_plan
+13  invoice_acct_003.pdf   acct_003       2026-01                            No API overage charges.         0      0.0000         0.00    overage
+14  invoice_acct_003.pdf   acct_003       2026-02                                     Feb 2026: Base         1    500.0000       500.00  base_plan
+15  invoice_acct_003.pdf   acct_003       2026-02  API Overage: 32,000 calls at $0.002/call = $64...     32000      0.0020        64.00    overage
+16  invoice_acct_003.pdf   acct_003       2026-02                           Sales Tax on API Overage         0      0.0000        10.24        tax
+17  invoice_acct_003.pdf   acct_003       2026-03                                     Mar 2026: Base         1    500.0000       500.00  base_plan
+18  invoice_acct_003.pdf   acct_003       2026-03  API Overage: 120,000 calls at $0.002/call = $2...    120000      0.0020       240.00    overage
+[?2004hroot@dfed4e2ff84a:~# cat << 'EOF' >> build_workbook.py
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # SHEET 2: Expected Usage Charges
+[?2004l[?2004h> # account_id, service_month, actual_calls, included_calls, billable_calls, tier1_calls, tier2_calls, expected_overage_usd, discount_applied, pricing_rule_source
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> import math
+[?2004l[?2004h> 
+[?2004l[?2004h> def get_expected_charges(row):
+[?2004l[?2004h>     acct_id = row['account_id']
+[?2004l[?2004h>     month = row['service_month']
+[?2004l[?2004h>     actual = row['api_calls']
+[?2004l[?2004h>     included = 100000
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Check for legacy workbook overrides
+[?2004l[?2004h>     billable_override = None
+[?2004l[?2004h>     tier2_override = None
+[?2004l[?2004h>     
+[?2004l[?2004h>     if acct_id == 'acct_001' and month == '2026-02':
+[?2004l[?2004h>         billable_override = 46000
+[?2004l[?2004h>     if acct_id == 'acct_002' and month == '2026-03':
+[?2004l[?2004h>         tier2_override = 150000
+[?2004l[?2004h>         
+[?2004l[?2004h>     # Billable calls calculation
+[?2004l[?2004h>     if billable_override is not None:
+[?2004l[?2004h>         billable = billable_override
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         raw_billable = max(0, actual - included)
+[?2004l[?2004h>         # Round UP to nearest 1,000
+[?2004l[?2004h>         billable = int(math.ceil(raw_billable / 1000.0) * 1000)
+[?2004l[?2004h>         
+[?2004l[?2004h>     # Tier divisions
+[?2004l[?2004h>     if tier2_override is not None:
+[?2004l[?2004h>         tier2 = tier2_override
+[?2004l[?2004h>         tier1 = max(0, billable - tier2)
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         # Standard tier division
+[?2004l[?2004h>         # Tier 1 is first 100,000 overage calls (calls 100,001 through 200,000)
+[?2004l[?2004h>         # Tier 2 is calls above 200,000 total calls (which is overage > 100,000)
+[?2004l[?2004h>         if billable <= 100000:
+[?2004l[?2004h>             tier1 = billable
+[?2004l[?2004h>             tier2 = 0
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             tier1 = 100000
+[?2004l[?2004h>             tier2 = billable - 100000
+[?2004l[?2004h>             
+[?2004l[?2004h>     # Expected overage USD before discount
+[?2004l[?2004h>     expected_before_discount = (tier1 * 0.0020) + (tier2 * 0.0015)
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Discount
+[?2004l[?2004h>     is_legacy = (acct_id == 'acct_002') # Alpine Cloud Systems is Enterprise Legacy
+[?2004l[?2004h>     discount_applied = is_legacy and (expected_before_discount > 0)
+[?2004l[?2004h>     
+[?2004l[?2004h>     discount_amt = 0.0
+[?2004l[?2004h>     if is_legacy:
+[?2004l[?2004h>         discount_amt = expected_before_discount * 0.08
+[?2004l[?2004h>         
+[?2004l[?2004h>     expected_overage_usd = expected_before_discount - discount_amt
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Pricing rule source
+[?2004l[?2004h>     sources = []
+[?2004l[?2004h>     if billable_override is not None or tier2_override is not None:
+[?2004l[?2004h>         sources.append("legacy_call_adjustments.xlsx: Adjustments")
+[?2004l[?2004h>     if tier1 > 0:
+[?2004l[?2004h>         sources.append("pricing_addendum.pdf: Tier 1")
+[?2004l[?2004h>     if tier2 > 0:
+[?2004l[?2004h>         sources.append("pricing_addendum.pdf: Tier 2")
+[?2004l[?2004h>     if is_legacy and expected_overage_usd > 0:
+[?2004l[?2004h>         sources.append("pricing_addendum.pdf: Enterprise Legacy Discount")
+[?2004l[?2004h>     if len(sources) == 0:
+[?2004l[?2004h>         sources.append("pricing_addendum.pdf: Usage Pricing Tiers")
+[?2004l[?2004h>         
+[?2004l[?2004h>     pricing_rule_source = "; ".join(sources)
+[?2004l[?2004h>     
+[?2004l[?2004h>     return pd.Series({
+[?2004l[?2004h>         'account_id': acct_id,
+[?2004l[?2004h>         'service_month': month,
+[?2004l[?2004h>         'actual_calls': actual,
+[?2004l[?2004h>         'included_calls': included,
+[?2004l[?2004h>         'billable_calls': billable,
+[?2004l[?2004h>         'tier1_calls': tier1,
+[?2004l[?2004h>         'tier2_calls': tier2,
+[?2004l[?2004h>         'expected_overage_usd': expected_overage_usd,
+[?2004l[?2004h>         'discount_applied': discount_applied,
+[?2004l[?2004h>         'pricing_rule_source': pricing_rule_source
+[?2004l[?2004h>     })
+[?2004l[?2004h> 
+[?2004l[?2004h> sheet2_df = usage.apply(get_expected_charges, axis=1)
+[?2004l[?2004h> sheet2_df = sheet2_df.sort_values(by=['account_id', 'service_month']).reset_index(drop=True)
+[?2004l[?2004h> print("\nSheet 2 Expected Charges:")
+[?2004l[?2004h> print(sheet2_df.to_string())
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@dfed4e2ff84a:~# python3 build_workbook.py
+[?2004lSheet 1 Extracted:
+             source_file account_id invoice_month                                   line_description  quantity  unit_price  line_amount  line_type
+0   invoice_acct_001.pdf   acct_001       2026-01                               Monthly Subscription         1    500.0000       500.00  base_plan
+1   invoice_acct_001.pdf   acct_001       2026-01                                  API Overage Calls         0      0.0020         0.00    overage
+2   invoice_acct_001.pdf   acct_001       2026-02                               Monthly Subscription         1    500.0000       500.00  base_plan
+3   invoice_acct_001.pdf   acct_001       2026-02                         API Overage (46,000 calls)     46000      0.0020        92.00    overage
+4   invoice_acct_001.pdf   acct_001       2026-03                               Monthly Subscription         1    500.0000       500.00  base_plan
+5   invoice_acct_001.pdf   acct_001       2026-03                                  API Overage Calls         0      0.0020         0.00    overage
+6   invoice_acct_002.pdf   acct_002       2026-01                             Base Plan Subscription         1    500.0000       500.00  base_plan
+7   invoice_acct_002.pdf   acct_002       2026-01                           API Overage 75,000 calls     75000      0.0020       150.00    overage
+8   invoice_acct_002.pdf   acct_002       2026-02                             Base Plan Subscription         1    500.0000       500.00  base_plan
+9   invoice_acct_002.pdf   acct_002       2026-02                 No API overage charges this month.         0      0.0000         0.00    overage
+10  invoice_acct_002.pdf   acct_002       2026-03                             Base Plan Subscription         1    500.0000       500.00  base_plan
+11  invoice_acct_002.pdf   acct_002       2026-03                          API Overage 250,000 calls    250000      0.0017       425.00    overage
+12  invoice_acct_003.pdf   acct_003       2026-01                                     Jan 2026: Base         1    500.0000       500.00  base_plan
+13  invoice_acct_003.pdf   acct_003       2026-01                            No API overage charges.         0      0.0000         0.00    overage
+14  invoice_acct_003.pdf   acct_003       2026-02                                     Feb 2026: Base         1    500.0000       500.00  base_plan
+15  invoice_acct_003.pdf   acct_003       2026-02  API Overage: 32,000 calls at $0.002/call = $64...     32000      0.0020        64.00    overage
+16  invoice_acct_003.pdf   acct_003       2026-02                           Sales Tax on API Overage         0      0.0000        10.24        tax
+17  invoice_acct_003.pdf   acct_003       2026-03                                     Mar 2026: Base         1    500.0000       500.00  base_plan
+18  invoice_acct_003.pdf   acct_003       2026-03  API Overage: 120,000 calls at $0.002/call = $2...    120000      0.0020       240.00    overage
+
+Sheet 2 Expected Charges:
+  account_id service_month  actual_calls  included_calls  billable_calls  tier1_calls  tier2_calls  expected_overage_usd  discount_applied                                                                                                                                      pricing_rule_source
+0   acct_001       2026-01         85000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+1   acct_001       2026-02        145000          100000           46000        46000            0                  92.0             False                                                                                  legacy_call_adjustments.xlsx: Adjustments; pricing_addendum.pdf: Tier 1
+2   acct_001       2026-03         92000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+3   acct_002       2026-01        175000          100000           75000        75000            0                 138.0              True                                                                           pricing_addendum.pdf: Tier 1; pricing_addendum.pdf: Enterprise Legacy Discount
+4   acct_002       2026-02         88000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+5   acct_002       2026-03        350000          100000          250000       100000       150000                 391.0              True  legacy_call_adjustments.xlsx: Adjustments; pricing_addendum.pdf: Tier 1; pricing_addendum.pdf: Tier 2; pricing_addendum.pdf: Enterprise Legacy Discount
+6   acct_003       2026-01         76000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+7   acct_003       2026-02        132000          100000           32000        32000            0                  64.0             False                                                                                                                             pricing_addendum.pdf: Tier 1
+8   acct_003       2026-03        220000          100000          120000       100000        20000                 230.0             False                                                                                               pricing_addendum.pdf: Tier 1; pricing_addendum.pdf: Tier 2
+[?2004hroot@dfed4e2ff84a:~# cat << 'EOF' >> build_workbook.py
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # SHEET 3: Billing Reconciliation
+[?2004l[?2004h> # account_id, service_month, expected_overage_usd, billed_overage_usd, delta_usd, tax_excluded_usd, discount_delta_usd
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> reconcile_data = []
+[?2004l[?2004h> 
+[?2004l[?2004h> for index, row in sheet2_df.iterrows():
+[?2004l[?2004h>     acct_id = row['account_id']
+[?2004l[?2004h>     month = row['service_month']
+[?2004l[?2004h>     expected = row['expected_overage_usd']
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Calculate billed_overage_usd from Sheet 1
+[?2004l[?2004h>     # We need to find all overage and tax lines for this account-month in Sheet 1
+[?2004l[?2004h>     month_lines = sheet1_df[(sheet1_df['account_id'] == acct_id) & (sheet1_df['invoice_month'] == month)]
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Billed overage from invoice in local currency
+[?2004l[?2004h>     overage_lines = month_lines[month_lines['line_type'] == 'overage']
+[?2004l[?2004h>     tax_lines = month_lines[month_lines['line_type'] == 'tax']
+[?2004l[?2004h>     
+[?2004l[?2004h>     billed_overage_local = overage_lines['line_amount'].sum() if len(overage_lines) > 0 else 0.0
+[?2004l[?2004h>     billed_tax_local = tax_lines['line_amount'].sum() if len(tax_lines) > 0 else 0.0
+[?2004l[?2004h>     
+[?2004l[?2004h>     # If overage line includes tax on the invoice, the total billed overage includes the tax
+[?2004l[?2004h>     # Let's check if the tax was part of the overage line on the invoice.
+[?2004l[?2004h>     # For acct_003 in 2026-02, the invoice overage line total was 74.24, which includes 10.24 tax.
+[?2004l[?2004h>     # So the total billed overage on invoice was 74.24.
+[?2004l[?2004h>     if acct_id == 'acct_003' and month == '2026-02':
+[?2004l[?2004h>         billed_overage_local = 74.24  # Overage + Tax total billed on the line
+[?2004l[?2004h>         tax_excluded_local = 10.24
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         tax_excluded_local = billed_tax_local
+[?2004l[?2004h>         
+[?2004l[?2004h>     # Conversion to USD
+[?2004l[?2004h>     rate_row = fx[(fx['month'] == month) & (fx['currency'] == ('EUR' if acct_id == 'acct_002' else 'USD'))]
+[?2004l[?2004h>     rate = rate_row.iloc[0]['usd_rate'] if len(rate_row) > 0 else 1.0
+[?2004l[?2004h>     
+[?2004l[?2004h>     billed_overage_usd = billed_overage_local * rate
+[?2004l[?2004h>     tax_excluded_usd = tax_excluded_local * rate
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Delta
+[?2004l[?2004h>     delta_usd = billed_overage_usd - expected
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Discount delta
+[?2004l[?2004h>     # For acct_002, if the 8% discount was not applied, we calculate the discount delta
+[?2004l[?2004h>     # Let's check if discount was applied to the invoice: 
+[?2004l[?2004h>     # In Jan 2026, overage billed is EUR 150 (corresponds to no discount). Missed discount is 150 * 0.08 = 12.0 USD (or 150 * 0.08 * rate = 13.02 USD?)
+[?2004l[?2004h>     # Wait, let's look at the expected discount in USD. The expected discount was 150.0 * 0.08 = 12.0 USD (for Jan) and 425.0 * 0.08 = 34.0 USD (for Mar).
+[?2004l[?2004h>     # Let's write the discount delta as the expected discount in USD.
+[?2004l[?2004h>     if acct_id == 'acct_002':
+[?2004l[?2004h>         discount_delta_usd = (150.0 * 0.08) if month == '2026-01' else ((425.0 * 0.08) if month == '2026-03' else 0.0)
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         discount_delta_usd = 0.0
+[?2004l[?2004h>         
+[?2004l[?2004h>     reconcile_data.append({
+[?2004l[?2004h>         'account_id': acct_id,
+[?2004l[?2004h>         'service_month': month,
+[?2004l[?2004h>         'expected_overage_usd': expected,
+[?2004l[?2004h>         'billed_overage_usd': billed_overage_usd,
+[?2004l[?2004h>         'delta_usd': delta_usd,
+[?2004l[?2004h>         'tax_excluded_usd': tax_excluded_usd,
+[?2004l[?2004h>         'discount_delta_usd': discount_delta_usd
+[?2004l[?2004h>     })
+[?2004l[?2004h> 
+[?2004l[?2004h> sheet3_df = pd.DataFrame(reconcile_data)
+[?2004l[?2004h> sheet3_df = sheet3_df.sort_values(by=['account_id', 'service_month']).reset_index(drop=True)
+[?2004l[?2004h> print("\nSheet 3 Reconciliation:")
+[?2004l[?2004h> print(sheet3_df.to_string())
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@dfed4e2ff84a:~# python3 build_workbook.py
+[?2004lSheet 1 Extracted:
+             source_file account_id invoice_month                                   line_description  quantity  unit_price  line_amount  line_type
+0   invoice_acct_001.pdf   acct_001       2026-01                               Monthly Subscription         1    500.0000       500.00  base_plan
+1   invoice_acct_001.pdf   acct_001       2026-01                                  API Overage Calls         0      0.0020         0.00    overage
+2   invoice_acct_001.pdf   acct_001       2026-02                               Monthly Subscription         1    500.0000       500.00  base_plan
+3   invoice_acct_001.pdf   acct_001       2026-02                         API Overage (46,000 calls)     46000      0.0020        92.00    overage
+4   invoice_acct_001.pdf   acct_001       2026-03                               Monthly Subscription         1    500.0000       500.00  base_plan
+5   invoice_acct_001.pdf   acct_001       2026-03                                  API Overage Calls         0      0.0020         0.00    overage
+6   invoice_acct_002.pdf   acct_002       2026-01                             Base Plan Subscription         1    500.0000       500.00  base_plan
+7   invoice_acct_002.pdf   acct_002       2026-01                           API Overage 75,000 calls     75000      0.0020       150.00    overage
+8   invoice_acct_002.pdf   acct_002       2026-02                             Base Plan Subscription         1    500.0000       500.00  base_plan
+9   invoice_acct_002.pdf   acct_002       2026-02                 No API overage charges this month.         0      0.0000         0.00    overage
+10  invoice_acct_002.pdf   acct_002       2026-03                             Base Plan Subscription         1    500.0000       500.00  base_plan
+11  invoice_acct_002.pdf   acct_002       2026-03                          API Overage 250,000 calls    250000      0.0017       425.00    overage
+12  invoice_acct_003.pdf   acct_003       2026-01                                     Jan 2026: Base         1    500.0000       500.00  base_plan
+13  invoice_acct_003.pdf   acct_003       2026-01                            No API overage charges.         0      0.0000         0.00    overage
+14  invoice_acct_003.pdf   acct_003       2026-02                                     Feb 2026: Base         1    500.0000       500.00  base_plan
+15  invoice_acct_003.pdf   acct_003       2026-02  API Overage: 32,000 calls at $0.002/call = $64...     32000      0.0020        64.00    overage
+16  invoice_acct_003.pdf   acct_003       2026-02                           Sales Tax on API Overage         0      0.0000        10.24        tax
+17  invoice_acct_003.pdf   acct_003       2026-03                                     Mar 2026: Base         1    500.0000       500.00  base_plan
+18  invoice_acct_003.pdf   acct_003       2026-03  API Overage: 120,000 calls at $0.002/call = $2...    120000      0.0020       240.00    overage
+
+Sheet 2 Expected Charges:
+  account_id service_month  actual_calls  included_calls  billable_calls  tier1_calls  tier2_calls  expected_overage_usd  discount_applied                                                                                                                                      pricing_rule_source
+0   acct_001       2026-01         85000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+1   acct_001       2026-02        145000          100000           46000        46000            0                  92.0             False                                                                                  legacy_call_adjustments.xlsx: Adjustments; pricing_addendum.pdf: Tier 1
+2   acct_001       2026-03         92000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+3   acct_002       2026-01        175000          100000           75000        75000            0                 138.0              True                                                                           pricing_addendum.pdf: Tier 1; pricing_addendum.pdf: Enterprise Legacy Discount
+4   acct_002       2026-02         88000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+5   acct_002       2026-03        350000          100000          250000       100000       150000                 391.0              True  legacy_call_adjustments.xlsx: Adjustments; pricing_addendum.pdf: Tier 1; pricing_addendum.pdf: Tier 2; pricing_addendum.pdf: Enterprise Legacy Discount
+6   acct_003       2026-01         76000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+7   acct_003       2026-02        132000          100000           32000        32000            0                  64.0             False                                                                                                                             pricing_addendum.pdf: Tier 1
+8   acct_003       2026-03        220000          100000          120000       100000        20000                 230.0             False                                                                                               pricing_addendum.pdf: Tier 1; pricing_addendum.pdf: Tier 2
+
+Sheet 3 Reconciliation:
+  account_id service_month  expected_overage_usd  billed_overage_usd  delta_usd  tax_excluded_usd  discount_delta_usd
+0   acct_001       2026-01                   0.0               0.000      0.000              0.00                 0.0
+1   acct_001       2026-02                  92.0              92.000      0.000              0.00                 0.0
+2   acct_001       2026-03                   0.0               0.000      0.000              0.00                 0.0
+3   acct_002       2026-01                 138.0             162.750     24.750              0.00                12.0
+4   acct_002       2026-02                   0.0               0.000      0.000              0.00                 0.0
+5   acct_002       2026-03                 391.0             458.575     67.575              0.00                34.0
+6   acct_003       2026-01                   0.0               0.000      0.000              0.00                 0.0
+7   acct_003       2026-02                  64.0              74.240     10.240             10.24                 0.0
+8   acct_003       2026-03                 230.0             240.000     10.000              0.00                 0.0
+[?2004hroot@dfed4e2ff84a:~# cat << 'EOF' >> build_workbook.py
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # SHEET 4: Dispute Exceptions
+[?2004l[?2004h> # exception_id, account_id, service_month, exception_type, severity, delta_usd, source_reference
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004lo[?2004h> 
+[?2004lo[?2004h> exceptions_data = [
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-001",
+[?2004l[?2004h>         "account_id": "acct_002",
+[?2004l[?2004h>         "service_month": "2026-01",
+[?2004l[?2004h>         "exception_type": "OVERBILLED",
+[?2004l[?2004h>         "severity": "Medium",
+[?2004l[?2004h>         "delta_usd": 24.75,
+[?2004l[?2004h>         "source_reference": "invoices/invoice_acct_002.pdf: Jan overage; pricing_addendum.pdf: Enterprise Legacy Discount"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-002",
+[?2004l[?2004h>         "account_id": "acct_002",
+[?2004l[?2004h>         "service_month": "2026-03",
+[?2004l[?2004h>         "exception_type": "OVERBILLED",
+[?2004l[?2004h>         "severity": "Medium",
+[?2004l[?2004h>         "delta_usd": 67.575,
+[?2004l[?2004h>         "source_reference": "invoices/invoice_acct_002.pdf: Mar overage; pricing_addendum.pdf: Enterprise Legacy Discount"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-003",
+[?2004l[?2004h>         "account_id": "acct_003",
+[?2004l[?2004h>         "service_month": "2026-02",
+[?2004l[?2004h>         "exception_type": "TAX_INCLUDED",
+[?2004l[?2004h>         "severity": "High",
+[?2004l[?2004h>         "delta_usd": 10.24,
+[?2004l[?2004h>         "source_reference": "invoices/invoice_acct_003.pdf: Feb overage; pricing_addendum.pdf: Tax Policy"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-004",
+[?2004l[?2004h>         "account_id": "acct_003",
+[?2004l[?2004h>         "service_month": "2026-03",
+[?2004l[?2004h>         "exception_type": "WRONG_TIER",
+[?2004l[?2004h>         "severity": "Medium",
+[?2004l[?2004h>         "delta_usd": 10.00,
+[?2004l[?2004h>         "source_reference": "invoices/invoice_acct_003.pdf: Mar overage; pricing_addendum.pdf: Tier 2"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-005",
+[?2004l[?2004h>         "account_id": "acct_002",
+[?2004l[?2004h>         "service_month": "2026-01",
+[?2004l[?2004h>         "exception_type": "OVERBILLED",
+[?2004l[?2004h>         "severity": "Medium",
+[?2004l[?2004h>         "delta_usd": 92.325,  # Total discount not applied for Q1
+[?2004l[?2004h>         "source_reference": "support_tickets.csv: TKT-001; customers.csv: is_enterprise_legacy"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-006",
+[?2004l[?2004h>         "account_id": "acct_003",
+[?2004l[?2004h>         "service_month": "2026-02",
+[?2004l[?2004h>         "exception_type": "TAX_INCLUDED",
+[?2004l[?2004h>         "severity": "High",
+[?2004l[?2004h>         "delta_usd": 10.24,
+[?2004l[?2004h>         "source_reference": "support_tickets.csv: TKT-002; pricing_addendum.pdf: Tax Policy"
+[?2004l[?2004h>     }
+[?2004l[?2004h> ]
+[?2004l[?2004h> exceptions_df = pd.DataFrame(exceptions_data)
+[?2004l[?2004h> print("\nSheet 4 Exceptions:")
+[?2004l[?2004h> print(exceptions_df)
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # SHEET 5: Executive Summary
+[?2004l[?2004h> # metric, value
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> # Let's double check if we round the summary metrics to 2 dp
+[?2004l[?2004h> # total_accounts_reviewed: integer count (3)
+[?2004l[?2004h> # total_overbilled_usd: sum of positive deltas (24.75 + 67.575 + 10.24 + 10.0 = 112.565 -> 112.57)
+[?2004l[?2004h> # total_underbilled_usd: sum of absolute negative deltas (0.0)
+[?2004l[?2004h> # highest_risk_account: acct_002
+[?2004l[?2004h> # recommended_action: Immediate Action (due to High severity exception EXC-003 and EXC-006)
+[?2004l[?2004h> 
+[?2004l[?2004h> summary_data = [
+[?2004l[?2004h>     {"metric": "total_accounts_reviewed", "value": 3},
+[?2004l[?2004h>     {"metric": "total_overbilled_usd", "value": 112.57},
+[?2004l[?2004h>     {"metric": "total_underbilled_usd", "value": 0.0},
+[?2004l[?2004h>     {"metric": "highest_risk_account", "value": "acct_002"},
+[?2004l[?2004h>     {"metric": "recommended_action", "value": "Immediate Action"}
+[?2004l[?2004h> ]
+[?2004l[?2004h> summary_df = pd.DataFrame(summary_data)
+[?2004l[?2004h> print("\nSheet 5 Summary:")
+[?2004l[?2004h> print(summary_df)
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # WRITE TO EXCEL FILE
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> from openpyxl.utils.dataframe import dataframe_to_rows
+[?2004l[?2004h> 
+[?2004l[?2004h> wb = openpyxl.Workbook()
+[?2004l[?2004h> # Remove default sheet
+[?2004l[?2004h> wb.remove(wb.active)
+[?2004l[?2004h> 
+[?2004l[?2004h> def create_sheet_from_df(wb, name, df):
+[?2004l[?2004h>     ws = wb.create_sheet(title=name)
+[?2004l[?2004h>     # Write header
+[?2004l[?2004h>     ws.append(list(df.columns))
+[?2004l[?2004h>     # Write rows
+[?2004l[?2004h>     for r in dataframe_to_rows(df, index=False, header=False):
+[?2004l[?2004h>         ws.append(r)
+[?2004l[?2004h>     # Format numbers and styles if needed
+[?2004l[?2004h>     return ws
+[?2004l[?2004h> 
+[?2004l[?2004h> ws1 = create_sheet_from_df(wb, "Extracted Invoice Lines", sheet1_df)
+[?2004l[?2004h> ws2 = create_sheet_from_df(wb, "Expected Usage Charges", sheet2_df)
+[?2004l[?2004h> ws3 = create_sheet_from_df(wb, "Billing Reconciliation", sheet3_df)
+[?2004l[?2004h> ws4 = create_sheet_from_df(wb, "Dispute Exceptions", exceptions_df)
+[?2004l[?2004h> ws5 = create_sheet_from_df(wb, "Executive Summary", summary_df)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Save workbook
+[?2004l[?2004h> wb.save("/root/out/billing_dispute_audit.xlsx")
+[?2004l[?2004h> print("\nWorkbook successfully written to /root/out/billing_dispute_audit.xlsx")
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@dfed4e2ff84a:~# python3 build_workbook.py
+[?2004lSheet 1 Extracted:
+             source_file account_id invoice_month                                   line_description  quantity  unit_price  line_amount  line_type
+0   invoice_acct_001.pdf   acct_001       2026-01                               Monthly Subscription         1    500.0000       500.00  base_plan
+1   invoice_acct_001.pdf   acct_001       2026-01                                  API Overage Calls         0      0.0020         0.00    overage
+2   invoice_acct_001.pdf   acct_001       2026-02                               Monthly Subscription         1    500.0000       500.00  base_plan
+3   invoice_acct_001.pdf   acct_001       2026-02                         API Overage (46,000 calls)     46000      0.0020        92.00    overage
+4   invoice_acct_001.pdf   acct_001       2026-03                               Monthly Subscription         1    500.0000       500.00  base_plan
+5   invoice_acct_001.pdf   acct_001       2026-03                                  API Overage Calls         0      0.0020         0.00    overage
+6   invoice_acct_002.pdf   acct_002       2026-01                             Base Plan Subscription         1    500.0000       500.00  base_plan
+7   invoice_acct_002.pdf   acct_002       2026-01                           API Overage 75,000 calls     75000      0.0020       150.00    overage
+8   invoice_acct_002.pdf   acct_002       2026-02                             Base Plan Subscription         1    500.0000       500.00  base_plan
+9   invoice_acct_002.pdf   acct_002       2026-02                 No API overage charges this month.         0      0.0000         0.00    overage
+10  invoice_acct_002.pdf   acct_002       2026-03                             Base Plan Subscription         1    500.0000       500.00  base_plan
+11  invoice_acct_002.pdf   acct_002       2026-03                          API Overage 250,000 calls    250000      0.0017       425.00    overage
+12  invoice_acct_003.pdf   acct_003       2026-01                                     Jan 2026: Base         1    500.0000       500.00  base_plan
+13  invoice_acct_003.pdf   acct_003       2026-01                            No API overage charges.         0      0.0000         0.00    overage
+14  invoice_acct_003.pdf   acct_003       2026-02                                     Feb 2026: Base         1    500.0000       500.00  base_plan
+15  invoice_acct_003.pdf   acct_003       2026-02  API Overage: 32,000 calls at $0.002/call = $64...     32000      0.0020        64.00    overage
+16  invoice_acct_003.pdf   acct_003       2026-02                           Sales Tax on API Overage         0      0.0000        10.24        tax
+17  invoice_acct_003.pdf   acct_003       2026-03                                     Mar 2026: Base         1    500.0000       500.00  base_plan
+18  invoice_acct_003.pdf   acct_003       2026-03  API Overage: 120,000 calls at $0.002/call = $2...    120000      0.0020       240.00    overage
+
+Sheet 2 Expected Charges:
+  account_id service_month  actual_calls  included_calls  billable_calls  tier1_calls  tier2_calls  expected_overage_usd  discount_applied                                                                                                                                      pricing_rule_source
+0   acct_001       2026-01         85000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+1   acct_001       2026-02        145000          100000           46000        46000            0                  92.0             False                                                                                  legacy_call_adjustments.xlsx: Adjustments; pricing_addendum.pdf: Tier 1
+2   acct_001       2026-03         92000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+3   acct_002       2026-01        175000          100000           75000        75000            0                 138.0              True                                                                           pricing_addendum.pdf: Tier 1; pricing_addendum.pdf: Enterprise Legacy Discount
+4   acct_002       2026-02         88000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+5   acct_002       2026-03        350000          100000          250000       100000       150000                 391.0              True  legacy_call_adjustments.xlsx: Adjustments; pricing_addendum.pdf: Tier 1; pricing_addendum.pdf: Tier 2; pricing_addendum.pdf: Enterprise Legacy Discount
+6   acct_003       2026-01         76000          100000               0            0            0                   0.0             False                                                                                                                pricing_addendum.pdf: Usage Pricing Tiers
+7   acct_003       2026-02        132000          100000           32000        32000            0                  64.0             False                                                                                                                             pricing_addendum.pdf: Tier 1
+8   acct_003       2026-03        220000          100000          120000       100000        20000                 230.0             False                                                                                               pricing_addendum.pdf: Tier 1; pricing_addendum.pdf: Tier 2
+
+Sheet 3 Reconciliation:
+  account_id service_month  expected_overage_usd  billed_overage_usd  delta_usd  tax_excluded_usd  discount_delta_usd
+0   acct_001       2026-01                   0.0               0.000      0.000              0.00                 0.0
+1   acct_001       2026-02                  92.0              92.000      0.000              0.00                 0.0
+2   acct_001       2026-03                   0.0               0.000      0.000              0.00                 0.0
+3   acct_002       2026-01                 138.0             162.750     24.750              0.00                12.0
+4   acct_002       2026-02                   0.0               0.000      0.000              0.00                 0.0
+5   acct_002       2026-03                 391.0             458.575     67.575              0.00                34.0
+6   acct_003       2026-01                   0.0               0.000      0.000              0.00                 0.0
+7   acct_003       2026-02                  64.0              74.240     10.240             10.24                 0.0
+8   acct_003       2026-03                 230.0             240.000     10.000              0.00                 0.0
+
+Sheet 4 Exceptions:
+  exception_id account_id service_month exception_type severity  delta_usd                                   source_reference
+0      EXC-001   acct_002       2026-01     OVERBILLED   Medium     24.750  invoices/invoice_acct_002.pdf: Jan overage; pr...
+1      EXC-002   acct_002       2026-03     OVERBILLED   Medium     67.575  invoices/invoice_acct_002.pdf: Mar overage; pr...
+2      EXC-003   acct_003       2026-02   TAX_INCLUDED     High     10.240  invoices/invoice_acct_003.pdf: Feb overage; pr...
+3      EXC-004   acct_003       2026-03     WRONG_TIER   Medium     10.000  invoices/invoice_acct_003.pdf: Mar overage; pr...
+4      EXC-005   acct_002       2026-01     OVERBILLED   Medium     92.325  support_tickets.csv: TKT-001; customers.csv: i...
+5      EXC-006   acct_003       2026-02   TAX_INCLUDED     High     10.240  support_tickets.csv: TKT-002; pricing_addendum...
+
+Sheet 5 Summary:
+                    metric             value
+0  total_accounts_reviewed                 3
+1     total_overbilled_usd            112.57
+2    total_underbilled_usd               0.0
+3     highest_risk_account          acct_002
+4       recommended_action  Immediate Action
+
+Workbook successfully written to /root/out/billing_dispute_audit.xlsx
+[?2004hroot@dfed4e2ff84a:~# cat << 'EOF' > build_workbook.py
+[?2004lion": [?2004h> import os
+[?2004l[?2004h> import pandas as pd
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> import math
+[?2004l[?2004h> from openpyxl.utils.dataframe import dataframe_to_rows
+[?2004l[?2004h> 
+[?2004l[?2004h> # Ensure output dir exists
+[?2004l[?2004h> os.makedirs("/root/out", exist_ok=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # DATA INGESTION & PROCESSING
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> # Customers
+[?2004l[?2004h> cust = pd.read_csv('/root/data/customers.csv')
+[?2004l[?2004h> # Usage
+[?2004l[?2004h> usage = pd.read_csv('/root/data/usage_logs.csv')
+[?2004l[?2004h> # FX Rates
+[?2004l[?2004h> fx = pd.read_csv('/root/data/fx_rates.csv')
+[?2004l[?2004h> # Tickets
+[?2004l[?2004h> tickets = pd.read_csv('/root/data/support_tickets.csv')
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # SHEET 1: Extracted Invoice Lines
+[?2004l[?2004h> # source_file, account_id, invoice_month, line_description, quantity, unit_price, line_amount, line_type
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> sheet1_data = [
+[?2004l[?2004h>     # acct_001
+[?2004l[?2004h>     {
+[?2004l [?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "Monthly Subscription", "quantity": 1, "unit_price": 500.00, "line_amount": 500.00, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "API Overage Calls", "quantity": 0, "unit_price": 0.0020, "line_amount": 0.00, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "Monthly Subscription", "quantity": 1, "unit_price": 500.00, "line_amount": 500.00, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "API Overage (46,000 calls)", "quantity": 46000, "unit_price": 0.0020, "line_amount": 92.00, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004lSHEET [?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "Monthly Subscription", "quantity": 1, "unit_price": 500.00, "line_amount": 500.00, "line_type": "base_plan"
+[?2004l--[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_001.pdf", "account_id": "acct_001", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "API Overage Calls", "quantity": 0, "unit_price": 0.0020, "line_amount": 0.00, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     # acct_002
+[?2004l[?2004h>     {
+[?2004lth ==[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-01",
+[?2004l'2026-03':
+  [?2004h>         "line_description": "Base Plan Subscription", "quantity": 1, "unit_price": 500.00, "line_amount": 500.00, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004llable =[?2004h>     {
+[?2004l0[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "API Overage 75,000 calls", "quantity": 75000, "unit_price": 0.0020, "line_amount": 150.00, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l   tie[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "Base Plan Subscription", "quantity": 1, "unit_price": 500.00, "line_amount": 500.00, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "No API overage charges this month.", "quantity": 0, "unit_price": 0.0000, "line_amount": 0.00, "line_type": "overage"
+[?2004l [?2004h>     },
+[?2004l[?2004h>     {
+[?2004lces = [?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "Base Plan Subscription", "quantity": 1, "unit_price": 500.00, "line_amount": 500.00, "line_type": "base_plan"
+[?2004l    so[?2004h>     },
+[?2004l[?2004h>     {
+[?2004lppend([?2004h>         "source_file": "invoice_acct_002.pdf", "account_id": "acct_002", "invoice_month": "2026-03",
+[?2004lsources.append[?2004h>         "line_description": "API Overage 250,000 calls", "quantity": 250000, "unit_price": 0.0017, "line_amount": 425.00, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l)
+     [?2004h>     # acct_003
+[?2004l[?2004h>     {
+[?2004l_rule_[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "Jan 2026: Base", "quantity": 1, "unit_price": 500.00, "line_amount": 500.00, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-01",
+[?2004l[?2004h>         "line_description": "No API overage charges.", "quantity": 0, "unit_price": 0.0000, "line_amount": 0.00, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "Feb 2026: Base", "quantity": 1, "unit_price": 500.00, "line_amount": 500.00, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-02",
+[?2004le[?2004h>         "line_description": "API Overage: 32,000 calls at $0.002/call = $64.00 (incl. tax $10.24)", "quantity": 32000, "unit_price": 0.0020, "line_amount": 64.00, "line_type": "overage"
+[?2004l[?2004h>     },
+[?2004l'servic[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-02",
+[?2004l[?2004h>         "line_description": "Sales Tax on API Overage", "quantity": 0, "unit_price": 0.0000, "line_amount": 10.24, "line_type": "tax"
+[?2004l'line_type'] == 'overage']
+ [?2004h>     },
+[?2004l   tax_[?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "Mar 2026: Base", "quantity": 1, "unit_price": 500.00, "line_amount": 500.00, "line_type": "base_plan"
+[?2004l[?2004h>     },
+[?2004l0.0
+   [?2004h>     {
+[?2004l[?2004h>         "source_file": "invoice_acct_003.pdf", "account_id": "acct_003", "invoice_month": "2026-03",
+[?2004l[?2004h>         "line_description": "API Overage: 120,000 calls at $0.002/call = $240.00", "quantity": 120000, "unit_price": 0.0020, "line_amount": 240.00, "line_type": "overage"
+[?2004l[?2004h>     }
+[?2004l[?2004h> ]
+[?2004l' [?2004h> sheet1_df = pd.DataFrame(sheet1_data)
+[?2004l[?2004h> sheet1_df = sheet1_df.sort_values(by=['account_id', 'invoice_month', 'line_type']).reset_index(drop=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l  [?2004h> # SHEET 2: Expected Usage Charges
+[?2004l[?2004h> # account_id, service_month, actual_calls, included_calls, billable_calls, tier1_calls, tier2_calls, expected_overage_usd, discount_applied, pricing_rule_source
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004lu[?2004h> def get_expected_charges(row):
+[?2004l[?2004h>     acct_id = row['account_id']
+[?2004l[?2004h>     month = row['service_month']
+[?2004l[?2004h>     actual = row['api_calls']
+[?2004l[?2004h>     included = 100000
+[?2004l[?2004h>     
+[?2004lexpec[?2004h>     billable_override = None
+[?2004lage[?2004h>     tier2_override = None
+[?2004l[?2004h>     
+[?2004l[?2004h>     if acct_id == 'acct_001' and month == '2026-02':
+[?2004l[?2004h>         billable_override = 46000
+[?2004l[?2004h>     if acct_id == 'acct_002' and month == '2026-03':
+[?2004lnt_[?2004h>         tier2_override = 150000
+[?2004l[?2004h>         
+[?2004l[?2004h>     if billable_override is not None:
+[?2004lt3_[?2004h>         billable = billable_override
+[?2004lser[?2004h>     else:
+[?2004l[?2004h>         raw_billable = max(0, actual - included)
+[?2004l[?2004h>         billable = int(math.ceil(raw_billable / 1000.0) * 1000)
+[?2004l[?2004h>         
+[?2004l[?2004h>     if tier2_override is not None:
+[?2004l[?2004h>         tier2 = tier2_override
+[?2004l[?2004h>         tier1 = max(0, billable - tier2)
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         if billable <= 100000:
+[?2004l[?2004h>             tier1 = billable
+[?2004l[?2004h>             tier2 = 0
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             tier1 = 100000
+[?2004l  "[?2004h>             tier2 = billable - 100000
+[?2004l[?2004h>             
+[?2004l[?2004h>     expected_before_discount = (tier1 * 0.0020) + (tier2 * 0.0015)
+[?2004l[?2004h>     
+[?2004l": "M[?2004h>     is_legacy = (acct_id == 'acct_002')
+[?2004l[?2004h>     discount_applied = is_legacy and (expected_before_discount > 0)
+[?2004l[?2004h>     
+[?2004l[?2004h>     discount_amt = 0.0
+[?2004l[?2004h>     if is_legacy:
+[?2004l[?2004h>         discount_amt = expected_before_discount * 0.08
+[?2004l[?2004h>         
+[?2004l[?2004h>     expected_overage_usd = round(expected_before_discount - discount_amt, 2)
+[?2004l[?2004h>     
+[?2004l[?2004h>     sources = []
+[?2004l[?2004h>     if billable_override is not None or tier2_override is not None:
+[?2004l[?2004h>         sources.append("legacy_call_adjustments.xlsx: Adjustments")
+[?2004l[?2004h>     if tier1 > 0:
+[?2004l[?2004h>         sources.append("pricing_addendum.pdf: Tier 1")
+[?2004l[?2004h>     if tier2 > 0:
+[?2004l[?2004h>         sources.append("pricing_addendum.pdf: Tier 2")
+[?2004l[?2004h>     if is_legacy and expected_overage_usd > 0:
+[?2004lx[?2004h>         sources.append("pricing_addendum.pdf: Enterprise Legacy Discount")
+[?2004l[?2004h>     if len(sources) == 0:
+[?2004l[?2004h>         sources.append("pricing_addendum.pdf: Usage Pricing Tiers")
+[?2004l[?2004h>         
+[?2004l[?2004h>     pricing_rule_source = "; ".join(sources)
+[?2004l[?2004h>     
+[?2004l[?2004h>     return pd.Series({
+[?2004l[?2004h>         'account_id': acct_id,
+[?2004l[?2004h>         'service_month': month,
+[?2004l[?2004h>         'actual_calls': int(actual),
+[?2004l[?2004h>         'included_calls': int(included),
+[?2004l   "d[?2004h>         'billable_calls': int(billable),
+[?2004ln[?2004h>         'tier1_calls': int(tier1),
+[?2004l[?2004h>         'tier2_calls': int(tier2),
+[?2004lf[?2004h>         'expected_overage_usd': float(expected_overage_usd),
+[?2004l[?2004h>         'discount_applied': bool(discount_applied),
+[?2004l[?2004h>         'pricing_rule_source': pricing_rule_source
+[?2004l[?2004h>     })
+[?2004l[?2004h> 
+[?2004l [?2004h> sheet2_df = usage.apply(get_expected_charges, axis=1)
+[?2004l[?2004h> sheet2_df = sheet2_df.sort_values(by=['account_id', 'service_month']).reset_index(drop=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l  {[?2004h> # SHEET 3: Billing Reconciliation
+[?2004l[?2004h> # account_id, service_month, expected_overage_usd, billed_overage_usd, delta_usd, tax_excluded_usd, discount_delta_usd
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004lr[?2004h> 
+[?2004le[?2004h> reconcile_data = []
+[?2004l[?2004h> 
+[?2004li[?2004h> for index, row in sheet2_df.iterrows():
+[?2004l[?2004h>     acct_id = row['account_id']
+[?2004ls[?2004h>     month = row['service_month']
+[?2004l[?2004h>     expected = row['expected_overage_usd']
+[?2004l[?2004h>     
+[?2004l[?2004h>     month_lines = sheet1_df[(sheet1_df['account_id'] == acct_id) & (sheet1_df['invoice_month'] == month)]
+[?2004l[?2004h>     
+[?2004l[?2004h>     overage_lines = month_lines[month_lines['line_type'] == 'overage']
+[?2004l[?2004h>     tax_lines = month_lines[month_lines['line_type'] == 'tax']
+[?2004l[?2004h>     
+[?2004led_us[?2004h>     billed_overage_local = overage_lines['line_amount'].sum() if len(overage_lines) > 0 else 0.0
+[?2004l[?2004h>     billed_tax_local = tax_lines['line_amount'].sum() if len(tax_lines) > 0 else 0.0
+[?2004l[?2004h>     
+[?2004lction[?2004h>     if acct_id == 'acct_003' and month == '2026-02':
+[?2004lat[?2004h>         billed_overage_local = 74.24
+[?2004l[?2004h>         tax_excluded_local = 10.24
+[?2004l--[?2004h>     else:
+[?2004l[?2004h>         tax_excluded_local = billed_tax_local
+[?2004l--[?2004h>         
+[?2004l[?2004h>     rate_row = fx[(fx['month'] == month) & (fx['currency'] == ('EUR' if acct_id == 'acct_002' else 'USD'))]
+[?2004l[?2004h>     rate = rate_row.iloc[0]['usd_rate'] if len(rate_row) > 0 else 1.0
+[?2004lpp[?2004h>     
+[?2004l[?2004h>     billed_overage_usd = round(billed_overage_local * rate, 2)
+[?2004l[?2004h>     tax_excluded_usd = round(tax_excluded_local * rate, 2)
+[?2004l[?2004h>     
+[?2004l[?2004h>     delta_usd = round(billed_overage_usd - expected, 2)
+[?2004l_df[?2004h>     
+[?2004l[?2004h>     if acct_id == 'acct_002':
+[?2004l[?2004h>         discount_delta_usd = round(150.0 * 0.08, 2) if month == '2026-01' else (round(425.0 * 0.08, 2) if month == '2026-03' else 0.00)
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         discount_delta_usd = 0.00
+[?2004l[?2004h>         
+[?2004leet[?2004h>     reconcile_data.append({
+[?2004l[?2004h>         'account_id': acct_id,
+[?2004l[?2004h>         'service_month': month,
+[?2004l[?2004h>         'expected_overage_usd': float(expected),
+[?2004lp[?2004h>         'billed_overage_usd': float(billed_overage_usd),
+[?2004l[?2004h>         'delta_usd': float(delta_usd),
+[?2004l[?2004h>         'tax_excluded_usd': float(tax_excluded_usd),
+[?2004l[?2004h>         'discount_delta_usd': float(discount_delta_usd)
+[?2004l[?2004h>     })
+[?2004l[?2004h> 
+[?2004l[?2004h> sheet3_df = pd.DataFrame(reconcile_data)
+[?2004l[?2004h> sheet3_df = sheet3_df.sort_values(by=['account_id', 'service_month']).reset_index(drop=True)
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # SHEET 4: Dispute Exceptions
+[?2004l[?2004h> # exception_id, account_id, service_month, exception_type, severity, delta_usd, source_reference
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> exceptions_data = [
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-001",
+[?2004l[?2004h>         "account_id": "acct_002",
+[?2004l[?2004h>         "service_month": "2026-01",
+[?2004l[?2004h>         "exception_type": "OVERBILLED",
+[?2004l[?2004h>         "severity": "Medium",
+[?2004l[?2004h>         "delta_usd": 24.75,
+[?2004l[?2004h>         "source_reference": "invoices/invoice_acct_002.pdf: Jan overage; pricing_addendum.pdf: Enterprise Legacy Discount"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-002",
+[?2004l[?2004h>         "account_id": "acct_002",
+[?2004l[?2004h>         "service_month": "2026-03",
+[?2004l[?2004h>         "exception_type": "OVERBILLED",
+[?2004l[?2004h>         "severity": "Medium",
+[?2004l[?2004h>         "delta_usd": 67.58,  # Rounded to 2 dp
+[?2004l[?2004h>         "source_reference": "invoices/invoice_acct_002.pdf: Mar overage; pricing_addendum.pdf: Enterprise Legacy Discount"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-003",
+[?2004l[?2004h>         "account_id": "acct_003",
+[?2004l[?2004h>         "service_month": "2026-02",
+[?2004l[?2004h>         "exception_type": "TAX_INCLUDED",
+[?2004l[?2004h>         "severity": "High",
+[?2004l[?2004h>         "delta_usd": 10.24,
+[?2004l[?2004h>         "source_reference": "invoices/invoice_acct_003.pdf: Feb overage; pricing_addendum.pdf: Tax Policy"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-004",
+[?2004l[?2004h>         "account_id": "acct_003",
+[?2004l[?2004h>         "service_month": "2026-03",
+[?2004l[?2004h>         "exception_type": "WRONG_TIER",
+[?2004l[?2004h>         "severity": "Medium",
+[?2004l[?2004h>         "delta_usd": 10.00,
+[?2004l[?2004h>         "source_reference": "invoices/invoice_acct_003.pdf: Mar overage; pricing_addendum.pdf: Tier 2"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-005",
+[?2004l[?2004h>         "account_id": "acct_002",
+[?2004l[?2004h>         "service_month": "2026-01",
+[?2004l[?2004h>         "exception_type": "OVERBILLED",
+[?2004l[?2004h>         "severity": "Medium",
+[?2004l[?2004h>         "delta_usd": 92.33,  # Total discount not applied for Q1, rounded to 2 dp
+[?2004l[?2004h>         "source_reference": "support_tickets.csv: TKT-001; customers.csv: is_enterprise_legacy"
+[?2004l[?2004h>     },
+[?2004l[?2004h>     {
+[?2004l[?2004h>         "exception_id": "EXC-006",
+[?2004l[?2004h>         "account_id": "acct_003",
+[?2004l[?2004h>         "service_month": "2026-02",
+[?2004l[?2004h>         "exception_type": "TAX_INCLUDED",
+[?2004l[?2004h>         "severity": "High",
+[?2004l[?2004h>         "delta_usd": 10.24,
+[?2004l[?2004h>         "source_reference": "support_tickets.csv: TKT-002; pricing_addendum.pdf: Tax Policy"
+[?2004l[?2004h>     }
+[?2004l[?2004h> ]
+[?2004l[?2004h> exceptions_df = pd.DataFrame(exceptions_data)
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # SHEET 5: Executive Summary
+[?2004l[?2004h> # metric, value
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> summary_data = [
+[?2004l[?2004h>     {"metric": "total_accounts_reviewed", "value": int(3)},
+[?2004l[?2004h>     {"metric": "total_overbilled_usd", "value": float(112.57)},
+[?2004l[?2004h>     {"metric": "total_underbilled_usd", "value": float(0.00)},
+[?2004l[?2004h>     {"metric": "highest_risk_account", "value": "acct_002"},
+[?2004l[?2004h>     {"metric": "recommended_action", "value": "Immediate Action"}
+[?2004l[?2004h> ]
+[?2004l[?2004h> summary_df = pd.DataFrame(summary_data)
+[?2004l[?2004h> 
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> # WRITE TO EXCEL FILE
+[?2004l[?2004h> # -----------------------------------------------------------------
+[?2004l[?2004h> 
+[?2004l[?2004h> wb = openpyxl.Workbook()
+[?2004l[?2004h> wb.remove(wb.active)
+[?2004l[?2004h> 
+[?2004l[?2004h> def create_sheet_from_df(wb, name, df):
+[?2004l[?2004h>     ws = wb.create_sheet(title=name)
+[?2004l[?2004h>     ws.append(list(df.columns))
+[?2004l[?2004h>     for r in dataframe_to_rows(df, index=False, header=False):
+[?2004l[?2004h>         ws.append(r)
+[?2004l[?2004h>     return ws
+[?2004l[?2004h> 
+[?2004l[?2004h> ws1 = create_sheet_from_df(wb, "Extracted Invoice Lines", sheet1_df)
+[?2004l[?2004h> ws2 = create_sheet_from_df(wb, "Expected Usage Charges", sheet2_df)
+[?2004l[?2004h> ws3 = create_sheet_from_df(wb, "Billing Reconciliation", sheet3_df)
+[?2004l[?2004h> ws4 = create_sheet_from_df(wb, "Dispute Exceptions", exceptions_df)
+[?2004l[?2004h> ws5 = create_sheet_from_df(wb, "Executive Summary", summary_df)
+[?2004l[?2004h> 
+[?2004l[?2004h> wb.save("/root/out/billing_dispute_audit.xlsx")
+[?2004l[?2004h> print("Workbook written successfully!")
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@dfed4e2ff84a:~# python3 build_workbook.py
+[?2004lWorkbook written successfully!
+[?2004hroot@dfed4e2ff84a:~# ls -lh /root/out/billing_dispute_audit.xlsx
+[?2004l-rw-r--r-- 1 root root 9.3K Jun  8 10:08 /root/out/billing_dispute_audit.xlsx
+[?2004hroot@dfed4e2ff84a:~# cat << 'EOF' > verify_xlsx.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> 
+[?2004l[?2004h> wb = openpyxl.load_workbook("/root/out/billing_dispute_audit.xlsx")
+[?2004l[?2004h> print("Sheets in workbook:", wb.sheetnames)
+[?2004l[?2004h> 
+[?2004l[?2004h> for name in wb.sheetnames:
+[?2004l[?2004h>     ws = wb[name]
+[?2004l[?2004h>     print(f"\nSheet: {name} ({ws.max_row} rows, {ws.max_column} cols)")
+[?2004l[?2004h>     # Print first 3 rows
+[?2004l[?2004h>     for r in list(ws.iter_rows(values_only=True))[:4]:
+[?2004l[?2004h>         print(r)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@dfed4e2ff84a:~# python3 verify_xlsx.py
+[?2004lSheets in workbook: ['Extracted Invoice Lines', 'Expected Usage Charges', 'Billing Reconciliation', 'Dispute Exceptions', 'Executive Summary']
+
+Sheet: Extracted Invoice Lines (20 rows, 8 cols)
+('source_file', 'account_id', 'invoice_month', 'line_description', 'quantity', 'unit_price', 'line_amount', 'line_type')
+('invoice_acct_001.pdf', 'acct_001', '2026-01', 'Monthly Subscription', 1, 500, 500, 'base_plan')
+('invoice_acct_001.pdf', 'acct_001', '2026-01', 'API Overage Calls', 0, 0.002, 0, 'overage')
+('invoice_acct_001.pdf', 'acct_001', '2026-02', 'Monthly Subscription', 1, 500, 500, 'base_plan')
+
+Sheet: Expected Usage Charges (10 rows, 10 cols)
+('account_id', 'service_month', 'actual_calls', 'included_calls', 'billable_calls', 'tier1_calls', 'tier2_calls', 'expected_overage_usd', 'discount_applied', 'pricing_rule_source')
+('acct_001', '2026-01', 85000, 100000, 0, 0, 0, 0, False, 'pricing_addendum.pdf: Usage Pricing Tiers')
+('acct_001', '2026-02', 145000, 100000, 46000, 46000, 0, 92, False, 'legacy_call_adjustments.xlsx: Adjustments; pricing_addendum.pdf: Tier 1')
+('acct_001', '2026-03', 92000, 100000, 0, 0, 0, 0, False, 'pricing_addendum.pdf: Usage Pricing Tiers')
+
+Sheet: Billing Reconciliation (10 rows, 7 cols)
+('account_id', 'service_month', 'expected_overage_usd', 'billed_overage_usd', 'delta_usd', 'tax_excluded_usd', 'discount_delta_usd')
+('acct_001', '2026-01', 0, 0, 0, 0, 0)
+('acct_001', '2026-02', 92, 92, 0, 0, 0)
+('acct_001', '2026-03', 0, 0, 0, 0, 0)
+
+Sheet: Dispute Exceptions (7 rows, 7 cols)
+('exception_id', 'account_id', 'service_month', 'exception_type', 'severity', 'delta_usd', 'source_reference')
+('EXC-001', 'acct_002', '2026-01', 'OVERBILLED', 'Medium', 24.75, 'invoices/invoice_acct_002.pdf: Jan overage; pricing_addendum.pdf: Enterprise Legacy Discount')
+('EXC-002', 'acct_002', '2026-03', 'OVERBILLED', 'Medium', 67.58, 'invoices/invoice_acct_002.pdf: Mar overage; pricing_addendum.pdf: Enterprise Legacy Discount')
+('EXC-003', 'acct_003', '2026-02', 'TAX_INCLUDED', 'High', 10.24, 'invoices/invoice_acct_003.pdf: Feb overage; pricing_addendum.pdf: Tax Policy')
+
+Sheet: Executive Summary (6 rows, 2 cols)
+('metric', 'value')
+('total_accounts_reviewed', 3)
+('total_overbilled_usd', 112.57)
+('total_underbilled_usd', 0)
+[?2004hroot@dfed4e2ff84a:~# 

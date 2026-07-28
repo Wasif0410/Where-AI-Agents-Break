@@ -1,0 +1,170 @@
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+Collecting pytest==8.4.1
+  Downloading pytest-8.4.1-py3-none-any.whl.metadata (7.7 kB)
+Collecting pytest-json-ctrf==0.3.5
+  Downloading pytest_json_ctrf-0.3.5-py3-none-any.whl.metadata (3.3 kB)
+Requirement already satisfied: openpyxl==3.1.5 in /usr/local/lib/python3.12/dist-packages (3.1.5)
+Collecting iniconfig>=1 (from pytest==8.4.1)
+  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting packaging>=20 (from pytest==8.4.1)
+  Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting pluggy<2,>=1.5 (from pytest==8.4.1)
+  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pygments>=2.7.2 (from pytest==8.4.1)
+  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)
+Requirement already satisfied: et-xmlfile in /usr/local/lib/python3.12/dist-packages (from openpyxl==3.1.5) (2.0.0)
+Downloading pytest-8.4.1-py3-none-any.whl (365 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 365.5/365.5 kB 1.6 MB/s eta 0:00:00
+Downloading pytest_json_ctrf-0.3.5-py3-none-any.whl (6.8 kB)
+Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Downloading packaging-26.2-py3-none-any.whl (100 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100.2/100.2 kB 1.8 MB/s eta 0:00:00
+Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Downloading pygments-2.20.0-py3-none-any.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 2.7 MB/s eta 0:00:00
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest, pytest-json-ctrf
+Successfully installed iniconfig-2.3.0 packaging-26.2 pluggy-1.6.0 pygments-2.20.0 pytest-8.4.1 pytest-json-ctrf-0.3.5
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /tests
+plugins: json-ctrf-0.3.5
+collecting ... collected 35 items
+
+../tests/test_outputs.py::TestStructure::test_workbook_exists PASSED     [  2%]
+../tests/test_outputs.py::TestStructure::test_required_sheets_present PASSED [  5%]
+../tests/test_outputs.py::TestStructure::test_sheet_order PASSED         [  8%]
+../tests/test_outputs.py::TestExtractedInvoiceLines::test_columns_exact PASSED [ 11%]
+../tests/test_outputs.py::TestExtractedInvoiceLines::test_acct_001_feb_overage_extracted PASSED [ 14%]
+../tests/test_outputs.py::TestExtractedInvoiceLines::test_acct_002_jan_overage_extracted PASSED [ 17%]
+../tests/test_outputs.py::TestExtractedInvoiceLines::test_acct_003_mar_overage_extracted PASSED [ 20%]
+../tests/test_outputs.py::TestExtractedInvoiceLines::test_acct_003_feb_overage_and_tax_extracted PASSED [ 22%]
+../tests/test_outputs.py::TestExpectedUsageCharges::test_columns_present PASSED [ 25%]
+../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_001_feb_billable_from_legacy_workbook PASSED [ 28%]
+../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_002_jan_expected_with_discount PASSED [ 31%]
+../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_002_mar_expected_tiered_with_legacy_tier2 PASSED [ 34%]
+../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_003_feb_expected_excludes_tax PASSED [ 37%]
+../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_003_mar_expected_tiered PASSED [ 40%]
+../tests/test_outputs.py::TestExpectedUsageCharges::test_pricing_rule_source_present PASSED [ 42%]
+../tests/test_outputs.py::TestBillingReconciliation::test_acct_001_feb_delta_zero PASSED [ 45%]
+../tests/test_outputs.py::TestBillingReconciliation::test_acct_002_jan_delta_overbilled FAILED [ 48%]
+../tests/test_outputs.py::TestBillingReconciliation::test_acct_002_mar_delta_overbilled FAILED [ 51%]
+../tests/test_outputs.py::TestBillingReconciliation::test_acct_003_feb_tax_excluded PASSED [ 54%]
+../tests/test_outputs.py::TestBillingReconciliation::test_acct_003_mar_delta_wrong_tier PASSED [ 57%]
+../tests/test_outputs.py::TestDisputeExceptions::test_exception_types_valid PASSED [ 60%]
+../tests/test_outputs.py::TestDisputeExceptions::test_acct_002_exception_is_overbilled PASSED [ 62%]
+../tests/test_outputs.py::TestDisputeExceptions::test_acct_002_overbilled_is_medium_severity PASSED [ 65%]
+../tests/test_outputs.py::TestDisputeExceptions::test_acct_003_exception_is_tax_included PASSED [ 68%]
+../tests/test_outputs.py::TestDisputeExceptions::test_source_references_present PASSED [ 71%]
+../tests/test_outputs.py::TestDisputeExceptions::test_severity_values_valid PASSED [ 74%]
+../tests/test_outputs.py::TestDisputeExceptions::test_acct_003_is_high_severity PASSED [ 77%]
+../tests/test_outputs.py::TestDisputeExceptions::test_acct_003_mar_exception_is_wrong_tier PASSED [ 80%]
+../tests/test_outputs.py::TestExecutiveSummary::test_total_accounts_reviewed PASSED [ 82%]
+../tests/test_outputs.py::TestExecutiveSummary::test_total_overbilled PASSED [ 85%]
+../tests/test_outputs.py::TestExecutiveSummary::test_total_underbilled PASSED [ 88%]
+../tests/test_outputs.py::TestExecutiveSummary::test_highest_risk_account PASSED [ 91%]
+../tests/test_outputs.py::TestExecutiveSummary::test_recommended_action_immediate PASSED [ 94%]
+../tests/test_outputs.py::TestOutputFormat::test_summary_metrics_are_literals_not_formulas PASSED [ 97%]
+../tests/test_outputs.py::TestOutputFormat::test_reconciliation_deltas_are_literals_not_formulas PASSED [100%]
+
+=================================== FAILURES ===================================
+_________ TestBillingReconciliation.test_acct_002_jan_delta_overbilled _________
+
+self = <test_outputs.TestBillingReconciliation object at 0x7d5e03d23cb0>
+
+    def test_acct_002_jan_delta_overbilled(self):
+        """acct_002 Jan: EUR 150 @ 1.0850 = USD 162.75 billed, expected $138 → delta $24.75."""
+        headers, rows = self._get_rows()
+        acct_col  = headers["account_id"] - 1
+        month_col = headers["service_month"] - 1
+        delta_col = headers["delta_usd"] - 1
+        disc_col  = headers.get("discount_delta_usd", 0) - 1
+    
+        row = next((r for r in rows
+                    if str(r[acct_col]).strip() == "acct_002"
+                    and str(r[month_col]).strip() == "2026-01"), None)
+        assert row is not None, "acct_002 Jan missing from Billing Reconciliation"
+        v = float(row[delta_col])
+        assert abs(v - 24.75) <= TOLERANCE, (
+            f"acct_002 Jan delta: expected 24.75 (EUR converted, discount missing), got {v}"
+        )
+        if disc_col >= 0:
+>           assert abs(float(row[disc_col]) - 24.75) <= TOLERANCE, (
+                f"acct_002 Jan discount_delta_usd: expected 24.75, got {row[disc_col]}"
+            )
+E           AssertionError: acct_002 Jan discount_delta_usd: expected 24.75, got 12
+E           assert 12.75 <= 0.01
+E            +  where 12.75 = abs((12.0 - 24.75))
+E            +    where 12.0 = float(12)
+
+/tests/test_outputs.py:366: AssertionError
+_________ TestBillingReconciliation.test_acct_002_mar_delta_overbilled _________
+
+self = <test_outputs.TestBillingReconciliation object at 0x7d5e03d23e60>
+
+    def test_acct_002_mar_delta_overbilled(self):
+        """acct_002 Mar: EUR 425 @ 1.0790 = USD 458.58 billed, expected $391 → delta $67.58."""
+        headers, rows = self._get_rows()
+        acct_col  = headers["account_id"] - 1
+        month_col = headers["service_month"] - 1
+        delta_col = headers["delta_usd"] - 1
+        disc_col  = headers.get("discount_delta_usd", 0) - 1
+    
+        row = next((r for r in rows
+                    if str(r[acct_col]).strip() == "acct_002"
+                    and str(r[month_col]).strip() == "2026-03"), None)
+        assert row is not None, "acct_002 Mar missing from Billing Reconciliation"
+        v = float(row[delta_col])
+        assert abs(v - 67.58) <= TOLERANCE, (
+            f"acct_002 Mar delta: expected 67.58, got {v}"
+        )
+        if disc_col >= 0:
+>           assert abs(float(row[disc_col]) - 67.58) <= TOLERANCE, (
+                f"acct_002 Mar discount_delta_usd: expected 67.58, got {row[disc_col]}"
+            )
+E           AssertionError: acct_002 Mar discount_delta_usd: expected 67.58, got 34
+E           assert 33.58 <= 0.01
+E            +  where 33.58 = abs((34.0 - 67.58))
+E            +    where 34.0 = float(34)
+
+/tests/test_outputs.py:387: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_outputs.py::TestStructure::test_workbook_exists
+PASSED ../tests/test_outputs.py::TestStructure::test_required_sheets_present
+PASSED ../tests/test_outputs.py::TestStructure::test_sheet_order
+PASSED ../tests/test_outputs.py::TestExtractedInvoiceLines::test_columns_exact
+PASSED ../tests/test_outputs.py::TestExtractedInvoiceLines::test_acct_001_feb_overage_extracted
+PASSED ../tests/test_outputs.py::TestExtractedInvoiceLines::test_acct_002_jan_overage_extracted
+PASSED ../tests/test_outputs.py::TestExtractedInvoiceLines::test_acct_003_mar_overage_extracted
+PASSED ../tests/test_outputs.py::TestExtractedInvoiceLines::test_acct_003_feb_overage_and_tax_extracted
+PASSED ../tests/test_outputs.py::TestExpectedUsageCharges::test_columns_present
+PASSED ../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_001_feb_billable_from_legacy_workbook
+PASSED ../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_002_jan_expected_with_discount
+PASSED ../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_002_mar_expected_tiered_with_legacy_tier2
+PASSED ../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_003_feb_expected_excludes_tax
+PASSED ../tests/test_outputs.py::TestExpectedUsageCharges::test_acct_003_mar_expected_tiered
+PASSED ../tests/test_outputs.py::TestExpectedUsageCharges::test_pricing_rule_source_present
+PASSED ../tests/test_outputs.py::TestBillingReconciliation::test_acct_001_feb_delta_zero
+PASSED ../tests/test_outputs.py::TestBillingReconciliation::test_acct_003_feb_tax_excluded
+PASSED ../tests/test_outputs.py::TestBillingReconciliation::test_acct_003_mar_delta_wrong_tier
+PASSED ../tests/test_outputs.py::TestDisputeExceptions::test_exception_types_valid
+PASSED ../tests/test_outputs.py::TestDisputeExceptions::test_acct_002_exception_is_overbilled
+PASSED ../tests/test_outputs.py::TestDisputeExceptions::test_acct_002_overbilled_is_medium_severity
+PASSED ../tests/test_outputs.py::TestDisputeExceptions::test_acct_003_exception_is_tax_included
+PASSED ../tests/test_outputs.py::TestDisputeExceptions::test_source_references_present
+PASSED ../tests/test_outputs.py::TestDisputeExceptions::test_severity_values_valid
+PASSED ../tests/test_outputs.py::TestDisputeExceptions::test_acct_003_is_high_severity
+PASSED ../tests/test_outputs.py::TestDisputeExceptions::test_acct_003_mar_exception_is_wrong_tier
+PASSED ../tests/test_outputs.py::TestExecutiveSummary::test_total_accounts_reviewed
+PASSED ../tests/test_outputs.py::TestExecutiveSummary::test_total_overbilled
+PASSED ../tests/test_outputs.py::TestExecutiveSummary::test_total_underbilled
+PASSED ../tests/test_outputs.py::TestExecutiveSummary::test_highest_risk_account
+PASSED ../tests/test_outputs.py::TestExecutiveSummary::test_recommended_action_immediate
+PASSED ../tests/test_outputs.py::TestOutputFormat::test_summary_metrics_are_literals_not_formulas
+PASSED ../tests/test_outputs.py::TestOutputFormat::test_reconciliation_deltas_are_literals_not_formulas
+FAILED ../tests/test_outputs.py::TestBillingReconciliation::test_acct_002_jan_delta_overbilled
+FAILED ../tests/test_outputs.py::TestBillingReconciliation::test_acct_002_mar_delta_overbilled
+========================= 2 failed, 33 passed in 0.72s =========================

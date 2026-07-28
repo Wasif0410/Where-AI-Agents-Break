@@ -1,0 +1,347 @@
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+Requirement already satisfied: pytest==8.4.1 in /usr/local/lib/python3.12/dist-packages (8.4.1)
+Requirement already satisfied: pytest-json-ctrf==0.3.5 in /usr/local/lib/python3.12/dist-packages (0.3.5)
+Requirement already satisfied: pandas==2.2.3 in /usr/local/lib/python3.12/dist-packages (2.2.3)
+Requirement already satisfied: numpy==2.1.3 in /usr/local/lib/python3.12/dist-packages (2.1.3)
+Requirement already satisfied: openpyxl==3.1.5 in /usr/local/lib/python3.12/dist-packages (3.1.5)
+Requirement already satisfied: iniconfig>=1 in /usr/local/lib/python3.12/dist-packages (from pytest==8.4.1) (2.3.0)
+Requirement already satisfied: packaging>=20 in /usr/local/lib/python3.12/dist-packages (from pytest==8.4.1) (26.2)
+Requirement already satisfied: pluggy<2,>=1.5 in /usr/local/lib/python3.12/dist-packages (from pytest==8.4.1) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in /usr/local/lib/python3.12/dist-packages (from pytest==8.4.1) (2.20.0)
+Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2026.2)
+Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.12/dist-packages (from pandas==2.2.3) (2026.2)
+Requirement already satisfied: et-xmlfile in /usr/local/lib/python3.12/dist-packages (from openpyxl==3.1.5) (2.0.0)
+Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.8.2->pandas==2.2.3) (1.17.0)
+WARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /tests
+plugins: json-ctrf-0.3.5
+collecting ... collected 64 items
+
+../tests/test_outputs.py::TestOutputFilesExist::test_repaired_workbook_exists PASSED [  1%]
+../tests/test_outputs.py::TestOutputFilesExist::test_audit_summary_json_exists PASSED [  3%]
+../tests/test_outputs.py::TestWorkbookStructure::test_sheet_names_and_order PASSED [  4%]
+../tests/test_outputs.py::TestWorkbookStructure::test_control_sheet_hidden PASSED [  6%]
+../tests/test_outputs.py::TestWorkbookStructure::test_validation_sheet_hidden PASSED [  7%]
+../tests/test_outputs.py::TestWorkbookStructure::test_notes_sheet_exists PASSED [  9%]
+../tests/test_outputs.py::TestCommissionAuditLayout::test_headers PASSED [ 10%]
+../tests/test_outputs.py::TestCommissionAuditLayout::test_rep_ids PASSED [ 12%]
+../tests/test_outputs.py::TestCommissionAuditLayout::test_frozen_panes PASSED [ 14%]
+../tests/test_outputs.py::TestCommissionAuditLayout::test_auto_filter FAILED [ 15%]
+../tests/test_outputs.py::TestWorkbookPreservation::test_summary_formulas_preserved PASSED [ 17%]
+../tests/test_outputs.py::TestWorkbookPreservation::test_control_expected_row_count PASSED [ 18%]
+../tests/test_outputs.py::TestWorkbookPreservation::test_control_metadata_preserved PASSED [ 20%]
+../tests/test_outputs.py::TestWorkbookPreservation::test_validation_tier_labels PASSED [ 21%]
+../tests/test_outputs.py::TestWorkbookPreservation::test_validation_flag_labels PASSED [ 23%]
+../tests/test_outputs.py::TestWorkbookPreservation::test_tier_data_validation PASSED [ 25%]
+../tests/test_outputs.py::TestWorkbookPreservation::test_flag_data_validation PASSED [ 26%]
+../tests/test_outputs.py::TestWorkbookPreservation::test_header_row_styled PASSED [ 28%]
+../tests/test_outputs.py::TestEditableCellsAreLiterals::test_editable_numeric_cells_not_formulas PASSED [ 29%]
+../tests/test_outputs.py::TestEditableCellsAreLiterals::test_editable_numeric_cells_are_numbers PASSED [ 31%]
+../tests/test_outputs.py::TestAuditFormulaCells::test_total_quota_formulas_preserved PASSED [ 32%]
+../tests/test_outputs.py::TestAuditFormulaCells::test_attainment_formulas_preserved PASSED [ 34%]
+../tests/test_outputs.py::TestAuditFormulaCells::test_delta_formulas_preserved PASSED [ 35%]
+../tests/test_outputs.py::TestAuditFormulaCells::test_tier_formulas_preserved PASSED [ 37%]
+../tests/test_outputs.py::TestAuditFormulaCells::test_flag_formulas_preserved PASSED [ 39%]
+../tests/test_outputs.py::TestAuditFormulaCells::test_hidden_helper_row_preserved PASSED [ 40%]
+../tests/test_outputs.py::TestAuditFormulaCells::test_reviewer_notes_preserved PASSED [ 42%]
+../tests/test_outputs.py::TestPerRepValues::test_all_reps_present PASSED [ 43%]
+../tests/test_outputs.py::TestPerRepValues::test_base_quota_per_rep PASSED [ 45%]
+../tests/test_outputs.py::TestPerRepValues::test_carryover_nonzero PASSED [ 46%]
+../tests/test_outputs.py::TestPerRepValues::test_carryover_per_rep FAILED [ 48%]
+../tests/test_outputs.py::TestPerRepValues::test_total_quota_equals_sum PASSED [ 50%]
+../tests/test_outputs.py::TestPerRepValues::test_attainment_per_rep FAILED [ 51%]
+../tests/test_outputs.py::TestPerRepValues::test_not_all_below_threshold PASSED [ 53%]
+../tests/test_outputs.py::TestPerRepValues::test_commission_tier_per_rep FAILED [ 54%]
+../tests/test_outputs.py::TestPerRepValues::test_commission_usd_per_rep FAILED [ 56%]
+../tests/test_outputs.py::TestPerRepValues::test_delta_usd_per_rep FAILED [ 57%]
+../tests/test_outputs.py::TestPerRepValues::test_flag_per_rep PASSED     [ 59%]
+../tests/test_outputs.py::TestAuditSummary::test_required_keys PASSED    [ 60%]
+../tests/test_outputs.py::TestAuditSummary::test_total_reps_audited PASSED [ 62%]
+../tests/test_outputs.py::TestAuditSummary::test_reps_with_discrepancy PASSED [ 64%]
+../tests/test_outputs.py::TestAuditSummary::test_total_overpaid_usd PASSED [ 65%]
+../tests/test_outputs.py::TestAuditSummary::test_total_underpaid_usd FAILED [ 67%]
+../tests/test_outputs.py::TestAuditSummary::test_tier_distribution FAILED [ 68%]
+../tests/test_outputs.py::TestAuditSummary::test_highest_delta_rep PASSED [ 70%]
+../tests/test_outputs.py::TestAuditSummary::test_summary_matches_workbook PASSED [ 71%]
+../tests/test_outputs.py::TestWorkbookArtifactRepair::test_commission_audit_table_range PASSED [ 73%]
+../tests/test_outputs.py::TestWorkbookArtifactRepair::test_defined_names_point_to_full_range PASSED [ 75%]
+../tests/test_outputs.py::TestWorkbookArtifactRepair::test_conditional_formatting_covers_row_24 PASSED [ 76%]
+../tests/test_outputs.py::TestWorkbookArtifactRepair::test_formula_columns_extended_through_row_24 PASSED [ 78%]
+../tests/test_outputs.py::TestWorkbookArtifactRepair::test_rows_13_24_formulas_reference_own_row PASSED [ 79%]
+../tests/test_outputs.py::TestStaleRangeRepair::test_summary_formulas_use_full_rep_range PASSED [ 81%]
+../tests/test_outputs.py::TestStaleRangeRepair::test_autofilter_covers_full_range FAILED [ 82%]
+../tests/test_outputs.py::TestStaleRangeRepair::test_helper_formulas_use_row_24 PASSED [ 84%]
+../tests/test_outputs.py::TestAntiShortcut::test_hidden_sheets_not_dropped PASSED [ 85%]
+../tests/test_outputs.py::TestAntiShortcut::test_summary_not_overwritten_with_values PASSED [ 87%]
+../tests/test_outputs.py::TestAntiShortcut::test_tier_and_flag_not_written_as_literals PASSED [ 89%]
+../tests/test_outputs.py::TestAntiShortcut::test_audit_formula_columns_not_overwritten PASSED [ 90%]
+../tests/test_outputs.py::TestAntiShortcut::test_stale_draft_rep001_repaired PASSED [ 92%]
+../tests/test_outputs.py::TestAntiShortcut::test_rep012_carryover_uses_max_formula FAILED [ 93%]
+../tests/test_outputs.py::TestAntiShortcut::test_rep012_wrong_carryover_breaks_tier_and_commission FAILED [ 95%]
+../tests/test_outputs.py::TestAntiShortcut::test_rep015_carryover_uses_max_formula FAILED [ 96%]
+../tests/test_outputs.py::TestAntiShortcut::test_rep008_zero_carryover_preserved PASSED [ 98%]
+../tests/test_outputs.py::TestAntiShortcut::test_rep020_zero_carryover_preserved PASSED [100%]
+
+=================================== FAILURES ===================================
+__________________ TestCommissionAuditLayout.test_auto_filter __________________
+
+self = <test_outputs.TestCommissionAuditLayout object at 0x7493b7a2f950>
+
+    def test_auto_filter(self):
+        wb = load_workbook_repaired()
+>       assert wb["Commission Audit"].auto_filter.ref == "A4:L24"
+E       AssertionError: assert 'A4:L12' == 'A4:L24'
+E         
+E         - A4:L24
+E         ?      -
+E         + A4:L12
+E         ?     +
+
+/tests/test_outputs.py:462: AssertionError
+___________________ TestPerRepValues.test_carryover_per_rep ____________________
+
+self = <test_outputs.TestPerRepValues object at 0x7493b7a511f0>
+audit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}
+
+    def test_carryover_per_rep(self, audit_rows):
+        for rep_id, exp in EXPECTED.items():
+            actual = float(audit_rows[rep_id]["carryover_quota_usd"])
+>           assert abs(actual - exp["carryover_quota_usd"]) <= MONEY_TOL, (
+                f"{rep_id} carryover_quota_usd: expected {exp['carryover_quota_usd']}, got {actual}"
+            )
+E           AssertionError: REP-012 carryover_quota_usd: expected 5000.0, got 4000.0
+E           assert 1000.0 <= 0.01
+E            +  where 1000.0 = abs((4000.0 - 5000.0))
+
+/tests/test_outputs.py:636: AssertionError
+___________________ TestPerRepValues.test_attainment_per_rep ___________________
+
+self = <test_outputs.TestPerRepValues object at 0x7493b7a51550>
+audit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}
+
+    def test_attainment_per_rep(self, audit_rows):
+        for rep_id, exp in EXPECTED.items():
+            actual = float(audit_rows[rep_id]["attainment_pct"])
+>           assert abs(actual - exp["attainment_pct"]) <= SHARE_TOL, (
+                f"{rep_id} attainment_pct: expected {exp['attainment_pct']}, got {actual}"
+            )
+E           AssertionError: REP-012 attainment_pct: expected 1.4786, got 1.5
+E           assert 0.021400000000000086 <= 0.0005
+E            +  where 0.021400000000000086 = abs((1.5 - 1.4786))
+
+/tests/test_outputs.py:651: AssertionError
+________________ TestPerRepValues.test_commission_tier_per_rep _________________
+
+self = <test_outputs.TestPerRepValues object at 0x7493b7a518b0>
+audit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}
+
+    def test_commission_tier_per_rep(self, audit_rows):
+        for rep_id, exp in EXPECTED.items():
+            actual = audit_rows[rep_id]["commission_tier"]
+>           assert actual == exp["commission_tier"], (
+                f"{rep_id} commission_tier: expected {exp['commission_tier']}, got {actual}"
+            )
+E           AssertionError: REP-012 commission_tier: expected Accelerator 2, got Accelerator 3
+E           assert 'Accelerator 3' == 'Accelerator 2'
+E             
+E             - Accelerator 2
+E             ?             ^
+E             + Accelerator 3
+E             ?             ^
+
+/tests/test_outputs.py:664: AssertionError
+_________________ TestPerRepValues.test_commission_usd_per_rep _________________
+
+self = <test_outputs.TestPerRepValues object at 0x7493b7a51a60>
+audit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}
+
+    def test_commission_usd_per_rep(self, audit_rows):
+        for rep_id, exp in EXPECTED.items():
+            actual = float(audit_rows[rep_id]["commission_usd"])
+>           assert abs(actual - exp["commission_usd"]) <= MONEY_TOL, (
+                f"{rep_id} commission_usd: expected {exp['commission_usd']}, got {actual}"
+            )
+E           AssertionError: REP-012 commission_usd: expected 12420.0, got 15525.0
+E           assert 3105.0 <= 0.01
+E            +  where 3105.0 = abs((15525.0 - 12420.0))
+
+/tests/test_outputs.py:672: AssertionError
+___________________ TestPerRepValues.test_delta_usd_per_rep ____________________
+
+self = <test_outputs.TestPerRepValues object at 0x7493b7a51c10>
+audit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}
+
+    def test_delta_usd_per_rep(self, audit_rows):
+        for rep_id, exp in EXPECTED.items():
+            actual = float(audit_rows[rep_id]["delta_usd"])
+>           assert abs(actual - exp["delta_usd"]) <= MONEY_TOL, (
+                f"{rep_id} delta_usd: expected {exp['delta_usd']}, got {actual}"
+            )
+E           AssertionError: REP-012 delta_usd: expected -920.0, got -4025.0
+E           assert 3105.0 <= 0.01
+E            +  where 3105.0 = abs((-4025.0 - -920.0))
+
+/tests/test_outputs.py:679: AssertionError
+__________________ TestAuditSummary.test_total_underpaid_usd ___________________
+
+self = <test_outputs.TestAuditSummary object at 0x7493b7a525d0>
+
+    def test_total_underpaid_usd(self):
+        actual = float(load_summary()["total_underpaid_usd"])
+        expected = EXPECTED_SUMMARY["total_underpaid_usd"]
+>       assert abs(actual - expected) <= MONEY_TOL
+E       assert 3105.0 <= 0.01
+E        +  where 3105.0 = abs((4585.0 - 1480.0))
+
+/tests/test_outputs.py:712: AssertionError
+___________________ TestAuditSummary.test_tier_distribution ____________________
+
+self = <test_outputs.TestAuditSummary object at 0x7493b7a52780>
+
+    def test_tier_distribution(self):
+        summary = load_summary()
+        dist = summary["tier_distribution"]
+        for tier, count in EXPECTED_SUMMARY["tier_distribution"].items():
+            assert tier in dist, f"tier_distribution missing tier '{tier}'"
+>           assert dist[tier] == count, (
+                f"tier_distribution['{tier}']: expected {count}, got {dist[tier]}"
+            )
+E           AssertionError: tier_distribution['Accelerator 2']: expected 3, got 2
+E           assert 2 == 3
+
+/tests/test_outputs.py:719: AssertionError
+____________ TestStaleRangeRepair.test_autofilter_covers_full_range ____________
+
+self = <test_outputs.TestStaleRangeRepair object at 0x7493b7a51850>
+
+    def test_autofilter_covers_full_range(self):
+        wb = load_workbook_repaired()
+>       assert wb["Commission Audit"].auto_filter.ref == "A4:L24"
+E       AssertionError: assert 'A4:L12' == 'A4:L24'
+E         
+E         - A4:L24
+E         ?      -
+E         + A4:L12
+E         ?     +
+
+/tests/test_outputs.py:845: AssertionError
+___________ TestAntiShortcut.test_rep012_carryover_uses_max_formula ____________
+
+self = <test_outputs.TestAntiShortcut object at 0x7493b7a53500>
+
+    def test_rep012_carryover_uses_max_formula(self):
+        rows = audit_rows_from_workbook(load_workbook_repaired())
+        carry = float(rows["REP-012"]["carryover_quota_usd"])
+>       assert abs(carry - 5000.00) <= MONEY_TOL, (
+            f"REP-012 carryover_quota_usd is {carry} — expected 5000.00. "
+            "The carryover cell uses a MAX formula; arithmetic-only handling gives 4000."
+        )
+E       AssertionError: REP-012 carryover_quota_usd is 4000.0 — expected 5000.00. The carryover cell uses a MAX formula; arithmetic-only handling gives 4000.
+E       assert 1000.0 <= 0.01
+E        +  where 1000.0 = abs((4000.0 - 5000.0))
+
+/tests/test_outputs.py:900: AssertionError
+___ TestAntiShortcut.test_rep012_wrong_carryover_breaks_tier_and_commission ____
+
+self = <test_outputs.TestAntiShortcut object at 0x7493b7a536b0>
+
+    def test_rep012_wrong_carryover_breaks_tier_and_commission(self):
+        """ROUND-only carryover for REP-012 lands in Accelerator 3, not Accelerator 2."""
+        rows = audit_rows_from_workbook(load_workbook_repaired())
+>       assert rows["REP-012"]["commission_tier"] == "Accelerator 2"
+E       AssertionError: assert 'Accelerator 3' == 'Accelerator 2'
+E         
+E         - Accelerator 2
+E         ?             ^
+E         + Accelerator 3
+E         ?             ^
+
+/tests/test_outputs.py:908: AssertionError
+___________ TestAntiShortcut.test_rep015_carryover_uses_max_formula ____________
+
+self = <test_outputs.TestAntiShortcut object at 0x7493b7a53860>
+
+    def test_rep015_carryover_uses_max_formula(self):
+        rows = audit_rows_from_workbook(load_workbook_repaired())
+        carry = float(rows["REP-015"]["carryover_quota_usd"])
+>       assert abs(carry - 5000.00) <= MONEY_TOL, (
+            f"REP-015 carryover_quota_usd is {carry} — expected 5000.00. "
+            "The carryover cell uses a MAX formula; arithmetic-only handling gives 3000."
+        )
+E       AssertionError: REP-015 carryover_quota_usd is 3000.0 — expected 5000.00. The carryover cell uses a MAX formula; arithmetic-only handling gives 3000.
+E       assert 2000.0 <= 0.01
+E        +  where 2000.0 = abs((3000.0 - 5000.0))
+
+/tests/test_outputs.py:914: AssertionError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED ../tests/test_outputs.py::TestOutputFilesExist::test_repaired_workbook_exists
+PASSED ../tests/test_outputs.py::TestOutputFilesExist::test_audit_summary_json_exists
+PASSED ../tests/test_outputs.py::TestWorkbookStructure::test_sheet_names_and_order
+PASSED ../tests/test_outputs.py::TestWorkbookStructure::test_control_sheet_hidden
+PASSED ../tests/test_outputs.py::TestWorkbookStructure::test_validation_sheet_hidden
+PASSED ../tests/test_outputs.py::TestWorkbookStructure::test_notes_sheet_exists
+PASSED ../tests/test_outputs.py::TestCommissionAuditLayout::test_headers
+PASSED ../tests/test_outputs.py::TestCommissionAuditLayout::test_rep_ids
+PASSED ../tests/test_outputs.py::TestCommissionAuditLayout::test_frozen_panes
+PASSED ../tests/test_outputs.py::TestWorkbookPreservation::test_summary_formulas_preserved
+PASSED ../tests/test_outputs.py::TestWorkbookPreservation::test_control_expected_row_count
+PASSED ../tests/test_outputs.py::TestWorkbookPreservation::test_control_metadata_preserved
+PASSED ../tests/test_outputs.py::TestWorkbookPreservation::test_validation_tier_labels
+PASSED ../tests/test_outputs.py::TestWorkbookPreservation::test_validation_flag_labels
+PASSED ../tests/test_outputs.py::TestWorkbookPreservation::test_tier_data_validation
+PASSED ../tests/test_outputs.py::TestWorkbookPreservation::test_flag_data_validation
+PASSED ../tests/test_outputs.py::TestWorkbookPreservation::test_header_row_styled
+PASSED ../tests/test_outputs.py::TestEditableCellsAreLiterals::test_editable_numeric_cells_not_formulas
+PASSED ../tests/test_outputs.py::TestEditableCellsAreLiterals::test_editable_numeric_cells_are_numbers
+PASSED ../tests/test_outputs.py::TestAuditFormulaCells::test_total_quota_formulas_preserved
+PASSED ../tests/test_outputs.py::TestAuditFormulaCells::test_attainment_formulas_preserved
+PASSED ../tests/test_outputs.py::TestAuditFormulaCells::test_delta_formulas_preserved
+PASSED ../tests/test_outputs.py::TestAuditFormulaCells::test_tier_formulas_preserved
+PASSED ../tests/test_outputs.py::TestAuditFormulaCells::test_flag_formulas_preserved
+PASSED ../tests/test_outputs.py::TestAuditFormulaCells::test_hidden_helper_row_preserved
+PASSED ../tests/test_outputs.py::TestAuditFormulaCells::test_reviewer_notes_preserved
+PASSED ../tests/test_outputs.py::TestPerRepValues::test_all_reps_present
+PASSED ../tests/test_outputs.py::TestPerRepValues::test_base_quota_per_rep
+PASSED ../tests/test_outputs.py::TestPerRepValues::test_carryover_nonzero
+PASSED ../tests/test_outputs.py::TestPerRepValues::test_total_quota_equals_sum
+PASSED ../tests/test_outputs.py::TestPerRepValues::test_not_all_below_threshold
+PASSED ../tests/test_outputs.py::TestPerRepValues::test_flag_per_rep
+PASSED ../tests/test_outputs.py::TestAuditSummary::test_required_keys
+PASSED ../tests/test_outputs.py::TestAuditSummary::test_total_reps_audited
+PASSED ../tests/test_outputs.py::TestAuditSummary::test_reps_with_discrepancy
+PASSED ../tests/test_outputs.py::TestAuditSummary::test_total_overpaid_usd
+PASSED ../tests/test_outputs.py::TestAuditSummary::test_highest_delta_rep
+PASSED ../tests/test_outputs.py::TestAuditSummary::test_summary_matches_workbook
+PASSED ../tests/test_outputs.py::TestWorkbookArtifactRepair::test_commission_audit_table_range
+PASSED ../tests/test_outputs.py::TestWorkbookArtifactRepair::test_defined_names_point_to_full_range
+PASSED ../tests/test_outputs.py::TestWorkbookArtifactRepair::test_conditional_formatting_covers_row_24
+PASSED ../tests/test_outputs.py::TestWorkbookArtifactRepair::test_formula_columns_extended_through_row_24
+PASSED ../tests/test_outputs.py::TestWorkbookArtifactRepair::test_rows_13_24_formulas_reference_own_row
+PASSED ../tests/test_outputs.py::TestStaleRangeRepair::test_summary_formulas_use_full_rep_range
+PASSED ../tests/test_outputs.py::TestStaleRangeRepair::test_helper_formulas_use_row_24
+PASSED ../tests/test_outputs.py::TestAntiShortcut::test_hidden_sheets_not_dropped
+PASSED ../tests/test_outputs.py::TestAntiShortcut::test_summary_not_overwritten_with_values
+PASSED ../tests/test_outputs.py::TestAntiShortcut::test_tier_and_flag_not_written_as_literals
+PASSED ../tests/test_outputs.py::TestAntiShortcut::test_audit_formula_columns_not_overwritten
+PASSED ../tests/test_outputs.py::TestAntiShortcut::test_stale_draft_rep001_repaired
+PASSED ../tests/test_outputs.py::TestAntiShortcut::test_rep008_zero_carryover_preserved
+PASSED ../tests/test_outputs.py::TestAntiShortcut::test_rep020_zero_carryover_preserved
+FAILED ../tests/test_outputs.py::TestCommissionAuditLayout::test_auto_filter
+FAILED ../tests/test_outputs.py::TestPerRepValues::test_carryover_per_rep - A...
+FAILED ../tests/test_outputs.py::TestPerRepValues::test_attainment_per_rep - ...
+FAILED ../tests/test_outputs.py::TestPerRepValues::test_commission_tier_per_rep
+FAILED ../tests/test_outputs.py::TestPerRepValues::test_commission_usd_per_rep
+FAILED ../tests/test_outputs.py::TestPerRepValues::test_delta_usd_per_rep - A...
+FAILED ../tests/test_outputs.py::TestAuditSummary::test_total_underpaid_usd
+FAILED ../tests/test_outputs.py::TestAuditSummary::test_tier_distribution - A...
+FAILED ../tests/test_outputs.py::TestStaleRangeRepair::test_autofilter_covers_full_range
+FAILED ../tests/test_outputs.py::TestAntiShortcut::test_rep012_carryover_uses_max_formula
+FAILED ../tests/test_outputs.py::TestAntiShortcut::test_rep012_wrong_carryover_breaks_tier_and_commission
+FAILED ../tests/test_outputs.py::TestAntiShortcut::test_rep015_carryover_uses_max_formula
+======================== 12 failed, 52 passed in 1.16s =========================

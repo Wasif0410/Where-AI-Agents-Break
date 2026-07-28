@@ -1,0 +1,1363 @@
+[?2004hroot@c19df17170a9:~# asciinema rec --stdin /logs/agent/recording.cast
+[?2004l[0;32masciinema: recording asciicast to /logs/agent/recording.cast[0m
+[0;32masciinema: press <ctrl-d> or type "exit" when you're done[0m
+[?2004hroot@c19df17170a9:~# clear
+[?2004l[H[J[3J[?2004hroot@c19df17170a9:~# ls -la /root/data
+[?2004ltotal 48
+drwxr-xr-x 2 root root  4096 Jun  8 04:36 [0m[01;34m.[0m
+drwx------ 1 root root  4096 Jun  8 08:14 [01;34m..[0m
+-rw-r--r-- 1 root root  7733 Jun  8 04:36 bookings.jsonl
+-rw-r--r-- 1 root root  2841 Jun  8 04:36 commission_plan.pdf
+-rw-r--r-- 1 root root 11860 Jun  8 04:36 draft_commission_audit.xlsx
+-rw-r--r-- 1 root root   323 Jun  8 04:36 draft_commission_statements.csv
+-rw-r--r-- 1 root root  7489 Jun  8 04:36 quota_carryover.xlsx
+-rw-r--r-- 1 root root   841 Jun  8 04:36 rep_quotas.csv
+[?2004hroot@c19df17170a9:~# pip list | grep -E "openpyxl|pandas|pdf|pypdf|pdfplumber|xlrd"
+[?2004l[33mWARNING: Skipping /usr/lib/python3.12/dist-packages/asciinema-2.4.0.dist-info due to invalid metadata entry 'name'[0m[33m
+[0m[01;31m[Kopenpyxl[m[K           3.1.5
+[01;31m[Kpandas[m[K             2.2.3
+[01;31m[Kpdf[m[Kminer.six       20231228
+[01;31m[Kpdfplumber[m[K         0.11.4
+[01;31m[Kpypdf[m[Kium2          5.9.0
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; import pandas; print('openpyxl and pandas are installed')" 2>&1
+[?2004lpython3 -c "import pypdf; print('pypdf installed')" 2>/dev/null || python3 -c "import pdfplumber; print('pdfplumber installed')" 2>/dev/null || python3 -c "import fitz; print('PyMuPDF installed')" 2>/dev/null || pip install pypdf pdfplumber openpyxl pandas
+openpyxl and pandas are installed
+[?2004hroot@c19df17170a9:~# python3 -c "import pypdf; print('pypdf installed')" 2>/dev/null || python3 -c "import pdfplumber; print('pdfplumber installed')" 2>/dev/null || python3 -c "import fitz; print('PyMuPDF installed')" 2>/dev/null || pip install pypdf pdfplumber openpyxl pandas
+[?2004lpdfplumber installed
+[?2004hroot@c19df17170a9:~# python3 -c "import pdfplumber; pdf = pdfplumber.open('/root/data/commission_plan.pdf'); [print(f'--- PAGE {i} --- \n', page.extract_text()) for i, page in enumerate(pdf.pages)]"
+[?2004l--- PAGE 0 --- 
+ Abundant Cloud Platform — Q1 2026 AE Commission Plan
+Effective period: January 1, 2026 – March 31, 2026
+Audience: Account Executive commission audit
+Plan overview
+Account Executives earn quarterly commission on New ARR booked during the
+period. Commission is determined by quota attainment against a total quota
+that includes any approved carryover allocation from the prior period.
+Quota components
+- Base quota: The rep's assigned Q1 2026 target.
+- Carryover quota: Additional quota credit allocated per rep. Approved
+carryover amounts are recorded in quota_carryover.xlsx.
+Commission workbook formula values should be interpreted using
+standard Excel formula semantics.
+- Total quota: total_quota_usd = base_quota_usd + carryover_quota_usd
+Carryover amounts add to the quota denominator. They do not count as bookings.
+Attainment
+attainment_pct = bookings_arr_usd / total_quota_usd
+where bookings_arr_usd is the sum of arr_usd for all deals closed in Q1 2026
+for that rep.
+Commission tiers (ratchet schedule)
+Below Threshold: attainment < 80% — 0%
+Base: 80% <= attainment < 100% — 8%
+Accelerator 1: 100% <= attainment < 120% — 10%
+Accelerator 2: 120% <= attainment < 150% — 12%
+Accelerator 3: attainment >= 150% — 15%
+Boundary behavior: inclusive on the lower bound, exclusive on the upper bound.
+Accelerator stacking rule (non-marginal)
+The commission rate for the tier reached applies to ALL Q1 bookings for
+that rep — not marginally by tier band.
+Audit comparison
+Compare computed commission_usd against draft_commission_usd from
+draft_commission_statements.csv.
+delta_usd = draft_commission_usd - commission_usd
+OVERPAID if delta_usd > 0.01
+UNDERPAID if delta_usd < -0.01
+CORRECT if |delta_usd| <= 0.01
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx'); print('Sheets:', wb.sheetnames); ws = wb['Control'] if 'Control' in wb.sheetnames else None; [print(f'Row {r}:', [ws.cell(r, c).value for c in range(1, 10)]) for r in range(1, 35) if ws]"
+[?2004lSheets: ['Cover', 'Commission Audit', 'Summary', 'Control', 'Validation', 'Notes']
+Row 1: ['control_name', 'value', None, None, None, None, None, None, None]
+Row 2: ['expected_row_count', 20, None, None, None, None, None, None, None]
+Row 3: ['workbook_version', 'Q1-2026-v1', None, None, None, None, None, None, None]
+Row 4: ['editable_columns', 'B,C,E,H,I', None, None, None, None, None, None, None]
+Row 5: ['formula_columns', 'D,F,G,J,K', None, None, None, None, None, None, None]
+Row 6: ['preserve_columns', 'A,L', None, None, None, None, None, None, None]
+Row 7: ['first_data_row', 5, None, None, None, None, None, None, None]
+Row 8: ['last_data_row', 24, None, None, None, None, None, None, None]
+Row 9: ['active_range', 'A4:L24', None, None, None, None, None, None, None]
+Row 10: ['validation_tier_range', 'G5:G24', None, None, None, None, None, None, None]
+Row 11: ['validation_flag_range', 'K5:K24', None, None, None, None, None, None, None]
+Row 12: ['summary_formula_range', '5:24', None, None, None, None, None, None, None]
+Row 13: ['table_name', 'CommissionAuditTable', None, None, None, None, None, None, None]
+Row 14: ['expected_table_range', 'A4:L24', None, None, None, None, None, None, None]
+Row 15: ['defined_names', 'AuditDataRange,TierEntryRange,FlagEntryRange', None, None, None, None, None, None, None]
+Row 16: ['expected_AuditDataRange', "'Commission Audit'!$A$5:$L$24", None, None, None, None, None, None, None]
+Row 17: ['expected_TierEntryRange', "'Commission Audit'!$G$5:$G$24", None, None, None, None, None, None, None]
+Row 18: ['expected_FlagEntryRange', "'Commission Audit'!$K$5:$K$24", None, None, None, None, None, None, None]
+Row 19: ['conditional_format_ranges', 'F5:F24,J5:J24,K5:K24', None, None, None, None, None, None, None]
+Row 20: ['allowed_tiers', None, 'allowed_flags', None, None, None, None, None, None]
+Row 21: ['Below Threshold', None, 'OVERPAID', None, None, None, None, None, None]
+Row 22: ['Base', None, 'UNDERPAID', None, None, None, None, None, None]
+Row 23: ['Accelerator 1', None, 'CORRECT', None, None, None, None, None, None]
+Row 24: ['Accelerator 2', None, None, None, None, None, None, None, None]
+Row 25: ['Accelerator 3', None, None, None, None, None, None, None, None]
+Row 26: [None, None, None, None, None, None, None, None, None]
+Row 27: [None, None, None, None, None, None, None, None, None]
+Row 28: [None, None, None, None, None, None, None, None, None]
+Row 29: [None, None, None, None, None, None, None, None, None]
+Row 30: [None, None, None, None, None, None, None, None, None]
+Row 31: [None, None, None, None, None, None, None, None, None]
+Row 32: [None, None, None, None, None, None, None, None, None]
+Row 33: [None, None, None, None, None, None, None, None, None]
+Row 34: [None, None, None, None, None, None, None, None, None]
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx'); ws = wb['Commission Audit']; print('Headers in Row 4:', [ws.cell(4, c).value for c in range(1, 13)]); [print(f'Row {r}:', [ws.cell(r, c).value for c in range(1, 13)]) for r in range(5, 30)]"
+[?2004lHeaders in Row 4: ['rep_id', 'base_quota_usd', 'carryover_quota_usd', 'total_quota_usd', 'bookings_arr_usd', 'attainment_pct', 'commission_tier', 'commission_usd', 'draft_commission_usd', 'delta_usd', 'flag', 'reviewer_note']
+Row 5: ['REP-001', 145000, 0, '=B5+C5', 168000, '=E5/D5', '=IF(F5<0.8,"Below Threshold",IF(F5<1,"Base",IF(F5<1.2,"Accelerator 1",IF(F5<1.5,"Accelerator 2","Accelerator 3"))))', 17200, 17200, '=I5-H5', '=IF(J5>0.01,"OVERPAID",IF(J5<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 6: ['REP-002', None, None, '=B6+C6', None, '=E6/D6', '=IF(F6<0.8,"Below Threshold",IF(F6<1,"Base",IF(F6<1.2,"Accelerator 1",IF(F6<1.5,"Accelerator 2","Accelerator 3"))))', None, 0, '=I6-H6', '=IF(J6>0.01,"OVERPAID",IF(J6<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 7: ['REP-003', 180000, 0, '=B7+C7', 333300, '=E7/D7', '=IF(F7<0.8,"Below Threshold",IF(F7<1,"Base",IF(F7<1.2,"Accelerator 1",IF(F7<1.5,"Accelerator 2","Accelerator 3"))))', 50500, 50500, '=I7-H7', '=IF(J7>0.01,"OVERPAID",IF(J7<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 8: ['REP-004', None, None, '=B8+C8', None, '=E8/D8', '=IF(F8<0.8,"Below Threshold",IF(F8<1,"Base",IF(F8<1.2,"Accelerator 1",IF(F8<1.5,"Accelerator 2","Accelerator 3"))))', None, 7560, '=I8-H8', '=IF(J8>0.01,"OVERPAID",IF(J8<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 9: ['REP-005', None, None, '=B9+C9', None, '=E9/D9', '=IF(F9<0.8,"Below Threshold",IF(F9<1,"Base",IF(F9<1.2,"Accelerator 1",IF(F9<1.5,"Accelerator 2","Accelerator 3"))))', None, 37260, '=I9-H9', '=IF(J9>0.01,"OVERPAID",IF(J9<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 10: ['REP-006', None, None, '=B10+C10', None, '=E10/D10', '=IF(F10<0.8,"Below Threshold",IF(F10<1,"Base",IF(F10<1.2,"Accelerator 1",IF(F10<1.5,"Accelerator 2","Accelerator 3"))))', None, 0, '=I10-H10', '=IF(J10>0.01,"OVERPAID",IF(J10<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 11: ['REP-007', 160000, 0, '=B11+C11', 193600, '=E11/D11', '=IF(F11<0.8,"Below Threshold",IF(F11<1,"Base",IF(F11<1.2,"Accelerator 1",IF(F11<1.5,"Accelerator 2","Accelerator 3"))))', 18800, 18800, '=I11-H11', '=IF(J11>0.01,"OVERPAID",IF(J11<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 12: ['REP-008', None, None, '=B12+C12', None, '=E12/D12', '=IF(F12<0.8,"Below Threshold",IF(F12<1,"Base",IF(F12<1.2,"Accelerator 1",IF(F12<1.5,"Accelerator 2","Accelerator 3"))))', None, 6688, '=I12-H12', '=IF(J12>0.01,"OVERPAID",IF(J12<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 13: ['REP-009', None, None, 59000, None, 0.851, 'Base', None, 4016, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 14: ['REP-010', None, None, 92000, None, 0.92, 'Base', None, 0, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 15: ['REP-011', None, None, 55000, None, 0.723, 'Below Threshold', None, 12810, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 16: ['REP-012', 65000, 4000, 151000, 91000, 1.15, 'Accelerator 1', 11500, 11500, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 17: ['REP-013', None, None, 77000, None, 1.4, 'Accelerator 2', None, 60720, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 18: ['REP-014', None, None, 51000, None, 0.88, 'Base', None, 6771.2, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 19: ['REP-015', None, None, 198000, None, 1.55, 'Accelerator 3', None, 0, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 20: ['REP-016', None, None, 60000, None, 0.6, 'Below Threshold', None, 17365, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 21: ['REP-017', None, None, None, None, None, None, None, 12936, None, None, 'Manual review: draft value from payroll export']
+Row 22: ['REP-018', None, None, 82000, None, 0.7, 'Below Threshold', None, 3590.4, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 23: ['REP-019', None, None, 122000, None, 1.05, 'Accelerator 1', None, 46035, 0, 'CORRECT', 'Manual review: draft value from payroll export']
+Row 24: ['REP-020', None, None, 70000, None, 1.479, 'Accelerator 2', None, 0, -920, 'UNDERPAID', 'Manual review: draft value from payroll export']
+Row 25: [None, '=SUM(B5:B12)', '=SUM(C5:C12)', None, '=SUM(E5:E12)', None, None, '=SUM(H5:H12)', None, '=SUM(J5:J12)', None, None]
+Row 26: [None, None, None, None, None, None, None, None, None, None, None, None]
+Row 27: [None, None, None, None, None, None, None, None, None, None, None, None]
+Row 28: [None, None, None, None, None, None, None, None, None, None, None, None]
+Row 29: [None, None, None, None, None, None, None, None, None, None, None, None]
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx'); ws = wb['Commission Audit']; print('Row 25:', [ws.cell(25, c).value for c in range(1, 13)]); print('Row 26:', [ws.cell(26, c).value for c in range(1, 13)]); ws2 = wb['Summary'] if 'Summary' in wb.sheetnames else None; [print(f'Summary Row {r}:', [ws2.cell(r, c).value for c in range(1, 10)]) for r in range(1, 15) if ws2]"
+[?2004lRow 25: [None, '=SUM(B5:B12)', '=SUM(C5:C12)', None, '=SUM(E5:E12)', None, None, '=SUM(H5:H12)', None, '=SUM(J5:J12)', None, None]
+Row 26: [None, None, None, None, None, None, None, None, None, None, None, None]
+Summary Row 1: ['Q1 Commission Audit Summary', None, None, None, None, None, None, None, None]
+Summary Row 2: [None, None, None, None, None, None, None, None, None]
+Summary Row 3: ['total_reps_audited', "=COUNTA('Commission Audit'!A5:A12)", None, None, None, None, None, None, None]
+Summary Row 4: ['reps_with_discrepancy', '=COUNTIF(\'Commission Audit\'!K5:K12,"<>CORRECT")', None, None, None, None, None, None, None]
+Summary Row 5: ['total_overpaid_usd', '=SUMIF(\'Commission Audit\'!K5:K12,"OVERPAID",\'Commission Audit\'!J5:J12)', None, None, None, None, None, None, None]
+Summary Row 6: ['total_underpaid_usd', '=ABS(SUMIF(\'Commission Audit\'!K5:K12,"UNDERPAID",\'Commission Audit\'!J5:J12))', None, None, None, None, None, None, None]
+Summary Row 7: ['highest_delta_rep', '=IFERROR(INDEX(\'Commission Audit\'!A5:A12,MATCH(MAX(ABS(\'Commission Audit\'!J5:J12)),ABS(\'Commission Audit\'!J5:J12),0)),"")', None, None, None, None, None, None, None]
+Summary Row 8: [None, None, None, None, None, None, None, None, None]
+Summary Row 9: ['Below Threshold', '=COUNTIF(\'Commission Audit\'!G5:G12,"Below Threshold")', None, None, None, None, None, None, None]
+Summary Row 10: ['Base', '=COUNTIF(\'Commission Audit\'!G5:G12,"Base")', None, None, None, None, None, None, None]
+Summary Row 11: ['Accelerator 1', '=COUNTIF(\'Commission Audit\'!G5:G12,"Accelerator 1")', None, None, None, None, None, None, None]
+Summary Row 12: ['Accelerator 2', '=COUNTIF(\'Commission Audit\'!G5:G12,"Accelerator 2")', None, None, None, None, None, None, None]
+Summary Row 13: ['Accelerator 3', '=COUNTIF(\'Commission Audit\'!G5:G12,"Accelerator 3")', None, None, None, None, None, None, None]
+Summary Row 14: [None, None, None, None, None, None, None, None, None]
+[?2004hroot@c19df17170a9:~# cat /root/data/rep_quotas.csv
+[?2004lrep_id,rep_name,region,base_quota_usd
+REP-001,Jordan Ellis,NA-East,"$145,000.00"
+REP-002,Morgan Reed,NA-West,"$120,000.00"
+REP-003,Priya Sharma,EMEA,"$180,000.00"
+REP-004,Kenji Tanaka,APAC,"$100,000.00"
+REP-005,Sofia Alvarez,NA-East,"$200,000.00"
+REP-006,Liam O'Brien,LATAM,"$40,000.00"
+REP-007,Aisha Khan,EMEA,"$160,000.00"
+REP-008,Tyler Brooks,NA-West,"$95,000.00"
+REP-009,Nina Patel,APAC,"$55,000.00"
+REP-010,Carlos Mendez,LATAM,"$75,000.00"
+REP-011,Emily Chen,NA-East,"$110,000.00"
+REP-012,Marcus Webb,NA-West,"$65,000.00"
+REP-013,Olivia Grant,EMEA,"$220,000.00"
+REP-014,David Kim,APAC,"$85,000.00"
+REP-015,Rachel Torres,LATAM,"$50,000.00"
+REP-016,James Liu,NA-East,"$135,000.00"
+REP-017,Hannah Ross,EMEA,"$70,000.00"
+REP-018,Alex Novak,NA-West,"$48,000.00"
+REP-019,Sara Mohammed,APAC,"$175,000.00"
+REP-020,Ben Carter,LATAM,"$60,000.00"
+[?2004hroot@c19df17170a9:~# cat /root/data/draft_commission_statements.csv
+[?2004lrep_id,draft_commission_usd
+REP-001,17200.0
+REP-002,0.0
+REP-003,50500.0
+REP-004,7560.0
+REP-005,37260.0
+REP-006,0.0
+REP-007,18800.0
+REP-008,6688.0
+REP-009,4016.0
+REP-010,0.0
+REP-011,12810.0
+REP-012,11500.0
+REP-013,60720.0
+REP-014,6771.2
+REP-015,0.0
+REP-016,17365.0
+REP-017,12936.0
+REP-018,3590.4
+REP-019,46035.0
+REP-020,0.0
+[?2004hroot@c19df17170a9:~# python3 -c "import pandas as pd; print(pd.read_excel('/root/data/quota_carryover.xlsx').head(10))"
+[?2004l                  Q1 2026 Quota Carryover Allocation
+0                                                NaN
+1   Prepared by Sales Operations — Internal Use Only
+2                                                NaN
+3  This workbook documents carryover credits appl...
+4                                                NaN
+5  Per-rep carryover amounts are computed in this...
+[?2004hroot@c19df17170a9:~# head -n 5 /root/data/bookings.jsonl
+[?2004l{"deal_id": "D-001-01", "rep_id": "REP-001", "close_date": "2026-01-15", "arr_usd": 42000.0}
+{"deal_id": "D-001-03", "rep_id": "REP-001", "close_date": "2026-02-10", "arr_usd": 38000.0}
+{"deal_id": "D-001-04", "rep_id": "REP-001", "close_date": "2026-02-22", "arr_usd": 28000.0}
+{"deal_id": "D-001-05", "rep_id": "REP-001", "close_date": "2026-03-08", "arr_usd": 25000.0}
+{"deal_id": "D-002-01", "rep_id": "REP-002", "close_date": "2026-01-12", "arr_usd": 22000.0}
+[?2004hroot@c19df17170a9:~# python3 -c "
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/quota_carryover.xlsx')
+[?2004l[?2004h> print('Carryover sheets:', wb.sheetnames)
+[?2004l[?2004h> ws = wb.active
+[?2004l[?2004h> for r in range(1, 40):
+[?2004l[?2004h>     row_vals = [ws.cell(r, c).value for c in range(1, 10)]
+[?2004l[?2004h>     if any(v is not None for v in row_vals):
+[?2004l[?2004h>         print(f'Row {r}:', row_vals)
+[?2004l[?2004h> "
+[?2004lCarryover sheets: ['Cover', 'RateTable', 'Allocations', 'BaseRef']
+Row 1: ['Q1 2026 Quota Carryover Allocation', None, None, None, None, None, None, None, None]
+Row 3: ['Prepared by Sales Operations — Internal Use Only', None, None, None, None, None, None, None, None]
+Row 5: ['This workbook documents carryover credits applied to Q1 2026 quotas.', None, None, None, None, None, None, None, None]
+Row 7: ['Per-rep carryover amounts are computed in this workbook.', None, None, None, None, None, None, None, None]
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb = openpyxl.load_workbook('/root/data/quota_carryover.xlsx'); ws = wb['Allocations']; [print(f'Row {r}:', [ws.cell(r, c).value for c in range(1, 10)]) for r in range(1, 35)]"
+[?2004lRow 1: ['rep_id', 'carryover_quota_usd', None, None, None, None, None, None, None]
+Row 2: ['REP-001', '=ROUND(VLOOKUP(A2,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A2,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 3: ['REP-002', '=ROUND(VLOOKUP(A3,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A3,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 4: ['REP-003', '=ROUND(VLOOKUP(A4,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A4,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 5: ['REP-004', '=ROUND(VLOOKUP(A5,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A5,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 6: ['REP-005', '=ROUND(VLOOKUP(A6,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A6,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 7: ['REP-006', '=ROUND(VLOOKUP(A7,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A7,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 8: ['REP-007', '=ROUND(VLOOKUP(A8,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A8,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 9: ['REP-008', '=ROUND(VLOOKUP(A9,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A9,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 10: ['REP-009', '=ROUND(VLOOKUP(A10,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A10,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 11: ['REP-010', '=ROUND(VLOOKUP(A11,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A11,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 12: ['REP-011', '=ROUND(VLOOKUP(A12,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A12,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 13: ['REP-012', '=MAX(VLOOKUP(A13,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A13,BaseRef!$A$2:$B$21,2,FALSE),5000)', None, None, None, None, None, None, None]
+Row 14: ['REP-013', '=ROUND(VLOOKUP(A14,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A14,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 15: ['REP-014', '=ROUND(VLOOKUP(A15,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A15,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 16: ['REP-015', '=MAX(VLOOKUP(A16,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A16,BaseRef!$A$2:$B$21,2,FALSE),5000)', None, None, None, None, None, None, None]
+Row 17: ['REP-016', '=ROUND(VLOOKUP(A17,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A17,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 18: ['REP-017', '=ROUND(VLOOKUP(A18,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A18,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 19: ['REP-018', '=ROUND(VLOOKUP(A19,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A19,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 20: ['REP-019', '=ROUND(VLOOKUP(A20,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A20,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 21: ['REP-020', '=ROUND(VLOOKUP(A21,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A21,BaseRef!$A$2:$B$21,2,FALSE),-3)', None, None, None, None, None, None, None]
+Row 22: [None, None, None, None, None, None, None, None, None]
+Row 23: [None, None, None, None, None, None, None, None, None]
+Row 24: [None, None, None, None, None, None, None, None, None]
+Row 25: [None, None, None, None, None, None, None, None, None]
+Row 26: [None, None, None, None, None, None, None, None, None]
+Row 27: [None, None, None, None, None, None, None, None, None]
+Row 28: [None, None, None, None, None, None, None, None, None]
+Row 29: [None, None, None, None, None, None, None, None, None]
+Row 30: [None, None, None, None, None, None, None, None, None]
+Row 31: [None, None, None, None, None, None, None, None, None]
+Row 32: [None, None, None, None, None, None, None, None, None]
+Row 33: [None, None, None, None, None, None, None, None, None]
+Row 34: [None, None, None, None, None, None, None, None, None]
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb = openpyxl.load_workbook('/root/data/quota_carryover.xlsx', data_only=True); ws = wb['Allocations']; [print(ws.cell(r, 1).value, ws.cell(r, 2).value) for r in range(2, 22)]"
+[?2004lREP-001 None
+REP-002 None
+REP-003 None
+REP-004 None
+REP-005 None
+REP-006 None
+REP-007 None
+REP-008 None
+REP-009 None
+REP-010 None
+REP-011 None
+REP-012 None
+REP-013 None
+REP-014 None
+REP-015 None
+REP-016 None
+REP-017 None
+REP-018 None
+REP-019 None
+REP-020 None
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb = openpyxl.load_workbook('/root/data/quota_carryover.xlsx'); r_ws = wb['RateTable']; b_ws = wb['BaseRef']; print('RateTable first 5 rows:'); [print([r_ws.cell(r, c).value for c in range(1, 4)]) for r in range(1, 23)]; print('BaseRef first 5 rows:'); [print([b_ws.cell(r, c).value for c in range(1, 4)]) for r in range(1, 23)]"
+[?2004lRateTable first 5 rows:
+['rep_id', 'carry_rate', None]
+['REP-001', 0.1, None]
+['REP-002', 0.08, None]
+['REP-003', 0.12, None]
+['REP-004', 0.05, None]
+['REP-005', 0.15, None]
+['REP-006', 0.1, None]
+['REP-007', 0.1, None]
+['REP-008', 0, None]
+['REP-009', 0.07, None]
+['REP-010', 0.09, None]
+['REP-011', 0.11, None]
+['REP-012', 0.06, None]
+['REP-013', 0.15, None]
+['REP-014', 0.08, None]
+['REP-015', 0.05, None]
+['REP-016', 0.12, None]
+['REP-017', 0.1, None]
+['REP-018', 0.07, None]
+['REP-019', 0.13, None]
+['REP-020', 0, None]
+[None, None, None]
+BaseRef first 5 rows:
+['rep_id', 'base_quota_usd', None]
+['REP-001', 145000, None]
+['REP-002', 120000, None]
+['REP-003', 180000, None]
+['REP-004', 100000, None]
+['REP-005', 200000, None]
+['REP-006', 40000, None]
+['REP-007', 160000, None]
+['REP-008', 95000, None]
+['REP-009', 55000, None]
+['REP-010', 75000, None]
+['REP-011', 110000, None]
+['REP-012', 65000, None]
+['REP-013', 220000, None]
+['REP-014', 85000, None]
+['REP-015', 50000, None]
+['REP-016', 135000, None]
+['REP-017', 70000, None]
+['REP-018', 48000, None]
+['REP-019', 175000, None]
+['REP-020', 60000, None]
+[None, None, None]
+[?2004hroot@c19df17170a9:~# python3 -c "rates={'REP-001': 0.1, 'REP-002': 0.08, 'REP-003': 0.12, 'REP-004': 0.05, 'REP-005': 0.15, 'REP-006': 0.1, 'REP-007': 0.1, 'REP-008': 0, 'REP-009': 0.07, 'REP-010': 0.09, 'REP-011': 0.11, 'REP-012': 0.06, 'REP-013': 0.15, 'REP-014': 0.08, 'REP-015': 0.05, 'REP-016': 0.12, 'REP-017': 0.1, 'REP-018': 0.07, 'REP-019': 0.13, 'REP-020': 0}; bases={'REP-001': 145000, 'REP-002': 120000, 'REP-003': 180000, 'REP-004': 100000, 'REP-005': 200000, 'REP-006': 40000, 'REP-007': 160000, 'REP-008': 95000, 'REP-009': 55000, 'REP-010': 75000, 'REP-011': 110000, 'REP-012': 65000, 'REP-013': 220000, 'REP-014': 85000, 'REP-015': 50000, 'REP-016': 135000, 'REP-017': 70000, 'REP-018': 48000, 'REP-019': 175000, 'REP-020': 60000}; [print(r, max(rates[r]*bases[r], 5000) if r in ['REP-012', 'REP-015'] else round(rates[r]*bases[r], -3)) for r in sorted(rates.keys())]"
+[?2004lREP-001 14000.0
+REP-002 10000.0
+REP-003 22000.0
+REP-004 5000.0
+REP-005 30000.0
+REP-006 4000.0
+REP-007 16000.0
+REP-008 0
+REP-009 4000.0
+REP-010 7000.0
+REP-011 12000.0
+REP-012 5000
+REP-013 33000.0
+REP-014 7000.0
+REP-015 5000
+REP-016 16000.0
+REP-017 7000.0
+REP-018 3000.0
+REP-019 23000.0
+REP-020 0
+[?2004hroot@c19df17170a9:~# python3 -c "import json; from collections import defaultdict; b = defaultdict(float); [b.update({d['rep_id']: b[d['rep_id']] + d['arr_usd']}) for d in (json.loads(line) for line in open('/root/data/bookings.jsonl'))]; [print(k, b[k]) for k in sorted(b.keys())]"
+[?2004lTraceback (most recent call last):
+  File "<string>", line 1, in <module>
+TypeError: unsupported operand type(s) for +: 'float' and 'str'
+[?2004hroot@c19df17170a9:~# python3 -c "import json; [print(type(d['arr_usd']), d['arr_usd']) for d in [json.loads(line) for line in open('/root/data/bookings.jsonl')] if not isinstance(d['arr_usd'], (int, float))]"
+[?2004l<class 'str'> $35,000.00
+<class 'str'> $55,000.00
+<class 'str'> $42,000.00
+<class 'str'> $22,000.00
+[?2004hroot@c19df17170a9:~# python3 -c "import json; from collections import defaultdict; b = defaultdict(float); [b.update({d['rep_id']: b[d['rep_id']] + (float(d['arr_usd'].replace('$','').replace(',','')) if isinstance(d['arr_usd'], str) else float(d['arr_usd']))}) for d in (json.loads(line) for line in open('/root/data/bookings.jsonl'))]; [print(k, b[k]) for k in sorted(b.keys())]"
+[?2004lREP-001 168000.0
+REP-002 91000.0
+REP-003 333300.0
+REP-004 94500.0
+REP-005 310500.0
+REP-006 33750.0
+REP-007 193600.0
+REP-008 83600.0
+REP-009 50200.0
+REP-010 57500.0
+REP-011 128100.0
+REP-012 103500.0
+REP-013 404800.0
+REP-014 84640.0
+REP-015 39750.0
+REP-016 173650.0
+REP-017 107800.0
+REP-018 44880.0
+REP-019 306900.0
+REP-020 36000.0
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb=openpyxl.load_workbook('/root/data/quota_carryover.xlsx'); r_ws=wb['RateTable']; b_ws=wb['BaseRef']; alloc_ws=wb['Allocations']; rates={r_ws.cell(r,1).value: r_ws.cell(r,2).value for r in range(2,22)}; bases={b_ws.cell(r,1).value: b_ws.cell(r,2).value for r in range(2,22)}; [print(alloc_ws.cell(r,1).value, alloc_ws.cell(r,2).value, '->', max(rates[alloc_ws.cell(r,1).value]*bases[alloc_ws.cell(r,1).value], 5000) if 'MAX' in alloc_ws.cell(r,2).value else round(rates[alloc_ws.cell(r,1).value]*bases[alloc_ws.cell(r,1).value], -3)) for r in range(2,22)]"
+[?2004lREP-001 =ROUND(VLOOKUP(A2,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A2,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 14000.0
+REP-002 =ROUND(VLOOKUP(A3,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A3,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 10000.0
+REP-003 =ROUND(VLOOKUP(A4,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A4,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 22000.0
+REP-004 =ROUND(VLOOKUP(A5,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A5,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 5000.0
+REP-005 =ROUND(VLOOKUP(A6,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A6,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 30000.0
+REP-006 =ROUND(VLOOKUP(A7,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A7,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 4000.0
+REP-007 =ROUND(VLOOKUP(A8,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A8,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 16000.0
+REP-008 =ROUND(VLOOKUP(A9,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A9,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 0
+REP-009 =ROUND(VLOOKUP(A10,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A10,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 4000.0
+REP-010 =ROUND(VLOOKUP(A11,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A11,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 7000.0
+REP-011 =ROUND(VLOOKUP(A12,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A12,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 12000.0
+REP-012 =MAX(VLOOKUP(A13,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A13,BaseRef!$A$2:$B$21,2,FALSE),5000) -> 5000
+REP-013 =ROUND(VLOOKUP(A14,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A14,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 33000.0
+REP-014 =ROUND(VLOOKUP(A15,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A15,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 7000.0
+REP-015 =MAX(VLOOKUP(A16,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A16,BaseRef!$A$2:$B$21,2,FALSE),5000) -> 5000
+REP-016 =ROUND(VLOOKUP(A17,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A17,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 16000.0
+REP-017 =ROUND(VLOOKUP(A18,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A18,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 7000.0
+REP-018 =ROUND(VLOOKUP(A19,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A19,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 3000.0
+REP-019 =ROUND(VLOOKUP(A20,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A20,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 23000.0
+REP-020 =ROUND(VLOOKUP(A21,RateTable!$A$2:$B$21,2,FALSE)*VLOOKUP(A21,BaseRef!$A$2:$B$21,2,FALSE),-3) -> 0
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/calc.py
+[?2004l[?2004h> import json, openpyxl, csv
+[?2004l[?2004h> 
+[?2004l[?2004h> # Load base quotas
+[?2004l[?2004h> bases = {}
+[?2004l[?2004h> with open('/root/data/rep_quotas.csv') as f:
+[?2004l[?2004h>     reader = csv.DictReader(f)
+[?2004l[?2004h>     for row in reader:
+[?2004l[?2004h>         rep = row['rep_id']
+[?2004l[?2004h>         val = float(row['base_quota_usd'].replace('$','').replace(',',''))
+[?2004l[?2004h>         bases[rep] = val
+[?2004l[?2004h> 
+[?2004l[?2004h> # Load carryover allocations
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/quota_carryover.xlsx')
+[?2004l[?2004h> r_ws = wb['RateTable']
+[?2004l[?2004h> b_ws = wb['BaseRef']
+[?2004l[?2004h> alloc_ws = wb['Allocations']
+[?2004l[?2004h> rates = {r_ws.cell(r,1).value: r_ws.cell(r,2).value for r in range(2,22)}
+[?2004l[?2004h> bases_from_excel = {b_ws.cell(r,1).value: b_ws.cell(r,2).value for r in range(2,22)}
+[?2004l[?2004h> carryovers = {}
+[?2004l[?2004h> for r in range(2,22):
+[?2004l[?2004h>     rep = alloc_ws.cell(r,1).value
+[?2004l[?2004h>     formula = alloc_ws.cell(r,2).value
+[?2004l[?2004h>     val = rates[rep] * bases_from_excel[rep]
+[?2004l[?2004h>     carryovers[rep] = max(val, 5000) if 'MAX' in formula else round(val, -3)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Load bookings
+[?2004l[?2004h> bookings = {}
+[?2004l[?2004h> with open('/root/data/bookings.jsonl') as f:
+[?2004l[?2004h>     for line in f:
+[?2004l[?2004h>         d = json.loads(line)
+[?2004l[?2004h>         rep = d['rep_id']
+[?2004l[?2004h>         arr = float(d['arr_usd'].replace('$','').replace(',','')) if isinstance(d['arr_usd'], str) else float(d['arr_usd'])
+[?2004l[?2004h>         bookings[rep] = bookings.get(rep, 0.0) + arr
+[?2004l[?2004h> 
+[?2004l[?2004h> # Load draft statements
+[?2004l[?2004h> drafts = {}
+[?2004l[?2004h> with open('/root/data/draft_commission_statements.csv') as f:
+[?2004l[?2004h>     reader = csv.DictReader(f)
+[?2004l[?2004h>     for row in reader:
+[?2004l[?2004h>         drafts[row['rep_id']] = float(row['draft_commission_usd'])
+[?2004l[?2004h> 
+[?2004l[?2004h> # Calculate for each rep
+[?2004l[?2004h> for rep in sorted(bases.keys()):
+[?2004l[?2004h>     bq = bases[rep]
+[?2004l[?2004h>     co = carryovers[rep]
+[?2004l[?2004h>     tq = bq + co
+[?2004l[?2004h>     bk = bookings.get(rep, 0.0)
+[?2004l[?2004h>     att = bk / tq
+[?2004l[?2004h>     if att < 0.8: tier, rate = 'Below Threshold', 0.0
+[?2004l[?2004h>     elif att < 1.0: tier, rate = 'Base', 0.08
+[?2004l[?2004h>     elif att < 1.2: tier, rate = 'Accelerator 1', 0.10
+[?2004l[?2004h>     elif att < 1.5: tier, rate = 'Accelerator 2', 0.12
+[?2004l[?2004h>     else: tier, rate = 'Accelerator 3', 0.15
+[?2004l[?2004h>     comm = rate * bk
+[?2004l[?2004h>     dr = drafts.get(rep, 0.0)
+[?2004l[?2004h>     delta = dr - comm
+[?2004l[?2004h>     flag = 'OVERPAID' if delta > 0.01 else ('UNDERPAID' if delta < -0.01 else 'CORRECT')
+[?2004l[?2004h>     print(rep, 'BQ:', bq, 'CO:', co, 'TQ:', tq, 'BK:', bk, 'ATT:', round(att,4), 'TIER:', tier, 'COMM:', comm, 'DR:', dr, 'DELTA:', round(delta,2), 'FLAG:', flag)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/calc.py
+[?2004lREP-001 BQ: 145000.0 CO: 14000.0 TQ: 159000.0 BK: 168000.0 ATT: 1.0566 TIER: Accelerator 1 COMM: 16800.0 DR: 17200.0 DELTA: 400.0 FLAG: OVERPAID
+REP-002 BQ: 120000.0 CO: 10000.0 TQ: 130000.0 BK: 91000.0 ATT: 0.7 TIER: Below Threshold COMM: 0.0 DR: 0.0 DELTA: 0.0 FLAG: CORRECT
+REP-003 BQ: 180000.0 CO: 22000.0 TQ: 202000.0 BK: 333300.0 ATT: 1.65 TIER: Accelerator 3 COMM: 49995.0 DR: 50500.0 DELTA: 505.0 FLAG: OVERPAID
+REP-004 BQ: 100000.0 CO: 5000.0 TQ: 105000.0 BK: 94500.0 ATT: 0.9 TIER: Base COMM: 7560.0 DR: 7560.0 DELTA: 0.0 FLAG: CORRECT
+REP-005 BQ: 200000.0 CO: 30000.0 TQ: 230000.0 BK: 310500.0 ATT: 1.35 TIER: Accelerator 2 COMM: 37260.0 DR: 37260.0 DELTA: 0.0 FLAG: CORRECT
+REP-006 BQ: 40000.0 CO: 4000.0 TQ: 44000.0 BK: 33750.0 ATT: 0.767 TIER: Below Threshold COMM: 0.0 DR: 0.0 DELTA: 0.0 FLAG: CORRECT
+REP-007 BQ: 160000.0 CO: 16000.0 TQ: 176000.0 BK: 193600.0 ATT: 1.1 TIER: Accelerator 1 COMM: 19360.0 DR: 18800.0 DELTA: -560.0 FLAG: UNDERPAID
+REP-008 BQ: 95000.0 CO: 0 TQ: 95000.0 BK: 83600.0 ATT: 0.88 TIER: Base COMM: 6688.0 DR: 6688.0 DELTA: 0.0 FLAG: CORRECT
+REP-009 BQ: 55000.0 CO: 4000.0 TQ: 59000.0 BK: 50200.0 ATT: 0.8508 TIER: Base COMM: 4016.0 DR: 4016.0 DELTA: 0.0 FLAG: CORRECT
+REP-010 BQ: 75000.0 CO: 7000.0 TQ: 82000.0 BK: 57500.0 ATT: 0.7012 TIER: Below Threshold COMM: 0.0 DR: 0.0 DELTA: 0.0 FLAG: CORRECT
+REP-011 BQ: 110000.0 CO: 12000.0 TQ: 122000.0 BK: 128100.0 ATT: 1.05 TIER: Accelerator 1 COMM: 12810.0 DR: 12810.0 DELTA: 0.0 FLAG: CORRECT
+REP-012 BQ: 65000.0 CO: 5000 TQ: 70000.0 BK: 103500.0 ATT: 1.4786 TIER: Accelerator 2 COMM: 12420.0 DR: 11500.0 DELTA: -920.0 FLAG: UNDERPAID
+REP-013 BQ: 220000.0 CO: 33000.0 TQ: 253000.0 BK: 404800.0 ATT: 1.6 TIER: Accelerator 3 COMM: 60720.0 DR: 60720.0 DELTA: 0.0 FLAG: CORRECT
+REP-014 BQ: 85000.0 CO: 7000.0 TQ: 92000.0 BK: 84640.0 ATT: 0.92 TIER: Base COMM: 6771.2 DR: 6771.2 DELTA: 0.0 FLAG: CORRECT
+REP-015 BQ: 50000.0 CO: 5000 TQ: 55000.0 BK: 39750.0 ATT: 0.7227 TIER: Below Threshold COMM: 0.0 DR: 0.0 DELTA: 0.0 FLAG: CORRECT
+REP-016 BQ: 135000.0 CO: 16000.0 TQ: 151000.0 BK: 173650.0 ATT: 1.15 TIER: Accelerator 1 COMM: 17365.0 DR: 17365.0 DELTA: 0.0 FLAG: CORRECT
+REP-017 BQ: 70000.0 CO: 7000.0 TQ: 77000.0 BK: 107800.0 ATT: 1.4 TIER: Accelerator 2 COMM: 12936.0 DR: 12936.0 DELTA: 0.0 FLAG: CORRECT
+REP-018 BQ: 48000.0 CO: 3000.0 TQ: 51000.0 BK: 44880.0 ATT: 0.88 TIER: Base COMM: 3590.4 DR: 3590.4 DELTA: 0.0 FLAG: CORRECT
+REP-019 BQ: 175000.0 CO: 23000.0 TQ: 198000.0 BK: 306900.0 ATT: 1.55 TIER: Accelerator 3 COMM: 46035.0 DR: 46035.0 DELTA: 0.0 FLAG: CORRECT
+REP-020 BQ: 60000.0 CO: 0 TQ: 60000.0 BK: 36000.0 ATT: 0.6 TIER: Below Threshold COMM: 0.0 DR: 0.0 DELTA: 0.0 FLAG: CORRECT
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/inspect_wb.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> print('Tables in Commission Audit:')
+[?2004l[?2004h> for tbl in ws._tables:
+[?2004l[?2004h>     print(tbl.name, tbl.ref)
+[?2004l[?2004h> print('\nDefined Names:')
+[?2004l[?2004h> for name in wb.defined_names.definedName:
+[?2004l[?2004h>     print(name.name, name.value)
+[?2004l[?2004h> print('\nData Validations:')
+[?2004l[?2004h> for dv in ws.data_validations.dataValidation:
+[?2004l[?2004h>     print(dv.sqref, dv.formula1, dv.type)
+[?2004l[?2004h> print('\nConditional Formatting:')
+[?2004l[?2004h> for r in ws.conditional_formatting:
+[?2004l[?2004h>     print(r.sqref, len(r.rules))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/inspect_wb.py
+[?2004lTables in Commission Audit:
+Traceback (most recent call last):
+  File "/tmp/inspect_wb.py", line 6, in <module>
+    print(tbl.name, tbl.ref)
+          ^^^^^^^^
+AttributeError: 'str' object has no attribute 'name'
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/inspect_wb.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> print('Tables in Commission Audit:')
+[?2004l[?2004h> for name, ref in ws.tables.items():
+[?2004l[?2004h>     print(name, ref)
+[?2004l[?2004h> print('\nDefined Names:')
+[?2004l[?2004h> for name in wb.defined_names.definedName:
+[?2004l[?2004h>     print(name.name, name.value)
+[?2004l[?2004h> print('\nData Validations:')
+[?2004l[?2004h> for dv in ws.data_validations.dataValidation:
+[?2004l[?2004h>     print(dv.sqref, dv.formula1, dv.type)
+[?2004l[?2004h> print('\nConditional Formatting:')
+[?2004l[?2004h> for r in ws.conditional_formatting:
+[?2004l[?2004h>     print(r.sqref, len(r.rules))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/inspect_wb.py
+[?2004lTables in Commission Audit:
+CommissionAuditTable A4:L12
+
+Defined Names:
+Traceback (most recent call last):
+  File "/tmp/inspect_wb.py", line 8, in <module>
+    for name in wb.defined_names.definedName:
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'DefinedNameDict' object has no attribute 'definedName'
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/inspect_wb.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> print('Tables in Commission Audit:')
+[?2004l[?2004h> for name, tbl in ws.tables.items():
+[?2004l[?2004h>     print(tbl.name, tbl.ref)
+[?2004l[?2004h> print('\nDefined Names:')
+[?2004l[?2004h> for dn in wb.defined_names.values():
+[?2004l[?2004h>     print(dn.name, dn.value)
+[?2004l[?2004h> print('\nData Validations:')
+[?2004l[?2004h> for dv in ws.data_validations.dataValidation:
+[?2004l[?2004h>     print(dv.sqref, dv.formula1, dv.type)
+[?2004l[?2004h> print('\nConditional Formatting:')
+[?2004l[?2004h> for r in ws.conditional_formatting:
+[?2004l[?2004h>     print(r.sqref, len(r.rules))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/inspect_wb.py
+[?2004lTables in Commission Audit:
+Traceback (most recent call last):
+  File "/tmp/inspect_wb.py", line 6, in <module>
+    print(tbl.name, tbl.ref)
+          ^^^^^^^^
+AttributeError: 'str' object has no attribute 'name'
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/inspect_wb.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> print('Tables in Commission Audit:')
+[?2004l[?2004h> for item in ws.tables.items():
+[?2004l[?2004h>     print(item)
+[?2004l[?2004h> print('\nDefined Names:')
+[?2004l[?2004h> for dn in wb.defined_names.values():
+[?2004l[?2004h>     print(dn.name, dn.value)
+[?2004l[?2004h> print('\nData Validations:')
+[?2004l[?2004h> for dv in ws.data_validations.dataValidation:
+[?2004l[?2004h>     print(dv.sqref, dv.formula1, dv.type)
+[?2004l[?2004h> print('\nConditional Formatting:')
+[?2004l[?2004h> for r in ws.conditional_formatting:
+[?2004l[?2004h>     print(r.sqref, len(r.rules))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/inspect_wb.py
+[?2004lTables in Commission Audit:
+('CommissionAuditTable', 'A4:L12')
+
+Defined Names:
+AuditDataRange 'Commission Audit'!$A$5:$L$12
+TierEntryRange 'Commission Audit'!$G$5:$G$12
+FlagEntryRange 'Commission Audit'!$K$5:$K$12
+
+Data Validations:
+G5:G12 Validation!$A$2:$A$6 list
+K5:K12 Validation!$C$2:$C$4 list
+
+Conditional Formatting:
+F5:F12 1
+J5:J12 2
+K5:K12 3
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/test_modify.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> tbl_name = 'CommissionAuditTable'
+[?2004l[?2004h> old_ref = ws.tables[tbl_name]
+[?2004l[?2004h> print('Old table ref:', old_ref)
+[?2004l[?2004h> ws.tables[tbl_name] = 'A4:L24'
+[?2004l[?2004h> print('New table ref:', ws.tables[tbl_name])
+[?2004l[?2004h> for name in ['AuditDataRange', 'TierEntryRange', 'FlagEntryRange']:
+[?2004l[?2004h>     dn = wb.defined_names[name]
+[?2004l[?2004h>     print('Old DN:', name, dn.value)
+[?2004l[?2004h>     dn.value = dn.value.replace('$12', '$24')
+[?2004l[?2004h>     print('New DN:', name, dn.value)
+[?2004l[?2004h> for dv in list(ws.data_validations.dataValidation):
+[?2004l[?2004h>     print('Old DV:', dv.sqref, dv.formula1)
+[?2004l[?2004h>     dv.sqref = dv.sqref.replace('12', '24')
+[?2004l[?2004h>     print('New DV:', dv.sqref, dv.formula1)
+[?2004l[?2004h> for r in list(ws.conditional_formatting):
+[?2004l[?2004h>     print('Old CF:', r.sqref)
+[?2004l[?2004h>     r.sqref = r.sqref.replace('12', '24')
+[?2004l[?2004h>     print('New CF:', r.sqref)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/test_modify.py
+[?2004lOld table ref: <openpyxl.worksheet.table.Table object>
+Parameters:
+id=1, name='CommissionAuditTable', displayName='CommissionAuditTable', comment=None, ref='A4:L12', tableType=None, headerRowCount=1, insertRow=None, insertRowShift=None, totalsRowCount=None, totalsRowShown=None, published=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowBorderDxfId=None, tableBorderDxfId=None, totalsRowBorderDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, connectionId=None, autoFilter=<openpyxl.worksheet.filters.AutoFilter object>
+Parameters:
+ref='A4:L12', filterColumn=[], sortState=None, sortState=None, tableColumns=[<openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=1, uniqueName=None, name='rep_id', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=2, uniqueName=None, name='base_quota_usd', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=3, uniqueName=None, name='carryover_quota_usd', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=4, uniqueName=None, name='total_quota_usd', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=5, uniqueName=None, name='bookings_arr_usd', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=6, uniqueName=None, name='attainment_pct', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=7, uniqueName=None, name='commission_tier', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=8, uniqueName=None, name='commission_usd', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=9, uniqueName=None, name='draft_commission_usd', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=10, uniqueName=None, name='delta_usd', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=11, uniqueName=None, name='flag', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None, <openpyxl.worksheet.table.TableColumn object>
+Parameters:
+id=12, uniqueName=None, name='reviewer_note', totalsRowFunction=None, totalsRowLabel=None, queryTableFieldId=None, headerRowDxfId=None, dataDxfId=None, totalsRowDxfId=None, headerRowCellStyle=None, dataCellStyle=None, totalsRowCellStyle=None, calculatedColumnFormula=None, totalsRowFormula=None, xmlColumnPr=None, extLst=None], tableStyleInfo=<openpyxl.worksheet.table.TableStyleInfo object>
+Parameters:
+name='TableStyleMedium2', showFirstColumn=False, showLastColumn=False, showRowStripes=True, showColumnStripes=False
+New table ref: A4:L24
+Old DN: AuditDataRange 'Commission Audit'!$A$5:$L$12
+New DN: AuditDataRange 'Commission Audit'!$A$5:$L$24
+Old DN: TierEntryRange 'Commission Audit'!$G$5:$G$12
+New DN: TierEntryRange 'Commission Audit'!$G$5:$G$24
+Old DN: FlagEntryRange 'Commission Audit'!$K$5:$K$12
+New DN: FlagEntryRange 'Commission Audit'!$K$5:$K$24
+Old DV: G5:G12 Validation!$A$2:$A$6
+Traceback (most recent call last):
+  File "/tmp/test_modify.py", line 16, in <module>
+    dv.sqref = dv.sqref.replace('12', '24')
+               ^^^^^^^^^^^^^^^^
+AttributeError: 'MultiCellRange' object has no attribute 'replace'
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/test_modify.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> tbl_name = 'CommissionAuditTable'
+[?2004l[?2004h> ws.tables[tbl_name] = 'A4:L24'
+[?2004l[?2004h> for name in ['AuditDataRange', 'TierEntryRange', 'FlagEntryRange']:
+[?2004l[?2004h>     dn = wb.defined_names[name]
+[?2004l[?2004h>     dn.value = dn.value.replace('$12', '$24')
+[?2004l[?2004h> for dv in list(ws.data_validations.dataValidation):
+[?2004l[?2004h>     old_str = str(dv.sqref)
+[?2004l[?2004h>     new_str = old_str.replace('12', '24')
+[?2004l[?2004h>     dv.sqref = new_str
+[?2004l[?2004h>     print('New DV sqref:', dv.sqref)
+[?2004l[?2004h> for r in list(ws.conditional_formatting):
+[?2004l[?2004h>     old_str = str(r.sqref)
+[?2004l[?2004h>     new_str = old_str.replace('12', '24')
+[?2004l[?2004h>     r.sqref = new_str
+[?2004l[?2004h>     print('New CF sqref:', r.sqref)
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/test_modify.py
+[?2004lNew DV sqref: G5:G24
+New DV sqref: K5:K24
+New CF sqref: F5:F24
+New CF sqref: J5:J24
+New CF sqref: K5:K24
+[?2004hroot@c19df17170a9:~# python3 /tmp/repair_workbook.py
+[?2004lpython3: can't open file '/tmp/repair_workbook.py': [Errno 2] No such file or directory
+[?2004hroot@c19df17170a9:~# mkdir -p /root/out
+[?2004l[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/repair_workbook.py
+[?2004l[?2004h> import json, csv, openpyxl
+[?2004l[?2004h> 
+[?2004l[?2004h> # 1. Load data sources
+[?2004l[?2004h> bases = {}
+[?2004l[?2004h> with open('/root/data/rep_quotas.csv') as f:
+[?2004l[?2004h>     reader = csv.DictReader(f)
+[?2004l[?2004h>     for row in reader:
+[?2004l[?2004h>         rep = row['rep_id']
+[?2004l[?2004h>         val = float(row['base_quota_usd'].replace('$','').replace(',',''))
+[?2004l[?2004h>         bases[rep] = val
+[?2004l[?2004h> 
+[?2004l[?2004h> # Carryover allocations
+[?2004l[?2004h> co_wb = openpyxl.load_workbook('/root/data/quota_carryover.xlsx')
+[?2004l[?2004h> r_ws = co_wb['RateTable']
+[?2004l[?2004h> b_ws = co_wb['BaseRef']
+[?2004l[?2004h> alloc_ws = co_wb['Allocations']
+[?2004l[?2004h> rates = {r_ws.cell(r,1).value: r_ws.cell(r,2).value for r in range(2,22)}
+[?2004l e[?2004h> bases_from_excel = {b_ws.cell(r,1).value: b_ws.cell(r,2).value for r in range(2,22)}
+[?2004l[?2004h> carryovers = {}
+[?2004l[?2004h> for r in range(2,22):
+[?2004l[?2004h>     rep = alloc_ws.cell(r,1).value
+[?2004lc}) from[?2004h>     formula = alloc_ws.cell(r,2).value
+[?2004l[?2004h>     val = rates[rep] * bases_from_excel[rep]
+[?2004l[?2004h>     carryovers[rep] = max(val, 5000) if 'MAX' in formula else round(val, -3)
+[?2004laudit_r[?2004h> 
+[?2004l[?2004h> # Bookings
+[?2004l[?2004h> bookings = {}
+[?2004l[?2004h> with open('/root/data/bookings.jsonl') as f:
+[?2004l[?2004h>     for line in f:
+[?2004l[?2004h>         d = json.loads(line)
+[?2004l[?2004h>         rep = d['rep_id']
+[?2004l[?2004h>         arr = float(d['arr_usd'].replace('$','').replace(',','')) if isinstance(d['arr_usd'], str) else float(d['arr_usd'])
+[?2004l[?2004h>         bookings[rep] = bookings.get(rep, 0.0) + arr
+[?2004l[?2004h> 
+[?2004l[?2004h> # Draft commission statements
+[?2004l[?2004h> drafts = {}
+[?2004l[?2004h> with open('/root/data/draft_commission_statements.csv') as f:
+[?2004l[?2004h>     reader = csv.DictReader(f)
+[?2004l[?2004h>     for row in reader:
+[?2004l[?2004h>         drafts[row['rep_id']] = float(row['draft_commission_usd'])
+[?2004l[?2004h> 
+[?2004l[?2004h> # 2. Repair Workbook
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> 
+[?2004l[?2004h> # Update cell values and formulas
+[?2004l[?2004h> for r in range(5, 25):
+[?2004l[?2004h>     rep_id = ws.cell(r, 1).value
+[?2004l[?2004h>     if not rep_id:
+[?2004l[?2004h>         continue
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Check base quota and carryover from authoritative sources
+[?2004l[?2004h>     bq = bases[rep_id]
+[?2004l[?2004h>     co = carryovers[rep_id]
+[?2004l[?2004h>     bk = bookings.get(rep_id, 0.0)
+[?2004l[?2004h>     dr = drafts.get(rep_id, 0.0)
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Calculate audited commission in python
+[?2004l[?2004h>     tq = bq + co
+[?2004l[?2004h>     att = bk / tq
+[?2004l[?2004h>     if att < 0.8: rate = 0.0
+[?2004l[?2004h>     elif att < 1.0: rate = 0.08
+[?2004l[?2004h>     elif att < 1.2: rate = 0.10
+[?2004l[?2004h>     elif att < 1.5: rate = 0.12
+[?2004l[?2004h>     else: rate = 0.15
+[?2004l[?2004h>     comm = rate * bk
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Columns:
+[?2004l[?2004h>     # B: base_quota_usd
+[?2004l[?2004h>     ws.cell(r, 2).value = bq
+[?2004l[?2004h>     # C: carryover_quota_usd
+[?2004l[?2004h>     ws.cell(r, 3).value = co
+[?2004l[?2004h>     # D: total_quota_usd (formula)
+[?2004l[?2004h>     ws.cell(r, 4).value = f'=B{r}+C{r}'
+[?2004l[?2004h>     # E: bookings_arr_usd
+[?2004l[?2004h>     ws.cell(r, 5).value = bk
+[?2004l[?2004h>     # F: attainment_pct (formula)
+[?2004l[?2004h>     ws.cell(r, 6).value = f'=E{r}/D{r}'
+[?2004l[?2004h>     # G: commission_tier (formula)
+[?2004l[?2004h>     ws.cell(r, 7).value = f'=IF(F{r}<0.8,"Below Threshold",IF(F{r}<1,"Base",IF(F{r}<1.2,"Accelerator 1",IF(F{r}<1.5,"Accelerator 2","Accelerator 3"))))'
+[?2004l[?2004h>     # H: commission_usd (literal value)
+[?2004l[?2004h>     ws.cell(r, 8).value = comm
+[?2004l[?2004h>     # I: draft_commission_usd (literal value from draft statements)
+[?2004l[?2004h>     ws.cell(r, 9).value = dr
+[?2004l[?2004h>     # J: delta_usd (formula)
+[?2004l[?2004h>     ws.cell(r, 10).value = f'=I{r}-H{r}'
+[?2004l[?2004h>     # K: flag (formula)
+[?2004l[?2004h>     ws.cell(r, 11).value = f'=IF(J{r}>0.01,"OVERPAID",IF(J{r}<-0.01,"UNDERPAID","CORRECT"))'
+[?2004l[?2004h> 
+[?2004l[?2004h> # 3. Update summary row (row 25) in 'Commission Audit'
+[?2004l[?2004h> ws.cell(25, 2).value = '=SUM(B5:B24)'
+[?2004l[?2004h> ws.cell(25, 3).value = '=SUM(C5:C24)'
+[?2004l[?2004h> ws.cell(25, 5).value = '=SUM(E5:E24)'
+[?2004l[?2004h> ws.cell(25, 8).value = '=SUM(H5:H24)'
+[?2004l[?2004h> ws.cell(25, 10).value = '=SUM(J5:J24)'
+[?2004l[?2004h> 
+[?2004l[?2004h> # 4. Repair Workbook Objects
+[?2004l[?2004h> # Table range
+[?2004l[?2004h> ws.tables['CommissionAuditTable'] = 'A4:L24'
+[?2004l[?2004h> 
+[?2004l[?2004h> # Defined Names
+[?2004l[?2004h> for name in ['AuditDataRange', 'TierEntryRange', 'FlagEntryRange']:
+[?2004l[?2004h>     dn = wb.defined_names[name]
+[?2004l[?2004h>     dn.value = dn.value.replace('$12', '$24')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Data Validation
+[?2004l[?2004h> for dv in list(ws.data_validations.dataValidation):
+[?2004l[?2004h>     dv.sqref = str(dv.sqref).replace('12', '24')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Conditional Formatting
+[?2004l[?2004h> for r in list(ws.conditional_formatting):
+[?2004l[?2004h>     r.sqref = str(r.sqref).replace('12', '24')
+[?2004l[?2004h> 
+[?2004l[?2004h> # 5. Repair 'Summary' sheet
+[?2004l[?2004h> sum_ws = wb['Summary']
+[?2004l[?2004h> for r in range(1, 20):
+[?2004l[?2004h>     for c in range(1, 5):
+[?2004l[?2004h>         cell = sum_ws.cell(r, c)
+[?2004l[?2004h>         val = cell.value
+[?2004l[?2004h>         if isinstance(val, str) and '5:12' in val:
+[?2004l[?2004h>             cell.value = val.replace('5:12', '5:24')
+[?2004l[?2004h>             print(f'Updated Summary cell ({r},{c}) from {val} to {cell.value}')
+[?2004l[?2004h>         elif isinstance(val, str) and 'A5:A12' in val:
+[?2004l[?2004h>             cell.value = val.replace('A5:A12', 'A5:A24')
+[?2004l[?2004h>             print(f'Updated Summary cell ({r},{c}) from {val} to {cell.value}')
+[?2004l[?2004h>         elif isinstance(val, str) and 'K5:K12' in val:
+[?2004l[?2004h>             cell.value = val.replace('K5:K12', 'K5:K24')
+[?2004l[?2004h>             print(f'Updated Summary cell ({r},{c}) from {val} to {cell.value}')
+[?2004l[?2004h>         elif isinstance(val, str) and 'J5:J12' in val:
+[?2004l[?2004h>             cell.value = val.replace('J5:J12', 'J5:J24')
+[?2004l[?2004h>             print(f'Updated Summary cell ({r},{c}) from {val} to {cell.value}')
+[?2004l[?2004h>         elif isinstance(val, str) and 'G5:G12' in val:
+[?2004l[?2004h>             cell.value = val.replace('G5:G12', 'G5:G24')
+[?2004l[?2004h>             print(f'Updated Summary cell ({r},{c}) from {val} to {cell.value}')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Save repaired copy
+[?2004l[?2004h> wb.save('/root/out/commission_audit_repaired.xlsx')
+[?2004l[?2004h> print('Saved repaired workbook to /root/out/commission_audit_repaired.xlsx')
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/repair_workbook.py
+[?2004lUpdated Summary cell (3,2) from =COUNTA('Commission Audit'!A5:A12) to =COUNTA('Commission Audit'!A5:A24)
+Updated Summary cell (4,2) from =COUNTIF('Commission Audit'!K5:K12,"<>CORRECT") to =COUNTIF('Commission Audit'!K5:K24,"<>CORRECT")
+Updated Summary cell (5,2) from =SUMIF('Commission Audit'!K5:K12,"OVERPAID",'Commission Audit'!J5:J12) to =SUMIF('Commission Audit'!K5:K24,"OVERPAID",'Commission Audit'!J5:J12)
+Updated Summary cell (6,2) from =ABS(SUMIF('Commission Audit'!K5:K12,"UNDERPAID",'Commission Audit'!J5:J12)) to =ABS(SUMIF('Commission Audit'!K5:K24,"UNDERPAID",'Commission Audit'!J5:J12))
+Updated Summary cell (7,2) from =IFERROR(INDEX('Commission Audit'!A5:A12,MATCH(MAX(ABS('Commission Audit'!J5:J12)),ABS('Commission Audit'!J5:J12),0)),"") to =IFERROR(INDEX('Commission Audit'!A5:A24,MATCH(MAX(ABS('Commission Audit'!J5:J12)),ABS('Commission Audit'!J5:J12),0)),"")
+Updated Summary cell (9,2) from =COUNTIF('Commission Audit'!G5:G12,"Below Threshold") to =COUNTIF('Commission Audit'!G5:G24,"Below Threshold")
+Updated Summary cell (10,2) from =COUNTIF('Commission Audit'!G5:G12,"Base") to =COUNTIF('Commission Audit'!G5:G24,"Base")
+Updated Summary cell (11,2) from =COUNTIF('Commission Audit'!G5:G12,"Accelerator 1") to =COUNTIF('Commission Audit'!G5:G24,"Accelerator 1")
+Updated Summary cell (12,2) from =COUNTIF('Commission Audit'!G5:G12,"Accelerator 2") to =COUNTIF('Commission Audit'!G5:G24,"Accelerator 2")
+Updated Summary cell (13,2) from =COUNTIF('Commission Audit'!G5:G12,"Accelerator 3") to =COUNTIF('Commission Audit'!G5:G24,"Accelerator 3")
+Traceback (most recent call last):
+  File "/tmp/repair_workbook.py", line 137, in <module>
+    wb.save('/root/out/commission_audit_repaired.xlsx')
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/workbook/workbook.py", line 386, in save
+    save_workbook(self, filename)
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 294, in save_workbook
+    writer.save()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 275, in save
+    self.write_data()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 77, in write_data
+    self._write_worksheets()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 215, in _write_worksheets
+    self.write_worksheet(ws)
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 200, in write_worksheet
+    writer.write()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/worksheet/_writer.py", line 360, in write
+    self.write_tail()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/worksheet/_writer.py", line 341, in write_tail
+    self.write_formatting()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/worksheet/_writer.py", line 186, in write_formatting
+    for cf in self.ws.conditional_formatting:
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/formatting/formatting.py", line 91, in __iter__
+    for cf, rules in self._cf_rules.items():
+KeyError: <ConditionalFormatting F5:F24>
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb=openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx'); ws=wb['Commission Audit']; print(list(ws.conditional_formatting._cf_rules.keys()))"
+[?2004l[<ConditionalFormatting F5:F12>, <ConditionalFormatting J5:J12>, <ConditionalFormatting K5:K12>]
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb=openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx'); ws=wb['Commission Audit']; print(type(ws.conditional_formatting._cf_rules))"
+[?2004l<class 'collections.OrderedDict'>
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/test_cf.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> from collections import OrderedDict
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> new_cf_rules = OrderedDict()
+[?2004l[?2004h> for key, value in ws.conditional_formatting._cf_rules.items():
+[?2004l[?2004h>     key.sqref = str(key.sqref).replace('12', '24')
+[?2004l[?2004h>     new_cf_rules[key] = value
+[?2004l[?2004h> ws.conditional_formatting._cf_rules = new_cf_rules
+[?2004l[?2004h> wb.save('/tmp/test_cf_out.xlsx')
+[?2004l[?2004h> print('Saved successfully!')
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/test_cf.py
+[?2004lSaved successfully!
+[?2004hroot@c19df17170a9:~# python3 -c "import re; f1 = '=SUMIF(\'Commission Audit\'!K5:K12,\'OVERPAID\',\'Commission Audit\'!J5:J12)'; f2 = '=IFERROR(INDEX(\'Commission Audit\'!A5:A12,MATCH(MAX(ABS(\'Commission Audit\'!J5:J12)),ABS(\'Commission Audit\'!J5:J12),0)),\'\')'; pat = r'([A-L]|:)(12)\b'; print(re.sub(pat, r'\124', f1)); print(re.sub(pat, r'\124', f2))"
+[?2004lbash: !K5: event not found
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/test_regex.py
+[?2004l[?2004h> import re
+[?2004l[?2004h> f1 = '=SUMIF(\'Commission Audit\'!K5:K12,"OVERPAID",\'Commission Audit\'!J5:J12)'
+[?2004l[?2004h> f2 = '=IFERROR(INDEX(\'Commission Audit\'!A5:A12,MATCH(MAX(ABS(\'Commission Audit\'!J5:J12)),ABS(\'Commission Audit\'!J5:J12),0)),"")'
+[?2004l[?2004h> pat = r'([A-L]|:)(12)\b'
+[?2004l[?2004h> print(re.sub(pat, r'\124', f1))
+[?2004l[?2004h> print(re.sub(pat, r'\124', f2))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/test_regex.py
+[?2004l=SUMIF('Commission Audit'!K5:T,"OVERPAID",'Commission Audit'!J5:T)
+=IFERROR(INDEX('Commission Audit'!A5:T,MATCH(MAX(ABS('Commission Audit'!J5:T)),ABS('Commission Audit'!J5:T),0)),"")
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/test_regex.py
+[?2004l[?2004h> import re
+[?2004l[?2004h> f1 = '=SUMIF(\'Commission Audit\'!K5:K12,"OVERPAID",\'Commission Audit\'!J5:J12)'
+[?2004l[?2004h> f2 = '=IFERROR(INDEX(\'Commission Audit\'!A5:A12,MATCH(MAX(ABS(\'Commission Audit\'!J5:J12)),ABS(\'Commission Audit\'!J5:J12),0)),"")'
+[?2004l[?2004h> pat = r'([A-L]|:)(12)\b'
+[?2004l[?2004h> print(re.sub(pat, r'\g<1>24', f1))
+[?2004l[?2004h> print(re.sub(pat, r'\g<1>24', f2))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/test_regex.py
+[?2004l=SUMIF('Commission Audit'!K5:K24,"OVERPAID",'Commission Audit'!J5:J24)
+=IFERROR(INDEX('Commission Audit'!A5:A24,MATCH(MAX(ABS('Commission Audit'!J5:J24)),ABS('Commission Audit'!J5:J24),0)),"")
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/repair_all.py
+[?2004l[?2004h> import json, csv, openpyxl, re
+[?2004ltt[?2004h> from collections import OrderedDict
+[?2004l[?2004h> 
+[?2004l[?2004h> # 1. Load data sources
+[?2004l[?2004h> bases = {}
+[?2004l[?2004h> with open('/root/data/rep_quotas.csv') as f:
+[?2004l[?2004h>     reader = csv.DictReader(f)
+[?2004l[?2004h>     for row in reader:
+[?2004l[?2004h>         rep = row['rep_id']
+[?2004l[?2004h>         val = float(row['base_quota_usd'].replace('$','').replace(',',''))
+[?2004l[?2004h>         bases[rep] = val
+[?2004l[?2004h> 
+[?2004ls[?2004h> # Carryover allocations
+[?2004l[?2004h> co_wb = openpyxl.load_workbook('/root/data/quota_carryover.xlsx')
+[?2004l   cell.val[?2004h> r_ws = co_wb['RateTable']
+[?2004l24[?2004h> b_ws = co_wb['BaseRef']
+[?2004l[?2004h> alloc_ws = co_wb['Allocations']
+[?2004l[?2004h> rates = {r_ws.cell(r,1).value: r_ws.cell(r,2).value for r in range(2,22)}
+[?2004l[?2004h> bases_from_excel = {b_ws.cell(r,1).value: b_ws.cell(r,2).value for r in range(2,22)}
+[?2004ls[?2004h> carryovers = {}
+[?2004l[?2004h> for r in range(2,22):
+[?2004lx [?2004h>     rep = alloc_ws.cell(r,1).value
+[?2004l[?2004h>     formula = alloc_ws.cell(r,2).value
+[?2004l[?2004h>     val = rates[rep] * bases_from_excel[rep]
+[?2004l
+[?2004h>     carryovers[rep] = max(val, 5000) if 'MAX' in formula else round(val, -3)
+[?2004l[?2004h> 
+[?2004lE[?2004h> # Bookings
+[?2004l[?2004h> bookings = {}
+[?2004l[?2004h> with open('/root/data/bookings.jsonl') as f:
+[?2004l[?2004h>     for line in f:
+[?2004l0,[?2004h>         d = json.loads(line)
+[?2004l[?2004h>         rep = d['rep_id']
+[?2004l[?2004h>         arr = float(d['arr_usd'].replace('$','').replace(',','')) if isinstance(d['arr_usd'], str) else float(d['arr_usd'])
+[?2004l[?2004h>         bookings[rep] = bookings.get(rep, 0.0) + arr
+[?2004l[?2004h> 
+[?2004l:[?2004h> # Draft commission statements
+[?2004l [?2004h> drafts = {}
+[?2004l[?2004h> with open('/root/data/draft_commission_statements.csv') as f:
+[?2004l[?2004h>     reader = csv.DictReader(f)
+[?2004l[?2004h>     for row in reader:
+[?2004l[?2004h>         drafts[row['rep_id']] = float(row['draft_commission_usd'])
+[?2004l[?2004h> 
+[?2004l[?2004h> # 2. Repair Workbook
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004lribution': [?2004h> 
+[?2004lt[?2004h> # Track summary statistics
+[?2004l[?2004h> reps_data = []
+[?2004l[?2004h> 
+[?2004ls[?2004h> # Update cell values and formulas
+[?2004l'/root/out/audi[?2004h> for r in range(5, 25):
+[?2004l[?2004h>     rep_id = ws.cell(r, 1).value
+[?2004l_summary,[?2004h>     if not rep_id:
+[?2004l[?2004h>         continue
+[?2004l[?2004h>     
+[?2004ly J[?2004h>     # Check base quota and carryover from authoritative sources
+[?2004l[?2004h>     bq = bases[rep_id]
+[?2004l[?2004h>     co = carryovers[rep_id]
+[?2004l[?2004h>     bk = bookings.get(rep_id, 0.0)
+[?2004l[?2004h>     dr = drafts.get(rep_id, 0.0)
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Calculate audited commission in python
+[?2004l[?2004h>     tq = bq + co
+[?2004l[?2004h>     att = bk / tq
+[?2004l[?2004h>     if att < 0.8: tier, rate = 'Below Threshold', 0.0
+[?2004l[?2004h>     elif att < 1.0: tier, rate = 'Base', 0.08
+[?2004l[?2004h>     elif att < 1.2: tier, rate = 'Accelerator 1', 0.10
+[?2004l[?2004h>     elif att < 1.5: tier, rate = 'Accelerator 2', 0.12
+[?2004l[?2004h>     else: tier, rate = 'Accelerator 3', 0.15
+[?2004l[?2004h>     comm = rate * bk
+[?2004l[?2004h>     
+[?2004l[?2004h>     delta = dr - comm
+[?2004l[?2004h>     flag = 'OVERPAID' if delta > 0.01 else ('UNDERPAID' if delta < -0.01 else 'CORRECT')
+[?2004l[?2004h>     
+[?2004l[?2004h>     reps_data.append({
+[?2004l[?2004h>         'rep_id': rep_id,
+[?2004l[?2004h>         'tier': tier,
+[?2004l[?2004h>         'comm': comm,
+[?2004l[?2004h>         'delta': delta,
+[?2004l[?2004h>         'flag': flag
+[?2004l[?2004h>     })
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Columns:
+[?2004l[?2004h>     # B: base_quota_usd
+[?2004l[?2004h>     ws.cell(r, 2).value = bq
+[?2004l[?2004h>     # C: carryover_quota_usd
+[?2004l[?2004h>     ws.cell(r, 3).value = co
+[?2004l[?2004h>     # D: total_quota_usd (formula)
+[?2004l[?2004h>     ws.cell(r, 4).value = f'=B{r}+C{r}'
+[?2004l[?2004h>     # E: bookings_arr_usd
+[?2004l[?2004h>     ws.cell(r, 5).value = bk
+[?2004l[?2004h>     # F: attainment_pct (formula)
+[?2004l[?2004h>     ws.cell(r, 6).value = f'=E{r}/D{r}'
+[?2004l[?2004h>     # G: commission_tier (formula)
+[?2004l[?2004h>     ws.cell(r, 7).value = f'=IF(F{r}<0.8,"Below Threshold",IF(F{r}<1,"Base",IF(F{r}<1.2,"Accelerator 1",IF(F{r}<1.5,"Accelerator 2","Accelerator 3"))))'
+[?2004l[?2004h>     # H: commission_usd (literal value)
+[?2004l[?2004h>     ws.cell(r, 8).value = comm
+[?2004l[?2004h>     # I: draft_commission_usd (literal value from draft statements)
+[?2004l[?2004h>     ws.cell(r, 9).value = dr
+[?2004l[?2004h>     # J: delta_usd (formula)
+[?2004l[?2004h>     ws.cell(r, 10).value = f'=I{r}-H{r}'
+[?2004l[?2004h>     # K: flag (formula)
+[?2004l[?2004h>     ws.cell(r, 11).value = f'=IF(J{r}>0.01,"OVERPAID",IF(J{r}<-0.01,"UNDERPAID","CORRECT"))'
+[?2004l[?2004h> 
+[?2004l[?2004h> # Update summary row (row 25) in 'Commission Audit'
+[?2004l[?2004h> ws.cell(25, 2).value = '=SUM(B5:B24)'
+[?2004l[?2004h> ws.cell(25, 3).value = '=SUM(C5:C24)'
+[?2004l[?2004h> ws.cell(25, 5).value = '=SUM(E5:E24)'
+[?2004l[?2004h> ws.cell(25, 8).value = '=SUM(H5:H24)'
+[?2004l[?2004h> ws.cell(25, 10).value = '=SUM(J5:J24)'
+[?2004l[?2004h> 
+[?2004l[?2004h> # Table range
+[?2004l[?2004h> ws.tables['CommissionAuditTable'] = 'A4:L24'
+[?2004l[?2004h> 
+[?2004l[?2004h> # Defined Names
+[?2004l[?2004h> for name in ['AuditDataRange', 'TierEntryRange', 'FlagEntryRange']:
+[?2004l[?2004h>     dn = wb.defined_names[name]
+[?2004l[?2004h>     dn.value = dn.value.replace('$12', '$24')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Data Validation
+[?2004l[?2004h> for dv in list(ws.data_validations.dataValidation):
+[?2004l[?2004h>     dv.sqref = str(dv.sqref).replace('12', '24')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Conditional Formatting - Rebuild safely!
+[?2004l[?2004h> new_cf_rules = OrderedDict()
+[?2004l[?2004h> for key, value in ws.conditional_formatting._cf_rules.items():
+[?2004l[?2004h>     key.sqref = str(key.sqref).replace('12', '24')
+[?2004l[?2004h>     new_cf_rules[key] = value
+[?2004l[?2004h> ws.conditional_formatting._cf_rules = new_cf_rules
+[?2004l[?2004h> 
+[?2004l[?2004h> # Repair 'Summary' sheet
+[?2004l[?2004h> sum_ws = wb['Summary']
+[?2004l[?2004h> pat = r'([A-L]|:)(12)\b'
+[?2004l[?2004h> for r in range(1, 20):
+[?2004l[?2004h>     for c in range(1, 5):
+[?2004l[?2004h>         cell = sum_ws.cell(r, c)
+[?2004l[?2004h>         val = cell.value
+[?2004l[?2004h>         if isinstance(val, str):
+[?2004l[?2004h>             cell.value = re.sub(pat, r'\g<1>24', val)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Save repaired copy
+[?2004l[?2004h> wb.save('/root/out/commission_audit_repaired.xlsx')
+[?2004l[?2004h> print('Saved repaired workbook to /root/out/commission_audit_repaired.xlsx')
+[?2004l[?2004h> 
+[?2004l[?2004h> # 3. Calculate Audit Summary JSON
+[?2004l[?2004h> total_reps = len(reps_data)
+[?2004l[?2004h> reps_discrepancy = sum(1 for x in reps_data if x['flag'] != 'CORRECT')
+[?2004l[?2004h> total_overpaid = sum(x['delta'] for x in reps_data if x['flag'] == 'OVERPAID')
+[?2004l[?2004h> total_underpaid = sum(abs(x['delta']) for x in reps_data if x['flag'] == 'UNDERPAID')
+[?2004l[?2004h> 
+[?2004l[?2004h> tier_counts = {
+[?2004l[?2004h>     'Below Threshold': 0,
+[?2004l[?2004h>     'Base': 0,
+[?2004l[?2004h>     'Accelerator 1': 0,
+[?2004l[?2004h>     'Accelerator 2': 0,
+[?2004l[?2004h>     'Accelerator 3': 0
+[?2004l[?2004h> }
+[?2004l[?2004h> for x in reps_data:
+[?2004l[?2004h>     tier_counts[x['tier']] += 1
+[?2004l[?2004h> 
+[?2004l[?2004h> # highest_delta_rep: rep with largest absolute delta, ties broken by lowest rep_id
+[?2004l[?2004h> sorted_deltas = sorted(reps_data, key=lambda x: (-round(abs(x['delta']), 8), x['rep_id']))
+[?2004l[?2004h> highest_rep = sorted_deltas[0]['rep_id'] if sorted_deltas else ''
+[?2004l[?2004h> 
+[?2004l[?2004h> audit_summary = {
+[?2004l[?2004h>     'total_reps_audited': total_reps,
+[?2004l[?2004h>     'reps_with_discrepancy': reps_discrepancy,
+[?2004l[?2004h>     'total_overpaid_usd': round(total_overpaid, 2),
+[?2004l[?2004h>     'total_underpaid_usd': round(total_underpaid, 2),
+[?2004l[?2004h>     'tier_distribution': tier_counts,
+[?2004l[?2004h>     'highest_delta_rep': highest_rep
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> with open('/root/out/audit_summary.json', 'w') as f:
+[?2004l[?2004h>     json.dump(audit_summary, f, indent=2)
+[?2004l[?2004h> 
+[?2004l[?2004h> print('Generated summary JSON:')
+[?2004l[?2004h> print(json.dumps(audit_summary, indent=2))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/repair_all.py
+[?2004lTraceback (most recent call last):
+  File "/tmp/repair_all.py", line 142, in <module>
+    wb.save('/root/out/commission_audit_repaired.xlsx')
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/workbook/workbook.py", line 386, in save
+    save_workbook(self, filename)
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 294, in save_workbook
+    writer.save()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 275, in save
+    self.write_data()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 77, in write_data
+    self._write_worksheets()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 215, in _write_worksheets
+    self.write_worksheet(ws)
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/writer/excel.py", line 200, in write_worksheet
+    writer.write()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/worksheet/_writer.py", line 360, in write
+    self.write_tail()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/worksheet/_writer.py", line 351, in write_tail
+    self.write_tables()
+  File "/usr/local/lib/python3.12/dist-packages/openpyxl/worksheet/_writer.py", line 267, in write_tables
+    if not table.tableColumns:
+           ^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'tableColumns'
+[?2004hroot@c19df17170a9:~# python3 -c "import openpyxl; wb=openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx'); ws=wb['Commission Audit']; ws.tables['CommissionAuditTable'].ref = 'A4:L24'; wb.save('/tmp/test_tbl_out.xlsx'); print('Saved table successfully!')"
+[?2004lbash: !': event not found
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/test_tbl.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> ws.tables['CommissionAuditTable'].ref = 'A4:L24'
+[?2004l[?2004h> wb.save('/tmp/test_tbl_out.xlsx')
+[?2004l[?2004h> print('Saved successfully!')
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/test_tbl.py
+[?2004lSaved successfully!
+[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/repair_all.py
+[?2004l[?2004h> import json, csv, openpyxl, re
+[?2004l[?2004h> from collections import OrderedDict
+[?2004l[?2004h> 
+[?2004l[?2004h> # 1. Load data sources
+[?2004l[?2004h> bases = {}
+[?2004l[?2004h> with open('/root/data/rep_quotas.csv') as f:
+[?2004ldi[?2004h>     reader = csv.DictReader(f)
+[?2004l n[?2004h>     for row in reader:
+[?2004l[?2004h>         rep = row['rep_id']
+[?2004l[?2004h>         val = float(row['base_quota_usd'].replace('$','').replace(',',''))
+[?2004l[?2004h>         bases[rep] = val
+[?2004l[?2004h> 
+[?2004l[?2004h> # Carryover allocations
+[?2004l[?2004h> co_wb = openpyxl.load_workbook('/root/data/quota_carryover.xlsx')
+[?2004l[?2004h> r_ws = co_wb['RateTable']
+[?2004l[?2004h> b_ws = co_wb['BaseRef']
+[?2004l[?2004h> alloc_ws = co_wb['Allocations']
+[?2004l[?2004h> rates = {r_ws.cell(r,1).value: r_ws.cell(r,2).value for r in range(2,22)}
+[?2004l/root/out/[?2004h> bases_from_excel = {b_ws.cell(r,1).value: b_ws.cell(r,2).value for r in range(2,22)}
+[?2004llen([?2004h> carryovers = {}
+[?2004l[?2004h> for r in range(2,22):
+[?2004l[?2004h>     rep = alloc_ws.cell(r,1).value
+[?2004l[?2004h>     formula = alloc_ws.cell(r,2).value
+[?2004lum(x['delta'[?2004h>     val = rates[rep] * bases_from_excel[rep]
+[?2004l[?2004h>     carryovers[rep] = max(val, 5000) if 'MAX' in formula else round(val, -3)
+[?2004l[?2004h> 
+[?2004l'[?2004h> # Bookings
+[?2004lID')[?2004h> bookings = {}
+[?2004l[?2004h> with open('/root/data/bookings.jsonl') as f:
+[?2004l[?2004h>     for line in f:
+[?2004l[?2004h>         d = json.loads(line)
+[?2004l[?2004h>         rep = d['rep_id']
+[?2004l[?2004h>         arr = float(d['arr_usd'].replace('$','').replace(',','')) if isinstance(d['arr_usd'], str) else float(d['arr_usd'])
+[?2004l[?2004h>         bookings[rep] = bookings.get(rep, 0.0) + arr
+[?2004lb[?2004h> 
+[?2004ld[?2004h> # Draft commission statements
+[?2004l[?2004h> drafts = {}
+[?2004l[?2004h> with open('/root/data/draft_commission_statements.csv') as f:
+[?2004l[?2004h>     reader = csv.DictReader(f)
+[?2004l[?2004h>     for row in reader:
+[?2004l[?2004h>         drafts[row['rep_id']] = float(row['draft_commission_usd'])
+[?2004l
+    'to[?2004h> 
+[?2004lt[?2004h> # 2. Repair Workbook
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/data/draft_commission_audit.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> 
+[?2004ln[?2004h> # Track summary statistics
+[?2004l[?2004h> reps_data = []
+[?2004l[?2004h> 
+[?2004li[?2004h> # Update cell values and formulas
+[?2004lt/[?2004h> for r in range(5, 25):
+[?2004l[?2004h>     rep_id = ws.cell(r, 1).value
+[?2004l[?2004h>     if not rep_id:
+[?2004l[?2004h>         continue
+[?2004l[?2004h>     
+[?2004lmma[?2004h>     # Check base quota and carryover from authoritative sources
+[?2004l[?2004h>     bq = bases[rep_id]
+[?2004l[?2004h>     co = carryovers[rep_id]
+[?2004l[?2004h>     bk = bookings.get(rep_id, 0.0)
+[?2004l[?2004h>     dr = drafts.get(rep_id, 0.0)
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Calculate audited commission in python
+[?2004l[?2004h>     tq = bq + co
+[?2004l[?2004h>     att = bk / tq
+[?2004l[?2004h>     if att < 0.8: tier, rate = 'Below Threshold', 0.0
+[?2004l[?2004h>     elif att < 1.0: tier, rate = 'Base', 0.08
+[?2004l[?2004h>     elif att < 1.2: tier, rate = 'Accelerator 1', 0.10
+[?2004l[?2004h>     elif att < 1.5: tier, rate = 'Accelerator 2', 0.12
+[?2004l[?2004h>     else: tier, rate = 'Accelerator 3', 0.15
+[?2004l[?2004h>     comm = rate * bk
+[?2004l[?2004h>     
+[?2004l[?2004h>     delta = dr - comm
+[?2004l[?2004h>     flag = 'OVERPAID' if delta > 0.01 else ('UNDERPAID' if delta < -0.01 else 'CORRECT')
+[?2004l[?2004h>     
+[?2004l[?2004h>     reps_data.append({
+[?2004l[?2004h>         'rep_id': rep_id,
+[?2004l[?2004h>         'tier': tier,
+[?2004l[?2004h>         'comm': comm,
+[?2004l[?2004h>         'delta': delta,
+[?2004l[?2004h>         'flag': flag
+[?2004l[?2004h>     })
+[?2004l[?2004h>     
+[?2004l[?2004h>     # Columns:
+[?2004l[?2004h>     # B: base_quota_usd
+[?2004l[?2004h>     ws.cell(r, 2).value = bq
+[?2004l[?2004h>     # C: carryover_quota_usd
+[?2004l[?2004h>     ws.cell(r, 3).value = co
+[?2004l[?2004h>     # D: total_quota_usd (formula)
+[?2004l[?2004h>     ws.cell(r, 4).value = f'=B{r}+C{r}'
+[?2004l[?2004h>     # E: bookings_arr_usd
+[?2004l[?2004h>     ws.cell(r, 5).value = bk
+[?2004l[?2004h>     # F: attainment_pct (formula)
+[?2004l[?2004h>     ws.cell(r, 6).value = f'=E{r}/D{r}'
+[?2004l[?2004h>     # G: commission_tier (formula)
+[?2004l[?2004h>     ws.cell(r, 7).value = f'=IF(F{r}<0.8,"Below Threshold",IF(F{r}<1,"Base",IF(F{r}<1.2,"Accelerator 1",IF(F{r}<1.5,"Accelerator 2","Accelerator 3"))))'
+[?2004l[?2004h>     # H: commission_usd (literal value)
+[?2004l[?2004h>     ws.cell(r, 8).value = comm
+[?2004l[?2004h>     # I: draft_commission_usd (literal value from draft statements)
+[?2004l[?2004h>     ws.cell(r, 9).value = dr
+[?2004l[?2004h>     # J: delta_usd (formula)
+[?2004l[?2004h>     ws.cell(r, 10).value = f'=I{r}-H{r}'
+[?2004l[?2004h>     # K: flag (formula)
+[?2004l[?2004h>     ws.cell(r, 11).value = f'=IF(J{r}>0.01,"OVERPAID",IF(J{r}<-0.01,"UNDERPAID","CORRECT"))'
+[?2004l[?2004h> 
+[?2004l[?2004h> # Update summary row (row 25) in 'Commission Audit'
+[?2004l[?2004h> ws.cell(25, 2).value = '=SUM(B5:B24)'
+[?2004l[?2004h> ws.cell(25, 3).value = '=SUM(C5:C24)'
+[?2004l[?2004h> ws.cell(25, 5).value = '=SUM(E5:E24)'
+[?2004l[?2004h> ws.cell(25, 8).value = '=SUM(H5:H24)'
+[?2004l[?2004h> ws.cell(25, 10).value = '=SUM(J5:J24)'
+[?2004l[?2004h> 
+[?2004l[?2004h> # Table range
+[?2004l[?2004h> ws.tables['CommissionAuditTable'].ref = 'A4:L24'
+[?2004l[?2004h> 
+[?2004l[?2004h> # Defined Names
+[?2004l[?2004h> for name in ['AuditDataRange', 'TierEntryRange', 'FlagEntryRange']:
+[?2004l[?2004h>     dn = wb.defined_names[name]
+[?2004l[?2004h>     dn.value = dn.value.replace('$12', '$24')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Data Validation
+[?2004l[?2004h> for dv in list(ws.data_validations.dataValidation):
+[?2004l[?2004h>     dv.sqref = str(dv.sqref).replace('12', '24')
+[?2004l[?2004h> 
+[?2004l[?2004h> # Conditional Formatting - Rebuild safely!
+[?2004l[?2004h> new_cf_rules = OrderedDict()
+[?2004l[?2004h> for key, value in ws.conditional_formatting._cf_rules.items():
+[?2004l[?2004h>     key.sqref = str(key.sqref).replace('12', '24')
+[?2004l[?2004h>     new_cf_rules[key] = value
+[?2004l[?2004h> ws.conditional_formatting._cf_rules = new_cf_rules
+[?2004l[?2004h> 
+[?2004l[?2004h> # Repair 'Summary' sheet
+[?2004l[?2004h> sum_ws = wb['Summary']
+[?2004l[?2004h> pat = r'([A-L]|:)(12)\b'
+[?2004l[?2004h> for r in range(1, 20):
+[?2004l[?2004h>     for c in range(1, 5):
+[?2004l[?2004h>         cell = sum_ws.cell(r, c)
+[?2004l[?2004h>         val = cell.value
+[?2004l[?2004h>         if isinstance(val, str):
+[?2004l[?2004h>             cell.value = re.sub(pat, r'\g<1>24', val)
+[?2004l[?2004h> 
+[?2004l[?2004h> # Save repaired copy
+[?2004l[?2004h> wb.save('/root/out/commission_audit_repaired.xlsx')
+[?2004l[?2004h> print('Saved repaired workbook to /root/out/commission_audit_repaired.xlsx')
+[?2004l[?2004h> 
+[?2004l[?2004h> # 3. Calculate Audit Summary JSON
+[?2004l[?2004h> total_reps = len(reps_data)
+[?2004l[?2004h> reps_discrepancy = sum(1 for x in reps_data if x['flag'] != 'CORRECT')
+[?2004l[?2004h> total_overpaid = sum(x['delta'] for x in reps_data if x['flag'] == 'OVERPAID')
+[?2004l[?2004h> total_underpaid = sum(abs(x['delta']) for x in reps_data if x['flag'] == 'UNDERPAID')
+[?2004l[?2004h> 
+[?2004l[?2004h> tier_counts = {
+[?2004l[?2004h>     'Below Threshold': 0,
+[?2004l[?2004h>     'Base': 0,
+[?2004l[?2004h>     'Accelerator 1': 0,
+[?2004l[?2004h>     'Accelerator 2': 0,
+[?2004l[?2004h>     'Accelerator 3': 0
+[?2004l[?2004h> }
+[?2004l[?2004h> for x in reps_data:
+[?2004l[?2004h>     tier_counts[x['tier']] += 1
+[?2004l[?2004h> 
+[?2004l[?2004h> # highest_delta_rep: rep with largest absolute delta, ties broken by lowest rep_id
+[?2004l[?2004h> sorted_deltas = sorted(reps_data, key=lambda x: (-round(abs(x['delta']), 8), x['rep_id']))
+[?2004l[?2004h> highest_rep = sorted_deltas[0]['rep_id'] if sorted_deltas else ''
+[?2004l[?2004h> 
+[?2004l[?2004h> audit_summary = {
+[?2004l[?2004h>     'total_reps_audited': total_reps,
+[?2004l[?2004h>     'reps_with_discrepancy': reps_discrepancy,
+[?2004l[?2004h>     'total_overpaid_usd': round(total_overpaid, 2),
+[?2004l[?2004h>     'total_underpaid_usd': round(total_underpaid, 2),
+[?2004l[?2004h>     'tier_distribution': tier_counts,
+[?2004l[?2004h>     'highest_delta_rep': highest_rep
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> with open('/root/out/audit_summary.json', 'w') as f:
+[?2004l[?2004h>     json.dump(audit_summary, f, indent=2)
+[?2004l[?2004h> 
+[?2004l[?2004h> print('Generated summary JSON:')
+[?2004l[?2004h> print(json.dumps(audit_summary, indent=2))
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/repair_all.py
+[?2004lSaved repaired workbook to /root/out/commission_audit_repaired.xlsx
+Generated summary JSON:
+{
+  "total_reps_audited": 20,
+  "reps_with_discrepancy": 4,
+  "total_overpaid_usd": 905.0,
+  "total_underpaid_usd": 1480.0,
+  "tier_distribution": {
+    "Below Threshold": 5,
+    "Base": 5,
+    "Accelerator 1": 4,
+    "Accelerator 2": 3,
+    "Accelerator 3": 3
+  },
+  "highest_delta_rep": "REP-012"
+}
+[?2004hroot@c19df17170a9:~# ls -la /root/out
+[?2004ltotal 28
+drwxr-xr-x 2 root root  4096 Jun  8 08:20 [0m[01;34m.[0m
+drwx------ 1 root root  4096 Jun  8 08:18 [01;34m..[0m
+-rw-r--r-- 1 root root   300 Jun  8 08:20 audit_summary.json
+-rw-r--r-- 1 root root 12293 Jun  8 08:20 commission_audit_repaired.xlsx
+[?2004hroot@c19df17170a9:~# cat /root/out/audit_summary.json
+[?2004l{
+  "total_reps_audited": 20,
+  "reps_with_discrepancy": 4,
+  "total_overpaid_usd": 905.0,
+  "total_underpaid_usd": 1480.0,
+  "tier_distribution": {
+    "Below Threshold": 5,
+    "Base": 5,
+    "Accelerator 1": 4,
+    "Accelerator 2": 3,
+    "Accelerator 3": 3
+  },
+  "highest_delta_rep": "REP-012"
+}[?2004hroot@c19df17170a9:~# cat << 'EOF' > /tmp/check_repaired.py
+[?2004l[?2004h> import openpyxl
+[?2004l[?2004h> wb = openpyxl.load_workbook('/root/out/commission_audit_repaired.xlsx')
+[?2004l[?2004h> ws = wb['Commission Audit']
+[?2004l[?2004h> print('Row 5:', [ws.cell(5, c).value for c in range(1, 13)])
+[?2004l[?2004h> print('Row 24:', [ws.cell(24, c).value for c in range(1, 13)])
+[?2004l[?2004h> print('Row 25:', [ws.cell(25, c).value for c in range(1, 13)])
+[?2004l[?2004h> 
+[?2004l[?2004h> ws2 = wb['Summary']
+[?2004l[?2004h> for r in range(1, 15):
+[?2004l[?2004h>     print(f'Summary Row {r}:', [ws2.cell(r, c).value for c in range(1, 4)])
+[?2004l[?2004h> EOF
+[?2004l[?2004hroot@c19df17170a9:~# python3 /tmp/check_repaired.py
+[?2004lRow 5: ['REP-001', 145000, 14000, '=B5+C5', 168000, '=E5/D5', '=IF(F5<0.8,"Below Threshold",IF(F5<1,"Base",IF(F5<1.2,"Accelerator 1",IF(F5<1.5,"Accelerator 2","Accelerator 3"))))', 16800, 17200, '=I5-H5', '=IF(J5>0.01,"OVERPAID",IF(J5<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 24: ['REP-020', 60000, 0, '=B24+C24', 36000, '=E24/D24', '=IF(F24<0.8,"Below Threshold",IF(F24<1,"Base",IF(F24<1.2,"Accelerator 1",IF(F24<1.5,"Accelerator 2","Accelerator 3"))))', 0, 0, '=I24-H24', '=IF(J24>0.01,"OVERPAID",IF(J24<-0.01,"UNDERPAID","CORRECT"))', 'Manual review: draft value from payroll export']
+Row 25: [None, '=SUM(B5:B24)', '=SUM(C5:C24)', None, '=SUM(E5:E24)', None, None, '=SUM(H5:H24)', None, '=SUM(J5:J24)', None, None]
+Summary Row 1: ['Q1 Commission Audit Summary', None, None]
+Summary Row 2: [None, None, None]
+Summary Row 3: ['total_reps_audited', "=COUNTA('Commission Audit'!A5:A24)", None]
+Summary Row 4: ['reps_with_discrepancy', '=COUNTIF(\'Commission Audit\'!K5:K24,"<>CORRECT")', None]
+Summary Row 5: ['total_overpaid_usd', '=SUMIF(\'Commission Audit\'!K5:K24,"OVERPAID",\'Commission Audit\'!J5:J24)', None]
+Summary Row 6: ['total_underpaid_usd', '=ABS(SUMIF(\'Commission Audit\'!K5:K24,"UNDERPAID",\'Commission Audit\'!J5:J24))', None]
+Summary Row 7: ['highest_delta_rep', '=IFERROR(INDEX(\'Commission Audit\'!A5:A24,MATCH(MAX(ABS(\'Commission Audit\'!J5:J24)),ABS(\'Commission Audit\'!J5:J24),0)),"")', None]
+Summary Row 8: [None, None, None]
+Summary Row 9: ['Below Threshold', '=COUNTIF(\'Commission Audit\'!G5:G24,"Below Threshold")', None]
+Summary Row 10: ['Base', '=COUNTIF(\'Commission Audit\'!G5:G24,"Base")', None]
+Summary Row 11: ['Accelerator 1', '=COUNTIF(\'Commission Audit\'!G5:G24,"Accelerator 1")', None]
+Summary Row 12: ['Accelerator 2', '=COUNTIF(\'Commission Audit\'!G5:G24,"Accelerator 2")', None]
+Summary Row 13: ['Accelerator 3', '=COUNTIF(\'Commission Audit\'!G5:G24,"Accelerator 3")', None]
+Summary Row 14: [None, None, None]
+[?2004hroot@c19df17170a9:~# 

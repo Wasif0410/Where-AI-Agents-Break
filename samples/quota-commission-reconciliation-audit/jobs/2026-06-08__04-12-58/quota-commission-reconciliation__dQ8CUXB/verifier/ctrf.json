@@ -1,0 +1,632 @@
+{
+    "results": {
+        "tool": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "summary": {
+            "tests": 64,
+            "passed": 52,
+            "failed": 12,
+            "skipped": 0,
+            "pending": 0,
+            "other": 0,
+            "start": 1780906821.2948742,
+            "stop": 1780906822.437942
+        },
+        "tests": [
+            {
+                "name": "test_outputs.py::TestOutputFilesExist::test_repaired_workbook_exists",
+                "status": "passed",
+                "duration": 0.0005301259952830151,
+                "start": 1780906821.6421976,
+                "stop": 1780906821.6433797,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestOutputFilesExist::test_audit_summary_json_exists",
+                "status": "passed",
+                "duration": 0.0004518950008787215,
+                "start": 1780906821.6439693,
+                "stop": 1780906821.6449583,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookStructure::test_sheet_names_and_order",
+                "status": "passed",
+                "duration": 0.010704284992243629,
+                "start": 1780906821.645499,
+                "stop": 1780906821.6568666,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookStructure::test_control_sheet_hidden",
+                "status": "passed",
+                "duration": 0.009189714000967797,
+                "start": 1780906821.6574175,
+                "stop": 1780906821.6673274,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookStructure::test_validation_sheet_hidden",
+                "status": "passed",
+                "duration": 0.009785838003153913,
+                "start": 1780906821.6679575,
+                "stop": 1780906821.6784627,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookStructure::test_notes_sheet_exists",
+                "status": "passed",
+                "duration": 0.009206894996168558,
+                "start": 1780906821.6790438,
+                "stop": 1780906821.6889014,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestCommissionAuditLayout::test_headers",
+                "status": "passed",
+                "duration": 0.009909753993269987,
+                "start": 1780906821.6894436,
+                "stop": 1780906821.699928,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestCommissionAuditLayout::test_rep_ids",
+                "status": "passed",
+                "duration": 0.008638667000923306,
+                "start": 1780906821.7004564,
+                "stop": 1780906821.7096972,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestCommissionAuditLayout::test_frozen_panes",
+                "status": "passed",
+                "duration": 0.009100060997297987,
+                "start": 1780906821.7102513,
+                "stop": 1780906821.7200606,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestCommissionAuditLayout::test_auto_filter",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.009347789993626066,
+                "start": 1780906821.7206347,
+                "stop": 1780906821.7650032,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestCommissionAuditLayout object at 0x7493b7a2f950>\n\n    def test_auto_filter(self):\n        wb = load_workbook_repaired()\n>       assert wb[\"Commission Audit\"].auto_filter.ref == \"A4:L24\"\nE       AssertionError: assert 'A4:L12' == 'A4:L24'\nE         \nE         - A4:L24\nE         ?      -\nE         + A4:L12\nE         ?     +\n\n/tests/test_outputs.py:462: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookPreservation::test_summary_formulas_preserved",
+                "status": "passed",
+                "duration": 0.010418149002362043,
+                "start": 1780906821.7655785,
+                "stop": 1780906821.7767177,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookPreservation::test_control_expected_row_count",
+                "status": "passed",
+                "duration": 0.009076612011995167,
+                "start": 1780906821.7772808,
+                "stop": 1780906821.7870445,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookPreservation::test_control_metadata_preserved",
+                "status": "passed",
+                "duration": 0.009823438005696516,
+                "start": 1780906821.7876298,
+                "stop": 1780906821.7980797,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookPreservation::test_validation_tier_labels",
+                "status": "passed",
+                "duration": 0.009275826007069554,
+                "start": 1780906821.7986543,
+                "stop": 1780906821.8085918,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookPreservation::test_validation_flag_labels",
+                "status": "passed",
+                "duration": 0.010095223005919252,
+                "start": 1780906821.8091474,
+                "stop": 1780906821.819871,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookPreservation::test_tier_data_validation",
+                "status": "passed",
+                "duration": 0.008645742003864143,
+                "start": 1780906821.8204718,
+                "stop": 1780906821.8297517,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookPreservation::test_flag_data_validation",
+                "status": "passed",
+                "duration": 0.010239249997539446,
+                "start": 1780906821.8302925,
+                "stop": 1780906821.8411772,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookPreservation::test_header_row_styled",
+                "status": "passed",
+                "duration": 0.008763895006268285,
+                "start": 1780906821.841751,
+                "stop": 1780906821.8511748,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestEditableCellsAreLiterals::test_editable_numeric_cells_not_formulas",
+                "status": "passed",
+                "duration": 0.009930574997270014,
+                "start": 1780906821.8517432,
+                "stop": 1780906821.8623328,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestEditableCellsAreLiterals::test_editable_numeric_cells_are_numbers",
+                "status": "passed",
+                "duration": 0.009146252006758004,
+                "start": 1780906821.8629262,
+                "stop": 1780906821.8727388,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditFormulaCells::test_total_quota_formulas_preserved",
+                "status": "passed",
+                "duration": 0.009802314001717605,
+                "start": 1780906821.8733227,
+                "stop": 1780906821.8838382,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditFormulaCells::test_attainment_formulas_preserved",
+                "status": "passed",
+                "duration": 0.00901091499690665,
+                "start": 1780906821.884354,
+                "stop": 1780906821.8940053,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditFormulaCells::test_delta_formulas_preserved",
+                "status": "passed",
+                "duration": 0.010488430991244968,
+                "start": 1780906821.894557,
+                "stop": 1780906821.9056807,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditFormulaCells::test_tier_formulas_preserved",
+                "status": "passed",
+                "duration": 0.008692416005942505,
+                "start": 1780906821.9062352,
+                "stop": 1780906821.915557,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditFormulaCells::test_flag_formulas_preserved",
+                "status": "passed",
+                "duration": 0.008775934991717804,
+                "start": 1780906821.916089,
+                "stop": 1780906821.9255016,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditFormulaCells::test_hidden_helper_row_preserved",
+                "status": "passed",
+                "duration": 0.008859153997036628,
+                "start": 1780906821.926051,
+                "stop": 1780906821.935508,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditFormulaCells::test_reviewer_notes_preserved",
+                "status": "passed",
+                "duration": 0.009624328995414544,
+                "start": 1780906821.9360354,
+                "stop": 1780906821.9463263,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_all_reps_present",
+                "status": "passed",
+                "duration": 0.009081031996174715,
+                "start": 1780906821.9468994,
+                "stop": 1780906821.9566164,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_base_quota_per_rep",
+                "status": "passed",
+                "duration": 0.00983515998814255,
+                "start": 1780906821.957084,
+                "stop": 1780906821.967565,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_carryover_nonzero",
+                "status": "passed",
+                "duration": 0.008980990001873579,
+                "start": 1780906821.9680989,
+                "stop": 1780906821.977648,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_carryover_per_rep",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.011296075004793238,
+                "start": 1780906821.978232,
+                "stop": 1780906822.0033236,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestPerRepValues object at 0x7493b7a511f0>\naudit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}\n\n    def test_carryover_per_rep(self, audit_rows):\n        for rep_id, exp in EXPECTED.items():\n            actual = float(audit_rows[rep_id][\"carryover_quota_usd\"])\n>           assert abs(actual - exp[\"carryover_quota_usd\"]) <= MONEY_TOL, (\n                f\"{rep_id} carryover_quota_usd: expected {exp['carryover_quota_usd']}, got {actual}\"\n            )\nE           AssertionError: REP-012 carryover_quota_usd: expected 5000.0, got 4000.0\nE           assert 1000.0 <= 0.01\nE            +  where 1000.0 = abs((4000.0 - 5000.0))\n\n/tests/test_outputs.py:636: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_total_quota_equals_sum",
+                "status": "passed",
+                "duration": 0.009609591004846152,
+                "start": 1780906822.003765,
+                "stop": 1780906822.0138795,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_attainment_per_rep",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.008967448993644211,
+                "start": 1780906822.0142832,
+                "stop": 1780906822.035754,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestPerRepValues object at 0x7493b7a51550>\naudit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}\n\n    def test_attainment_per_rep(self, audit_rows):\n        for rep_id, exp in EXPECTED.items():\n            actual = float(audit_rows[rep_id][\"attainment_pct\"])\n>           assert abs(actual - exp[\"attainment_pct\"]) <= SHARE_TOL, (\n                f\"{rep_id} attainment_pct: expected {exp['attainment_pct']}, got {actual}\"\n            )\nE           AssertionError: REP-012 attainment_pct: expected 1.4786, got 1.5\nE           assert 0.021400000000000086 <= 0.0005\nE            +  where 0.021400000000000086 = abs((1.5 - 1.4786))\n\n/tests/test_outputs.py:651: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_not_all_below_threshold",
+                "status": "passed",
+                "duration": 0.01046055399638135,
+                "start": 1780906822.036348,
+                "stop": 1780906822.0473423,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_commission_tier_per_rep",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.009255988996301312,
+                "start": 1780906822.0478165,
+                "stop": 1780906822.0696125,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestPerRepValues object at 0x7493b7a518b0>\naudit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}\n\n    def test_commission_tier_per_rep(self, audit_rows):\n        for rep_id, exp in EXPECTED.items():\n            actual = audit_rows[rep_id][\"commission_tier\"]\n>           assert actual == exp[\"commission_tier\"], (\n                f\"{rep_id} commission_tier: expected {exp['commission_tier']}, got {actual}\"\n            )\nE           AssertionError: REP-012 commission_tier: expected Accelerator 2, got Accelerator 3\nE           assert 'Accelerator 3' == 'Accelerator 2'\nE             \nE             - Accelerator 2\nE             ?             ^\nE             + Accelerator 3\nE             ?             ^\n\n/tests/test_outputs.py:664: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_commission_usd_per_rep",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.011289964000752661,
+                "start": 1780906822.0700173,
+                "stop": 1780906822.09443,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestPerRepValues object at 0x7493b7a51a60>\naudit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}\n\n    def test_commission_usd_per_rep(self, audit_rows):\n        for rep_id, exp in EXPECTED.items():\n            actual = float(audit_rows[rep_id][\"commission_usd\"])\n>           assert abs(actual - exp[\"commission_usd\"]) <= MONEY_TOL, (\n                f\"{rep_id} commission_usd: expected {exp['commission_usd']}, got {actual}\"\n            )\nE           AssertionError: REP-012 commission_usd: expected 12420.0, got 15525.0\nE           assert 3105.0 <= 0.01\nE            +  where 3105.0 = abs((15525.0 - 12420.0))\n\n/tests/test_outputs.py:672: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_delta_usd_per_rep",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0098748539967346,
+                "start": 1780906822.0948708,
+                "stop": 1780906822.1330955,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestPerRepValues object at 0x7493b7a51c10>\naudit_rows = {'REP-001': {'attainment_pct': 1.05, 'base_quota_usd': 145000.0, 'bookings_arr_usd': 168000.0, 'carryover_quota_usd': ...ttainment_pct': 0.9, 'base_quota_usd': 100000.0, 'bookings_arr_usd': 94500.0, 'carryover_quota_usd': 5000.0, ...}, ...}\n\n    def test_delta_usd_per_rep(self, audit_rows):\n        for rep_id, exp in EXPECTED.items():\n            actual = float(audit_rows[rep_id][\"delta_usd\"])\n>           assert abs(actual - exp[\"delta_usd\"]) <= MONEY_TOL, (\n                f\"{rep_id} delta_usd: expected {exp['delta_usd']}, got {actual}\"\n            )\nE           AssertionError: REP-012 delta_usd: expected -920.0, got -4025.0\nE           assert 3105.0 <= 0.01\nE            +  where 3105.0 = abs((-4025.0 - -920.0))\n\n/tests/test_outputs.py:679: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestPerRepValues::test_flag_per_rep",
+                "status": "passed",
+                "duration": 0.009175358994980343,
+                "start": 1780906822.1336036,
+                "stop": 1780906822.1433895,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditSummary::test_required_keys",
+                "status": "passed",
+                "duration": 0.00045699800830334425,
+                "start": 1780906822.1438367,
+                "stop": 1780906822.1447568,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditSummary::test_total_reps_audited",
+                "status": "passed",
+                "duration": 0.0004051729993079789,
+                "start": 1780906822.1451716,
+                "stop": 1780906822.1460302,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditSummary::test_reps_with_discrepancy",
+                "status": "passed",
+                "duration": 0.0004595339996740222,
+                "start": 1780906822.146381,
+                "stop": 1780906822.1472387,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditSummary::test_total_overpaid_usd",
+                "status": "passed",
+                "duration": 0.00045567900087917224,
+                "start": 1780906822.1476052,
+                "stop": 1780906822.148447,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditSummary::test_total_underpaid_usd",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0005524349980987608,
+                "start": 1780906822.1489193,
+                "stop": 1780906822.162032,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestAuditSummary object at 0x7493b7a525d0>\n\n    def test_total_underpaid_usd(self):\n        actual = float(load_summary()[\"total_underpaid_usd\"])\n        expected = EXPECTED_SUMMARY[\"total_underpaid_usd\"]\n>       assert abs(actual - expected) <= MONEY_TOL\nE       assert 3105.0 <= 0.01\nE        +  where 3105.0 = abs((4585.0 - 1480.0))\n\n/tests/test_outputs.py:712: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestAuditSummary::test_tier_distribution",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.0006025350012350827,
+                "start": 1780906822.162469,
+                "stop": 1780906822.1756916,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestAuditSummary object at 0x7493b7a52780>\n\n    def test_tier_distribution(self):\n        summary = load_summary()\n        dist = summary[\"tier_distribution\"]\n        for tier, count in EXPECTED_SUMMARY[\"tier_distribution\"].items():\n            assert tier in dist, f\"tier_distribution missing tier '{tier}'\"\n>           assert dist[tier] == count, (\n                f\"tier_distribution['{tier}']: expected {count}, got {dist[tier]}\"\n            )\nE           AssertionError: tier_distribution['Accelerator 2']: expected 3, got 2\nE           assert 2 == 3\n\n/tests/test_outputs.py:719: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestAuditSummary::test_highest_delta_rep",
+                "status": "passed",
+                "duration": 0.00048681499902158976,
+                "start": 1780906822.176186,
+                "stop": 1780906822.177075,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAuditSummary::test_summary_matches_workbook",
+                "status": "passed",
+                "duration": 0.009465928000281565,
+                "start": 1780906822.177564,
+                "stop": 1780906822.1876142,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookArtifactRepair::test_commission_audit_table_range",
+                "status": "passed",
+                "duration": 0.009013697002956178,
+                "start": 1780906822.1881752,
+                "stop": 1780906822.1978238,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookArtifactRepair::test_defined_names_point_to_full_range",
+                "status": "passed",
+                "duration": 0.009848585999861825,
+                "start": 1780906822.1986003,
+                "stop": 1780906822.2091093,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookArtifactRepair::test_conditional_formatting_covers_row_24",
+                "status": "passed",
+                "duration": 0.00905842299835058,
+                "start": 1780906822.2096574,
+                "stop": 1780906822.2193618,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookArtifactRepair::test_formula_columns_extended_through_row_24",
+                "status": "passed",
+                "duration": 0.008602132991654798,
+                "start": 1780906822.2198722,
+                "stop": 1780906822.229085,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestWorkbookArtifactRepair::test_rows_13_24_formulas_reference_own_row",
+                "status": "passed",
+                "duration": 0.008870896992448252,
+                "start": 1780906822.229647,
+                "stop": 1780906822.239087,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestStaleRangeRepair::test_summary_formulas_use_full_rep_range",
+                "status": "passed",
+                "duration": 0.010227591999864671,
+                "start": 1780906822.2395835,
+                "stop": 1780906822.2504141,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestStaleRangeRepair::test_autofilter_covers_full_range",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.008787528997345362,
+                "start": 1780906822.2508974,
+                "stop": 1780906822.272024,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestStaleRangeRepair object at 0x7493b7a51850>\n\n    def test_autofilter_covers_full_range(self):\n        wb = load_workbook_repaired()\n>       assert wb[\"Commission Audit\"].auto_filter.ref == \"A4:L24\"\nE       AssertionError: assert 'A4:L12' == 'A4:L24'\nE         \nE         - A4:L24\nE         ?      -\nE         + A4:L12\nE         ?     +\n\n/tests/test_outputs.py:845: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestStaleRangeRepair::test_helper_formulas_use_row_24",
+                "status": "passed",
+                "duration": 0.009283981002226938,
+                "start": 1780906822.2725043,
+                "stop": 1780906822.2824178,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_hidden_sheets_not_dropped",
+                "status": "passed",
+                "duration": 0.010135095995792653,
+                "start": 1780906822.2831268,
+                "stop": 1780906822.2937987,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_summary_not_overwritten_with_values",
+                "status": "passed",
+                "duration": 0.009560856007738039,
+                "start": 1780906822.2943785,
+                "stop": 1780906822.3045745,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_tier_and_flag_not_written_as_literals",
+                "status": "passed",
+                "duration": 0.0092869209984201,
+                "start": 1780906822.3051417,
+                "stop": 1780906822.3150585,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_audit_formula_columns_not_overwritten",
+                "status": "passed",
+                "duration": 0.009572417999152094,
+                "start": 1780906822.315812,
+                "stop": 1780906822.3260489,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_stale_draft_rep001_repaired",
+                "status": "passed",
+                "duration": 0.01118093900004169,
+                "start": 1780906822.326578,
+                "stop": 1780906822.3383784,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_rep012_carryover_uses_max_formula",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.012830533996748272,
+                "start": 1780906822.3388906,
+                "stop": 1780906822.3664575,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestAntiShortcut object at 0x7493b7a53500>\n\n    def test_rep012_carryover_uses_max_formula(self):\n        rows = audit_rows_from_workbook(load_workbook_repaired())\n        carry = float(rows[\"REP-012\"][\"carryover_quota_usd\"])\n>       assert abs(carry - 5000.00) <= MONEY_TOL, (\n            f\"REP-012 carryover_quota_usd is {carry} \u2014 expected 5000.00. \"\n            \"The carryover cell uses a MAX formula; arithmetic-only handling gives 4000.\"\n        )\nE       AssertionError: REP-012 carryover_quota_usd is 4000.0 \u2014 expected 5000.00. The carryover cell uses a MAX formula; arithmetic-only handling gives 4000.\nE       assert 1000.0 <= 0.01\nE        +  where 1000.0 = abs((4000.0 - 5000.0))\n\n/tests/test_outputs.py:900: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_rep012_wrong_carryover_breaks_tier_and_commission",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.010136111006431747,
+                "start": 1780906822.36702,
+                "stop": 1780906822.3929162,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestAntiShortcut object at 0x7493b7a536b0>\n\n    def test_rep012_wrong_carryover_breaks_tier_and_commission(self):\n        \"\"\"ROUND-only carryover for REP-012 lands in Accelerator 3, not Accelerator 2.\"\"\"\n        rows = audit_rows_from_workbook(load_workbook_repaired())\n>       assert rows[\"REP-012\"][\"commission_tier\"] == \"Accelerator 2\"\nE       AssertionError: assert 'Accelerator 3' == 'Accelerator 2'\nE         \nE         - Accelerator 2\nE         ?             ^\nE         + Accelerator 3\nE         ?             ^\n\n/tests/test_outputs.py:908: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_rep015_carryover_uses_max_formula",
+                "status": "failed",
+                "raw_status": "call_failed",
+                "duration": 0.00997830100095598,
+                "start": 1780906822.393412,
+                "stop": 1780906822.4179044,
+                "retries": 0,
+                "file_path": "test_outputs.py",
+                "trace": "self = <test_outputs.TestAntiShortcut object at 0x7493b7a53860>\n\n    def test_rep015_carryover_uses_max_formula(self):\n        rows = audit_rows_from_workbook(load_workbook_repaired())\n        carry = float(rows[\"REP-015\"][\"carryover_quota_usd\"])\n>       assert abs(carry - 5000.00) <= MONEY_TOL, (\n            f\"REP-015 carryover_quota_usd is {carry} \u2014 expected 5000.00. \"\n            \"The carryover cell uses a MAX formula; arithmetic-only handling gives 3000.\"\n        )\nE       AssertionError: REP-015 carryover_quota_usd is 3000.0 \u2014 expected 5000.00. The carryover cell uses a MAX formula; arithmetic-only handling gives 3000.\nE       assert 2000.0 <= 0.01\nE        +  where 2000.0 = abs((3000.0 - 5000.0))\n\n/tests/test_outputs.py:914: AssertionError",
+                "message": "The test failed in the call phase due to an assertion error"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_rep008_zero_carryover_preserved",
+                "status": "passed",
+                "duration": 0.008818969996355008,
+                "start": 1780906822.4184031,
+                "stop": 1780906822.4278135,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            },
+            {
+                "name": "test_outputs.py::TestAntiShortcut::test_rep020_zero_carryover_preserved",
+                "status": "passed",
+                "duration": 0.008764304002397694,
+                "start": 1780906822.428406,
+                "stop": 1780906822.437823,
+                "retries": 0,
+                "file_path": "test_outputs.py"
+            }
+        ]
+    }
+}

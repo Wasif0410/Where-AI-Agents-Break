@@ -1,0 +1,178 @@
+{
+    "id": "cea36582-5fa7-4e54-9aa1-1a1a5f8f512c",
+    "task_name": "quota-commission-reconciliation-audit",
+    "trial_name": "quota-commission-reconciliation__GyZ4QFU",
+    "trial_uri": "file:///workspace/jobs/2026-06-08__04-12-58/quota-commission-reconciliation__GyZ4QFU",
+    "task_id": {
+        "path": "selected_final_samples/quota-commission-reconciliation-audit"
+    },
+    "source": null,
+    "task_checksum": "75f25be4ff84719af459baa7028a9268c9a21ca7d09f960fad14b787ab0d5eea",
+    "config": {
+        "task": {
+            "path": "selected_final_samples/quota-commission-reconciliation-audit",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": null
+        },
+        "trial_name": "quota-commission-reconciliation__GyZ4QFU",
+        "trials_dir": "jobs/2026-06-08__04-12-58",
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "terminus-2",
+            "import_path": null,
+            "model_name": "gemini/gemini-3.5-flash",
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "env": {},
+            "mcp_servers": []
+        },
+        "environment": {
+            "type": "docker",
+            "import_path": null,
+            "force_build": false,
+            "delete": true,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "env": {},
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "env": {},
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "job_id": "f82aad65-71e4-46d5-8b6d-8877c1793ad2"
+    },
+    "agent_info": {
+        "name": "terminus-2",
+        "version": "2.0.0",
+        "model_info": {
+            "name": "gemini-3.5-flash",
+            "provider": "gemini"
+        }
+    },
+    "agent_result": {
+        "n_input_tokens": 2711482,
+        "n_cache_tokens": 2312219,
+        "n_output_tokens": 49456,
+        "cost_usd": 1.39083135,
+        "rollout_details": [],
+        "metadata": {
+            "n_episodes": 62,
+            "api_request_times_msec": [
+                3556.3366413116455,
+                2688.8790130615234,
+                2253.9238929748535,
+                3979.65145111084,
+                2317.811965942383,
+                3365.2000427246094,
+                1871.473789215088,
+                4524.100065231323,
+                4427.961349487305,
+                2010.0946426391602,
+                2205.873489379883,
+                2530.6944847106934,
+                2855.079412460327,
+                7956.512212753296,
+                4328.366756439209,
+                9566.251754760742,
+                2169.544458389282,
+                2522.425413131714,
+                2416.7819023132324,
+                4675.108432769775,
+                2558.072090148926,
+                11308.997631072998,
+                5790.106534957886,
+                19637.89677619934,
+                2705.7669162750244,
+                2589.4482135772705,
+                4138.942241668701,
+                2570.4853534698486,
+                6565.877914428711,
+                4801.115274429321,
+                4536.82017326355,
+                2947.8888511657715,
+                18892.913103103638,
+                2104.692220687866,
+                10286.075592041016,
+                3839.646577835083,
+                1881.9985389709473,
+                2731.0543060302734,
+                1754.631757736206,
+                3524.454355239868,
+                2455.976724624634,
+                12986.323595046997,
+                2536.358594894409,
+                3967.8030014038086,
+                2364.5009994506836,
+                4237.267971038818,
+                2453.6802768707275,
+                15535.903215408325,
+                12762.42995262146,
+                4868.552684783936,
+                2335.6664180755615,
+                2989.014148712158,
+                2869.11678314209,
+                16439.182996749878,
+                11466.387033462524,
+                2596.1999893188477,
+                2262.573719024658,
+                4898.470163345337,
+                2877.0525455474854,
+                3347.280979156494,
+                1587.2175693511963,
+                1322.0276832580566
+            ],
+            "summarization_count": 0
+        }
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.0
+        }
+    },
+    "exception_info": null,
+    "started_at": "2026-06-08T08:13:19.261699Z",
+    "finished_at": "2026-06-08T08:21:11.022274Z",
+    "environment_setup": {
+        "started_at": "2026-06-08T08:13:20.009666Z",
+        "finished_at": "2026-06-08T08:13:33.667966Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-06-08T08:13:33.667990Z",
+        "finished_at": "2026-06-08T08:14:11.076765Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-06-08T08:14:11.076852Z",
+        "finished_at": "2026-06-08T08:21:04.901273Z"
+    },
+    "verifier": {
+        "started_at": "2026-06-08T08:21:05.590177Z",
+        "finished_at": "2026-06-08T08:21:08.256280Z"
+    },
+    "step_results": null
+}
